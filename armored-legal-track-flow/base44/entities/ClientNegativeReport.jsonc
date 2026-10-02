@@ -1,0 +1,96 @@
+{
+  "name": "ClientNegativeReport",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Nombre de la entidad"
+    },
+    "entity_nit": {
+      "type": "string",
+      "description": "NIT de la entidad (sin DV, con puntos)"
+    },
+    "entity_dv": {
+      "type": "string",
+      "description": "D\u00edgito de verificaci\u00f3n del NIT"
+    },
+    "obligation_number": {
+      "type": "string",
+      "description": "N\u00famero de obligaci\u00f3n en centrales de riesgo"
+    },
+    "pending_amount": {
+      "type": "number",
+      "description": "Saldo pendiente de esta obligaci\u00f3n"
+    },
+    "obligation_status": {
+      "type": "string",
+      "enum": [
+        "MORA",
+        "DUDOSO_RECAUDO",
+        "CARTERA_CASTIGADA",
+        "SALDADO",
+        "INACTIVA",
+        "CAN_MAL_MANEJO",
+        "PAGO_VOL",
+        "PAGO_VOL_MX",
+        "PAGO_JUR",
+        "LIQ_PAT",
+        "CAN_PRESCR",
+        "CAN_VOL",
+        "CAN_VOL_MM",
+        "T_EXTRAVIADA",
+        "NO_ENTREG",
+        "TARJETA_NO_RENOVADA",
+        "T_ROBADA",
+        "REESTRUCTURADA",
+        "REFINANCIADA",
+        "TRANSF_PRODUCTO",
+        "NORMAL",
+        "COMPRADA",
+        "OTRO"
+      ],
+      "description": "Estado de la obligaci\u00f3n en centrales de riesgo"
+    },
+    "has_negative_permanence": {
+      "type": "boolean",
+      "description": "Tiene permanencia negativa"
+    },
+    "negative_permanence_until": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha hasta que estar\u00e1 con reporte negativo"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendiente",
+        "en_gestion",
+        "eliminado_exito",
+        "inviable"
+      ],
+      "description": "Estado de gesti\u00f3n del reporte"
+    },
+    "cuota_exito_asignada": {
+      "type": "number",
+      "description": "Cuota de honorarios de \u00e9xito asignada a este reporte"
+    },
+    "factura_exito_id": {
+      "type": "string",
+      "description": "ID de la factura generada al eliminar este reporte"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas"
+    }
+  },
+  "required": [
+    "client_id",
+    "entity_name",
+    "obligation_status",
+    "status"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "ClientDocument",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "FK: ID del cliente al que pertenece el documento"
+    },
+    "tipo_documento": {
+      "type": "string",
+      "description": "Categor\u00eda del documento (Ej: C\u00e9dula, Soporte de Pago, Contrato)"
+    },
+    "nombre_original": {
+      "type": "string",
+      "description": "Nombre original del archivo subido"
+    },
+    "url_storage": {
+      "type": "string",
+      "description": "URL p\u00fablica del archivo en storage"
+    },
+    "peso_bytes": {
+      "type": "number",
+      "description": "Tama\u00f1o del archivo en bytes"
+    },
+    "tipo_mime": {
+      "type": "string",
+      "description": "Tipo MIME del archivo"
+    },
+    "uploaded_by_name": {
+      "type": "string",
+      "description": "Nombre del usuario que carg\u00f3 el documento"
+    }
+  },
+  "required": [
+    "client_id",
+    "nombre_original",
+    "url_storage",
+    "tipo_documento"
+  ]
+}

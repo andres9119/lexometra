@@ -1,0 +1,85 @@
+{
+  "name": "TreasuryTransaction",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "ingreso",
+        "egreso"
+      ],
+      "description": "Tipo de movimiento"
+    },
+    "wallet": {
+      "type": "string",
+      "enum": [
+        "cuenta_firma",
+        "fondo_terceros"
+      ],
+      "description": "Billetera: Cuenta de la Firma o Fondo de Terceros (t\u00edtulos, anticipos, embargos)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "pago_cliente",
+        "comision_referido",
+        "gastos_operacion",
+        "honorarios",
+        "impuestos",
+        "titulo_judicial",
+        "anticipo_cliente",
+        "reembolso",
+        "otro"
+      ],
+      "description": "Categor\u00eda"
+    },
+    "concept": {
+      "type": "string",
+      "description": "Concepto"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Monto (COP)"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "efectivo",
+        "transferencia",
+        "nequi",
+        "daviplata",
+        "cheque",
+        "otro"
+      ],
+      "description": "M\u00e9todo de pago"
+    },
+    "reference": {
+      "type": "string",
+      "description": "Referencia / No. comprobante"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Cliente relacionado"
+    },
+    "attachment_url": {
+      "type": "string",
+      "description": "URL del comprobante adjunto (JPG/PDF)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas"
+    }
+  },
+  "required": [
+    "type",
+    "category",
+    "concept",
+    "amount",
+    "date"
+  ]
+}

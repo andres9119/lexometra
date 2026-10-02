@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Casos Jurídicos — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+    .page-title { font-family:var(--font-display); font-size:1.45rem; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:0.6rem; letter-spacing:-0.01em; }
+    .page-title i { color:var(--accent); }
+
+    .status-tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; overflow-x:auto; padding-bottom:0.5rem; }
+    .status-tab { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:0.4rem 1rem; font-size:0.8rem; font-weight:500; color:var(--muted); display:flex; align-items:center; gap:0.5rem; cursor:pointer; transition:all 0.2s; text-decoration:none; }
+    .status-tab.active { background:var(--accent); color:#FFFFFF; border-color:var(--accent); }
+    .status-tab:hover:not(.active) { background:var(--line-soft); color:var(--ink); }
+    .tab-count { background:var(--line-soft); color:var(--ink); border-radius:10px; padding:0.1rem 0.4rem; font-size:0.7rem; font-weight:600; }
+    .status-tab.active .tab-count { background:rgba(255,255,255,0.2); color:#FFFFFF; }
+
+    .table-card { background:var(--surface); border-radius:8px; border:1px solid var(--line); overflow:hidden; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; padding:1rem; font-size:0.7rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--line); background:var(--line-soft); }
+    td { padding:1rem; font-size:0.85rem; border-bottom:1px solid var(--line-soft); color:var(--ink); vertical-align:middle; }
+    .caso-titulo { font-weight:600; }
+    .st-badge { padding:0.25rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:inline-block; }
+    .st-activo { background:var(--success-bg); color:var(--success); }
+    .st-suspendido { background:var(--warn-bg); color:var(--warn); }
+    .st-terminado { background:var(--info-bg); color:var(--info); }
+    .st-archivado { background:var(--line-soft); color:var(--muted); }
+    .pri-badge { font-size:0.7rem; font-weight:600; }
+    .pri-alta { color:var(--danger); } .pri-media { color:var(--warn); } .pri-baja { color:var(--muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title"><i data-lucide="briefcase"></i> Casos Jurídicos</h1>
+</div>
+
+<div class="status-tabs">
+    <a href="{% url 'procesos_lista' %}" class="status-tab {% if estado_activo == 'todos' %}active{% endif %}">
+        <i data-lucide="folder" width="16" height="16"></i> Todos <span class="tab-count">{{ stats.activos|add:stats.suspendidos|add:stats.terminados|add:stats.archivados }}</span>
+    </a>
+    <a href="{% url 'procesos_lista' %}?estado=ACTIVO" class="status-tab {% if estado_activo == 'ACTIVO' %}active{% endif %}">
+        <i data-lucide="play-circle" width="16" height="16"></i> Activos <span class="tab-count">{{ stats.activos }}</span>
+    </a>
+    <a href="{% url 'procesos_lista' %}?estado=SUSPENDIDO" class="status-tab {% if estado_activo == 'SUSPENDIDO' %}active{% endif %}">
+        <i data-lucide="pause-circle" width="16" height="16"></i> Suspendidos <span class="tab-count">{{ stats.suspendidos }}</span>
+    </a>
+    <a href="{% url 'procesos_lista' %}?estado=TERMINADO" class="status-tab {% if estado_activo == 'TERMINADO' %}active{% endif %}">
+        <i data-lucide="check-circle" width="16" height="16"></i> Terminados <span class="tab-count">{{ stats.terminados }}</span>
+    </a>
+    <a href="{% url 'procesos_lista' %}?estado=ARCHIVADO" class="status-tab {% if estado_activo == 'ARCHIVADO' %}active{% endif %}">
+        <i data-lucide="archive" width="16" height="16"></i> Archivados <span class="tab-count">{{ stats.archivados }}</span>
+    </a>
+</div>
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Abogado</th>
+                <th>Prioridad</th>
+                <th>Vencimiento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for caso in casos %}
+            <tr>
+                <td class="caso-titulo"><a href="{% url 'procesos_detalle' caso.pk %}" style="color:var(--text-main); text-decoration:none;">{{ caso.titulo }}</a></td>
+                <td>{{ caso.get_tipo_proceso_display }}</td>
+                <td><span class="st-badge st-{{ caso.estado|lower }}">{{ caso.get_estado_display }}</span></td>
+                <td>{% if caso.abogado_asignado %}{{ caso.abogado_asignado.get_full_name|default:caso.abogado_asignado.username }}{% else %}—{% endif %}</td>
+                <td><span class="pri-badge pri-{{ caso.prioridad|lower }}">{{ caso.get_prioridad_display }}</span></td>
+                <td>{{ caso.proximo_vencimiento|date:"Y-m-d"|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">No hay casos jurídicos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include '_pagination.html' %}
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Reasignar Abogados{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestión</div>
+        <h1 class="page-title"><i data-lucide="user-cog"></i> Reasignar Abogados</h1>
+        <p class="page-sub">Carga de trabajo por abogado y reasignación de casos (individual o masiva).</p>
+    </div>
+</div>
+
+{# Carga de trabajo #}
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header"><span>Carga de trabajo por abogado</span></div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Abogado</th>
+                <th>Casos asignados</th>
+                <th>Procesos internos</th>
+                <th>Reasignar casos a…</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in abogados %}
+            <tr>
+                <td style="font-weight:600;">{{ a.get_full_name|default:a.username }}</td>
+                <td>{{ a.num_casos }}</td>
+                <td>{{ a.num_internos }}</td>
+                <td>
+                    <form method="post" style="display:flex; gap:0.5rem; align-items:center;">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="masiva">
+                        <input type="hidden" name="from_abogado" value="{{ a.pk }}">
+                        <select name="to_abogado" style="padding:0.3rem 0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.8rem;">
+                            {% for b in abogados %}
+                            {% if b.pk != a.pk %}
+                            <option value="{{ b.pk }}">{{ b.get_full_name|default:b.username }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-sm" {% if a.num_casos == 0 %}disabled{% endif %}>Reasignar todos</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="empty-state">No hay abogados activos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# Reasignación individual #}
+<div class="card">
+    <div class="card-header"><span>Reasignación individual de casos</span></div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Caso</th>
+                <th>Cliente</th>
+                <th>Abogado actual</th>
+                <th>Asignar a…</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in casos %}
+            <tr>
+                <td style="font-weight:600; min-width:200px;">{{ c.titulo }}</td>
+                <td style="font-size:0.82rem;">{{ c.cliente.nombre|default:"—" }}</td>
+                <td style="font-size:0.82rem;">{{ c.abogado_asignado.get_full_name|default:c.abogado_asignado.username|default:"Sin asignar" }}</td>
+                <td>
+                    <form method="post" style="display:flex; gap:0.5rem; align-items:center;">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="individual">
+                        <input type="hidden" name="caso_id" value="{{ c.pk }}">
+                        <select name="to_abogado" style="padding:0.3rem 0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.8rem;">
+                            {% for b in abogados %}
+                            <option value="{{ b.pk }}">{{ b.get_full_name|default:b.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-sm">Reasignar</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="empty-state">No hay casos jurídicos registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

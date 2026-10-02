@@ -1,0 +1,1661 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ cliente.nombre }} — Ficha Cliente{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ── BANNER SUPERIOR ────────────────────── */
+    .cliente-banner {
+        background: var(--brand);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .banner-back {
+        color: var(--sidebar-text);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+        transition: color 0.2s;
+    }
+    .banner-back:hover { color: white; }
+
+    .banner-estado-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .banner-estado-select {
+        background: var(--brand-2);
+        border: 1px solid var(--brand-3);
+        color: white;
+        padding: 0.3rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 1.5rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.4rem center;
+    }
+    .banner-estado-select:focus { outline: 2px solid var(--accent); }
+
+    .banner-gear {
+        color: var(--sidebar-text);
+        cursor: pointer;
+        transition: color 0.2s, transform 0.3s;
+        flex-shrink: 0;
+    }
+    .banner-gear:hover { color: #FFFFFF; transform: rotate(60deg); }
+
+    .banner-nombre {
+        font-size: 1rem;
+        font-weight: 700;
+        flex: 1;
+    }
+    .banner-cedula {
+        font-size: 0.8rem;
+        color: var(--sidebar-text);
+        font-family: var(--font-mono);
+    }
+    .hal-badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:999px; font-size:0.65rem; font-weight:700; text-transform:uppercase; }
+    .hal-estado { background:var(--brand-2); color:#fff; }
+    .hal-recaudo { background:var(--success-bg); color:var(--success); }
+    .hal-reporte { background:var(--warn-bg); color:var(--warn); }
+    .hal-documento { background:var(--line-soft); color:var(--muted); }
+    .banner-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+    .banner-btn {
+        background: var(--brand-2);
+        border: 1px solid var(--brand-3);
+        color: white;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: background 0.2s;
+    }
+    .banner-btn:hover { background: var(--brand-3); }
+    .banner-btn-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    .banner-btn-primary:hover { background: var(--brand); }
+
+    /* ── TARJETAS RESUMEN ───────────────────── */
+    .summary-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .summary-card {
+        background: var(--surface);
+        border: 1px solid var(--topbar-border);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .summary-card-icon {
+        width: 40px; height: 40px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.2rem;
+    }
+    .summary-card-icon.yellow { background: var(--info-bg); color: var(--info); }
+    .summary-card-icon.blue { background: var(--info-bg); color: var(--info); }
+    .summary-card-icon.green { background: var(--success-bg); color: var(--success); }
+    .summary-card-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .summary-card-value { font-size: 1.4rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
+
+    /* ── TABLA DE FICHA ─────────────────────── */
+    .ficha-section { margin-bottom: 1rem; }
+    .ficha-section-header {
+        background: var(--brand);
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 6px 6px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .ficha-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--topbar-border);
+        border-top: none;
+        background: var(--surface);
+        border-radius: 0 0 6px 6px;
+        overflow: hidden;
+    }
+    .ficha-table td {
+        padding: 0.6rem 1rem;
+        font-size: 0.82rem;
+        border: 1px solid var(--line);
+        vertical-align: middle;
+    }
+    .ficha-table td.ft-label {
+        background: var(--line-soft);
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        white-space: nowrap;
+        width: 140px;
+    }
+    .ficha-table td.ft-val {
+        color: var(--ink);
+        font-weight: 500;
+    }
+
+    /* ── SECCIÓN CASOS ──────────────────────── */
+    .caso-card {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--topbar-border);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .caso-card:last-child { border-bottom: none; }
+    .caso-titulo { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
+    .caso-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .caso-badge { font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; background: var(--info-bg); color: var(--info); }
+    .caso-link { margin-left: auto; font-size: 0.8rem; font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
+    .caso-link:hover { text-decoration: underline; }
+
+    /* ── PROCESOS COMERCIALES ───────────────── */
+    .proc-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 0 0 6px 6px; overflow: hidden; }
+    .proc-table th {
+        background: var(--brand);
+        color: white;
+        padding: 0.6rem 1rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: left;
+    }
+    .proc-table td {
+        padding: 0.65rem 1rem;
+        font-size: 0.82rem;
+        border-bottom: 1px solid var(--topbar-border);
+        color: var(--ink);
+        vertical-align: middle;
+    }
+    .proc-badge-estado {
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        background: var(--line-soft);
+        color: var(--muted);
+        cursor: pointer;
+        display: inline-block;
+        text-transform: uppercase;
+        transition: background 0.15s;
+    }
+    .proc-badge-estado:hover { background: var(--line); }
+
+    /* ── POPUP ESTADO ───────────────────────── */
+    .estado-popup {
+        display: none;
+        position: absolute;
+        top: 28px;
+        left: 0;
+        min-width: 220px;
+        background: var(--surface);
+        border: 1px solid var(--topbar-border);
+        border-radius: 8px;
+        padding: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12);
+        z-index: 100;
+    }
+    .estado-popup select {
+        width: 100%;
+        padding: 0.4rem;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.85rem;
+    }
+    .estado-popup-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
+
+    /* ── CONDICIONES ESPECIALES (BADGES INFO) ── */
+    .cond-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: var(--info-bg);
+        color: var(--info);
+        border: 1px solid var(--info-border);
+        padding: 0.25rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* ── SECTION BUTTON ──────────────────────── */
+    .section-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .section-btn:hover { background: rgba(255,255,255,0.15); }
+
+    /* ── SMALL BUTTON ────────────────────────── */
+    .btn-sm {
+        padding: 0.2rem 0.5rem;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--surface);
+        color: var(--muted);
+        transition: all 0.15s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-sm:hover { background: var(--line-soft); border-color: var(--muted-2); }
+    .btn-sm-danger { color: var(--danger); border-color: var(--danger-border); }
+    .btn-sm-danger:hover { background: var(--danger-bg); }
+
+    /* ── BADGE GESTIÓN ───────────────────────── */
+    .badge-gestion {
+        display: inline-block;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        background: var(--line-soft);
+        color: var(--muted);
+    }
+
+    /* ── MODAL EDITAR ───────────────────────── */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 1000;
+        display: none; justify-content: center; align-items: flex-start;
+        overflow-y: auto; padding: 2rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+        background: var(--surface); width: 100%; max-width: 900px;
+        border-radius: 10px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+    .modal-header {
+        background: var(--brand); color: white;
+        padding: 1rem 1.5rem;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-title { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .btn-close { background: none; border: none; cursor: pointer; color: #A9B5C2; }
+    .btn-close:hover { color: white; }
+    .modal-body { padding: 1.5rem; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 0.6rem 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.88rem;
+        outline: none;
+        font-family: inherit;
+        color: var(--ink);
+        transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(32,58,94,0.08);
+    }
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--topbar-border);
+        display: flex; justify-content: flex-end; gap: 1rem;
+    }
+
+    /* ── SERVICE BADGES (st-pi) ─────────────── */
+    .st-pi { display:inline-block; padding:0.15rem 0.45rem; border-radius:999px; font-size:0.7rem; font-weight:600; }
+    .st-activo { background:var(--info-bg); color:var(--info); }
+    .st-en_proceso { background:var(--warn-bg); color:var(--warn); }
+    .st-resuelto { background:var(--success-bg); color:var(--success); }
+    .st-archivado { background:var(--line-soft); color:var(--muted); }
+    .st-apelacion { background:var(--info-bg); color:var(--info); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# ── BANNER SUPERIOR ─────────────────────────────────────────────────────── #}
+<div class="cliente-banner">
+    <a href="{% url 'comercial_lista' %}" class="banner-back">
+        <i data-lucide="arrow-left" width="14" height="14"></i> Comercial
+    </a>
+    {% if primer_proceso %}
+    <div class="banner-estado-wrapper">
+        {% if read_only %}
+        <span style="background:var(--brand-2); border:1px solid var(--brand-3); color:white; padding:0.3rem 0.75rem; border-radius:6px; font-size:0.8rem; font-weight:700;">{{ primer_proceso.estado_comercial }}</span>
+        {% else %}
+        <form id="form-estado-banner" method="post" action="{% url 'comercial_cambiar_estado' primer_proceso.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <select name="estado" class="banner-estado-select" onchange="guardarEstadoBanner(this)">
+                {% for e in estados %}
+                <option value="{{ e.nombre }}" {% if primer_proceso.estado_comercial == e.nombre %}selected{% endif %}>{{ e.nombre }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <i data-lucide="settings" width="16" height="16" class="banner-gear" onclick="crearEstado()" title="Crear nuevo estado"></i>
+        {% endif %}
+    </div>
+    {% endif %}
+    <i data-lucide="chevron-right" width="14" height="14" style="color:#A9B5C2; flex-shrink:0;"></i>
+    <div>
+        <div class="banner-nombre">{{ cliente.nombre }}</div>
+        <div class="banner-cedula">CC {{ cliente.identificacion }} · ID {{ cliente.id_comercial }}
+            {% if cliente.canal_origen %}· Canal: {{ cliente.get_canal_origen_display }}{% endif %}
+        </div>
+    </div>
+    <div class="banner-actions">
+        {% if not read_only %}
+        <button class="banner-btn banner-btn-primary" onclick="openEditModal()">
+            <i data-lucide="pencil" width="14" height="14"></i> Editar
+        </button>
+        {% endif %}
+        <button class="banner-btn" onclick="openNuevoCasoModal()">
+            <i data-lucide="plus" width="14" height="14"></i> Caso Jurídico
+        </button>
+        <a href="{% url 'comercial_generar_contrato' cliente.pk %}" class="banner-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
+            <i data-lucide="file-text" width="14" height="14"></i> Contrato
+        </a>
+        <a href="{% url 'comercial_generar_contrato' cliente.pk %}?pdf=1" class="banner-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
+            <i data-lucide="download" width="14" height="14"></i> PDF
+        </a>
+    </div>
+</div>
+
+{# ── TARJETAS RESUMEN ────────────────────────────────────────────────────── #}
+<div class="summary-row" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="summary-card">
+        <div class="summary-card-icon yellow"><i data-lucide="dollar-sign" width="20" height="20"></i></div>
+        <div>
+            <div class="summary-card-label">Saldo Pendiente</div>
+            <div class="summary-card-value">${{ stats.suma_saldo_pendiente|default:0|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card-icon blue"><i data-lucide="file-text" width="20" height="20"></i></div>
+        <div>
+            <div class="summary-card-label">Facturas</div>
+            <div class="summary-card-value">0</div>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card-icon green"><i data-lucide="trending-up" width="20" height="20"></i></div>
+        <div>
+            <div class="summary-card-label">Expectativa Total</div>
+            <div class="summary-card-value">${{ stats.suma_expectativa|default:0|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card-icon" style="background:var(--info-bg); color:var(--info);"><i data-lucide="check-circle" width="20" height="20"></i></div>
+        <div>
+            <div class="summary-card-label">Acuerdos Activos</div>
+            <div class="summary-card-value">{{ stats.total_procesos|default:0 }}</div>
+        </div>
+    </div>
+</div>
+
+{# ── TABS ────────────────────────────────────────────────────────────────── #}
+<div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--topbar-border); padding-bottom:0.5rem;">
+    <a href="#" class="tab-active" data-tab="ficha" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:700; border-radius:6px 6px 0 0; background:var(--brand); color:white; text-decoration:none;">Ficha</a>
+    <a href="#" data-tab="procesos" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Procesos ({{ stats.total_procesos|default:0 }})</a>
+    <a href="#" data-tab="actividad" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Actividad (0)</a>
+</div>
+
+{# ── SECCIÓN FICHA ──────────────────────────────────────────────────────── #}
+<div id="tab-ficha">
+
+{# I. DATOS GENERALES Y DOMICILIO #}
+<div class="ficha-section">
+    <div class="ficha-section-header">
+        <span>I. Datos Generales y Domicilio</span>
+    </div>
+    <table class="ficha-table">
+        <tr>
+            <td class="ft-label">Nombre Completo</td>
+            <td class="ft-val">{{ cliente.nombre }}</td>
+            <td class="ft-label">Cédula</td>
+            <td class="ft-val">{{ cliente.identificacion }}</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Celular</td>
+            <td class="ft-val">{{ cliente.telefono|default:"—" }}</td>
+            <td class="ft-label">Correo</td>
+            <td class="ft-val">{{ cliente.email|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Servicio</td>
+            <td class="ft-val">{% if primer_proceso %}{{ primer_proceso.tipo_servicio_display }}{% else %}—{% endif %}</td>
+            <td class="ft-label">Referido Por</td>
+            <td class="ft-val">{% if cliente.referidor %}{{ cliente.referidor }}{% else %}—{% endif %}</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Ciudad / Municipio</td>
+            <td class="ft-val">{{ cliente.ciudad|default:"—" }}</td>
+            <td class="ft-label">Departamento</td>
+            <td class="ft-val">{{ cliente.departamento|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Dirección</td>
+            <td class="ft-val">{{ cliente.direccion|default:"—" }}</td>
+            <td class="ft-label">Barrio</td>
+            <td class="ft-val">{{ cliente.barrio|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Fec. Contrato</td>
+            <td class="ft-val">
+                {% if primer_proceso and primer_proceso.fecha_contrato %}{{ primer_proceso.fecha_contrato|date:"d/m/Y" }}
+                {% elif cliente.fecha_contrato %}{{ cliente.fecha_contrato|date:"d/m/Y" }}
+                {% else %}—{% endif %}
+                {% if primer_proceso and primer_proceso.estado_comercial == 'CONTRATO_FIRMADO' and not primer_proceso.fecha_contrato %}
+                <span style="color:var(--danger); font-size:0.75rem;"> (pendiente)</span>
+                {% endif %}
+            </td>
+            <td class="ft-label">Vereda</td>
+            <td class="ft-val">{{ cliente.vereda|default:"—" }}</td>
+        </tr>
+    </table>
+    {% if not read_only and primer_proceso %}
+    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; padding:0.5rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; justify-content:flex-end;">
+        <button class="section-btn" onclick="openProcesoModal()">Editar datos del proceso</button>
+    </div>
+    {% endif %}
+    {% if cliente.es_victima_conflicto or cliente.es_indigena or cliente.es_adulto_mayor or cliente.es_afectacion_psicologica or cliente.es_madre_cabeza_familia %}
+    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; padding:0.6rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <span style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; padding-top:0.2rem;">Condic. Especiales:</span>
+        {% if cliente.es_victima_conflicto %}<span class="cond-badge"><i data-lucide="shield-alert" width="12" height="12"></i> Víctima conflicto</span>{% endif %}
+        {% if cliente.es_indigena %}<span class="cond-badge"><i data-lucide="flag" width="12" height="12"></i> Indígena</span>{% endif %}
+        {% if cliente.es_adulto_mayor %}<span class="cond-badge"><i data-lucide="users" width="12" height="12"></i> Adulto mayor</span>{% endif %}
+        {% if cliente.es_afectacion_psicologica %}<span class="cond-badge"><i data-lucide="heart" width="12" height="12"></i> Afectación psicológica</span>{% endif %}
+        {% if cliente.es_madre_cabeza_familia %}<span class="cond-badge"><i data-lucide="home" width="12" height="12"></i> Madre cabeza de familia</span>{% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{# OBSERVACIONES #}
+{% if cliente.observaciones %}
+<div class="ficha-section">
+    <div class="ficha-section-header"><span>Observaciones</span></div>
+    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; padding:1rem; border-radius:0 0 6px 6px; font-size:0.85rem; color:var(--ink); white-space:pre-wrap; line-height:1.6;">{{ cliente.observaciones }}</div>
+</div>
+{% endif %}
+
+{# II. CENTRALES DE RIESGO #}
+<div class="ficha-section">
+    <div class="ficha-section-header">
+        <span>II. Centrales de Riesgo</span>
+        {% if not read_only and primer_proceso %}
+        <button class="section-btn" onclick="openCentralesModal()">Editar</button>
+        {% endif %}
+    </div>
+    {% with p=primer_proceso %}
+    <table class="ficha-table">
+        {% if p %}
+        <tr>
+            <td class="ft-label">Clave DataCrédito</td>
+            <td class="ft-val">{{ p.clave_datacredito|default:"—" }}</td>
+            <td class="ft-label">Score DataCrédito</td>
+            <td class="ft-val">{{ p.score_datacredito|default:"—" }} / 1000</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Clave TransUnion</td>
+            <td class="ft-val">{{ p.clave_transunion|default:"—" }}</td>
+            <td class="ft-label">Score TransUnion</td>
+            <td class="ft-val">{{ p.score_transunion|default:"—" }} / 1000</td>
+        </tr>
+        {% else %}
+        <tr><td class="ft-val" colspan="4" style="text-align:center;color:var(--text-muted);">Sin procesos asociados</td></tr>
+        {% endif %}
+    </table>
+    {% endwith %}
+</div>
+
+{# IV. ESTRUCTURA DE COBRO MIXTO #}
+{% if primer_proceso %}
+{% with p=primer_proceso %}
+{% with ar=anticipo_resumen %}
+<div class="ficha-section">
+    <div class="ficha-section-header">
+        <span>IV. Estructura de Cobro Mixto</span>
+        <div style="display:flex; gap:0.4rem;">
+            {% if not read_only %}
+            <button class="section-btn" onclick="openCobroModal()">Editar</button>
+            <button class="section-btn" style="background:var(--success); color:white; border-color:var(--success);" onclick="facturarCobro()">Facturar</button>
+            {% endif %}
+        </div>
+    </div>
+    <table class="ficha-table">
+        <tr>
+            <td class="ft-label">Expectativa Total (COP)</td>
+            <td class="ft-val" style="font-weight:700;">$ {{ p.valor_expectativa_total|floatformat:0|intcomma|default:"0" }}</td>
+            <td class="ft-label">% Anticipo</td>
+            <td class="ft-val" style="font-weight:700;">{{ p.porcentaje_anticipo|floatformat:0|default:"0" }}%</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Reportes Objetivo</td>
+            <td class="ft-val" style="font-weight:700;">{{ p.cantidad_reportes|default:"0" }}</td>
+            <td class="ft-label">Cuotas Anticipo</td>
+            <td class="ft-val" style="font-weight:700;">{{ p.cuotas_anticipo|default:"1" }}</td>
+        </tr>
+        {% if ar %}
+        <tr>
+            <td class="ft-label">Anticipo Total</td>
+            <td class="ft-val" style="font-weight:700;">$ {{ ar.anticipo_total|floatformat:0|intcomma }}</td>
+            <td class="ft-label">Anticipo Pagado</td>
+            <td class="ft-val" style="font-weight:700; color:var(--success);">$ {{ ar.anticipo_pagado|floatformat:0|intcomma }}</td>
+        </tr>
+        <tr>
+            <td class="ft-label">Anticipo Pendiente</td>
+            <td class="ft-val" style="font-weight:700; color:var(--warn);">$ {{ ar.anticipo_pendiente|floatformat:0|intcomma }}</td>
+            <td class="ft-label">Saldo Pendiente</td>
+            <td class="ft-val" style="font-weight:700; color:var(--danger);">$ {{ ar.saldo_pendiente|floatformat:0|intcomma }}</td>
+        </tr>
+        {% endif %}
+    </table>
+    {% if anticipo_cuotas %}
+    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; border-radius:0 0 6px 6px; padding:0.75rem 1rem;">
+        <div style="font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:0.5rem;">
+            Cronograma de cuotas del anticipo
+            {% if anticipo_resumen %}<span style="color:var(--success);">({{ anticipo_resumen.cuotas_pagadas }}/{{ anticipo_resumen.cuotas_totales }} pagadas)</span>{% endif %}
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            {% for c in anticipo_cuotas %}
+            <div style="flex:1 1 140px; max-width:200px; border:1px solid var(--topbar-border); border-radius:6px; padding:0.5rem 0.7rem; {% if c.pagada %}background:var(--success-bg); border-color:var(--success);{% endif %}">
+                <div style="font-size:0.7rem; color:var(--muted);">Cuota {{ c.numero }}</div>
+                <div style="font-weight:700; font-size:0.85rem;">$ {{ c.valor|floatformat:0|intcomma }}</div>
+                <div style="font-size:0.7rem; color:{% if c.pagada %}var(--success){% else %}var(--muted-2){% endif %}; font-weight:600;">{% if c.pagada %}{{ c.fecha_pago|date:"d/m/Y" }}{% else %}Pendiente{% endif %}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endwith %}{% endwith %}
+{% endif %}
+
+{# III. REPORTES NEGATIVOS EN CENTRALES #}
+<div class="ficha-section">
+    <div class="ficha-section-header">
+        <span>III. Reportes Negativos en Centrales ({{ reportes_negativos|length }})</span>
+        {% if not read_only %}
+        <button class="section-btn" onclick="openReporteModal()">Agregar</button>
+        {% endif %}
+    </div>
+    <table class="proc-table" style="border-radius:0 0 6px 6px;">
+        <thead>
+            <tr>
+                <th style="width:30px;">#</th>
+                <th>Entidad / No. Obligación</th>
+                <th>Estado Central</th>
+                <th>Gestión</th>
+                <th>Estado Obligación</th>
+                <th>Saldo</th>
+                <th>Perm. Negativa</th>
+                <th style="width:100px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reportes_negativos %}
+            <tr>
+                <td style="color:var(--muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                <td>
+                    <div style="font-weight:600;">{{ r.entidad }}</div>
+                    {% if r.numero_obligacion %}<div style="font-size:0.75rem; color:var(--muted);">No. {{ r.numero_obligacion }}</div>{% endif %}
+                </td>
+                <td>{{ r.estado_central|default:"—" }}</td>
+                <td><span class="badge-gestion">{{ r.get_gestion_display }}</span></td>
+                <td>{% if r.obligation_status %}<span class="hal-badge hal-estado">{{ r.get_obligation_status_display }}</span>{% else %}<span style="color:var(--muted-2);">—</span>{% endif %}</td>
+                <td style="font-weight:700;">$ {{ r.saldo|floatformat:0|intcomma }}</td>
+                <td style="font-size:0.78rem;">{% if r.permiso_negativa_hasta %}Hasta {{ r.permiso_negativa_hasta|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                <td>
+                    {% if not read_only %}
+                    <button class="btn-sm" onclick="editarReporte({{ r.id }})">Editar</button>
+                    <button class="btn-sm btn-sm-danger" onclick="eliminarReporte({{ r.id }})"><i data-lucide="x" width="12" height="12"></i></button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No hay reportes negativos registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+        {% if reportes_negativos %}
+        <tfoot>
+            <tr style="background:var(--line-soft); font-weight:700;">
+                <td colspan="5" style="text-align:right; padding:0.6rem 1rem;">TOTALES — {{ reportes_negativos|length }} obligación(es)</td>
+                <td style="padding:0.6rem 1rem;">$ {{ total_saldo_reportes|default:0|floatformat:0|intcomma }}</td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+        {% endif %}
+    </table>
+</div>
+
+{# V. DOCUMENTOS ANEXOS #}
+<div class="ficha-section">
+    <div class="ficha-section-header">
+        <span>V. Documentos Anexos ({{ documentos|length }})</span>
+        {% if not read_only %}
+        <button class="section-btn" onclick="openDocumentoModal()">+ Subir Documento</button>
+        {% endif %}
+    </div>
+    <table class="proc-table" style="border-radius:0 0 6px 6px;">
+        <thead>
+            <tr>
+                <th style="width:30px;">#</th>
+                <th>Tipo de Documento</th>
+                <th>Nombre del Archivo</th>
+                <th>Fecha de Carga</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in documentos %}
+            <tr>
+                <td style="color:var(--muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                <td>{{ d.descripcion|default:"Documento" }}</td>
+                <td><a href="{{ d.archivo.url }}" target="_blank" style="color:var(--accent); text-decoration:none;">{{ d.nombre }}</a></td>
+                <td style="font-size:0.78rem;">{{ d.fecha_subida|date:"d/m/Y" }}</td>
+                <td style="white-space:nowrap;">
+                    <a href="{{ d.archivo.url }}" target="_blank" class="btn-sm">Descargar</a>
+                    {% if not read_only %}
+                    <button class="btn-sm btn-sm-danger" onclick="eliminarDocumento({{ d.pk }})" title="Eliminar"><i data-lucide="x" width="12" height="12"></i></button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No hay documentos anexados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# VI. HISTORIAL DE ACTIVIDADES #}
+<div class="ficha-section">
+    <div class="ficha-section-header">
+        <span>VI. Historial de Actividades</span>
+        <div style="display:flex; gap:0.4rem;">
+            {% if not read_only %}
+            <button class="section-btn" onclick="openActividadModal()">Agregar actividad</button>
+            {% endif %}
+            <a href="{% url 'comercial_historial' cliente.pk %}" class="section-btn">Ver todas</a>
+        </div>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; border-radius:0 0 6px 6px;">
+        {% for h in historial %}
+        <div style="display:flex; gap:0.75rem; padding:0.7rem 1rem; border-top:1px solid var(--line-soft); align-items:flex-start;">
+            <div style="flex-shrink:0; font-size:0.72rem; color:var(--muted); min-width:80px; padding-top:0.1rem;">{{ h.fecha|date:"d/m/Y" }}</div>
+            <div style="flex:1; min-width:0;">
+                <div style="font-size:0.83rem; font-weight:600; color:var(--ink);">{{ h.texto }}</div>
+                {% if h.usuario %}<div style="font-size:0.72rem; color:var(--muted);">por {{ h.usuario }}</div>{% endif %}
+            </div>
+            {% if h.tipo %}<span class="hal-badge hal-{{ h.tipo }}" style="flex-shrink:0;">{{ h.tipo }}</span>{% endif %}
+        </div>
+        {% empty %}
+        <div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+            Sin actividades registradas todavía.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+</div>{# /tab-ficha #}
+
+{# ── MODAL EDITAR CLIENTE ───────────────────────────────────────────────── #}
+<div class="modal-overlay" id="editClienteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Editar Cliente</div>
+            <button class="btn-close" onclick="closeEditModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-cliente-form">
+                {% csrf_token %}
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" name="nombre" value="{{ cliente.nombre }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Cédula</label>
+                        <input type="text" name="identificacion" value="{{ cliente.identificacion }}" readonly style="background:var(--line-soft);">
+                    </div>
+                    <div class="form-group">
+                        <label>Celular</label>
+                        <input type="text" name="telefono" value="{{ cliente.telefono }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo</label>
+                        <input type="email" name="email" value="{{ cliente.email }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Departamento</label>
+                        <input type="text" name="departamento" value="{{ cliente.departamento }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad</label>
+                        <input type="text" name="ciudad" value="{{ cliente.ciudad }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" name="direccion" value="{{ cliente.direccion }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Barrio</label>
+                        <input type="text" name="barrio" value="{{ cliente.barrio }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Vereda</label>
+                        <input type="text" name="vereda" value="{{ cliente.vereda }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Canal de Origen</label>
+                        <select name="canal_origen">
+                            <option value="">— Sin canal —</option>
+                            {% for v, lbl in canales_origen %}
+                            <option value="{{ v }}" {% if cliente.canal_origen == v %}selected{% endif %}>{{ lbl }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fec. Contrato</label>
+                        <input type="date" name="fecha_contrato"
+                               value="{% if primer_proceso and primer_proceso.fecha_contrato %}{{ primer_proceso.fecha_contrato|date:'Y-m-d' }}{% elif cliente.fecha_contrato %}{{ cliente.fecha_contrato|date:'Y-m-d' }}{% endif %}">
+                    </div>
+                </div>
+                {% if request.user.role == 'ADMIN' %}
+                <div class="form-grid-2" style="margin-top:1rem;">
+                    <div class="form-group">
+                        <label>Asesor Comercial</label>
+                        <select name="comercial">
+                            <option value="">— Sin asignar —</option>
+                            {% for c in comerciales %}
+                            <option value="{{ c.pk }}" {% if cliente.comercial_id == c.pk %}selected{% endif %}>{{ c.get_full_name|default:c.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Referidor</label>
+                        <select name="referidor">
+                            <option value="">— Sin referidor —</option>
+                            {% for r in referidores %}
+                            <option value="{{ r.pk }}" {% if cliente.referidor_id == r.pk %}selected{% endif %}>{{ r.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Observaciones</label>
+                    <textarea name="observaciones" rows="4">{{ cliente.observaciones }}</textarea>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:1rem;">
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="es_victima_conflicto" {% if cliente.es_victima_conflicto %}checked{% endif %}> Víctima conflicto
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="es_indigena" {% if cliente.es_indigena %}checked{% endif %}> Indígena
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="es_adulto_mayor" {% if cliente.es_adulto_mayor %}checked{% endif %}> Adulto mayor
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="es_afectacion_psicologica" {% if cliente.es_afectacion_psicologica %}checked{% endif %}> Afectación psicológica
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="es_madre_cabeza_familia" {% if cliente.es_madre_cabeza_familia %}checked{% endif %}> Madre cabeza de familia
+                    </label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeEditModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="submitEditCliente()" class="btn-submit">Guardar cambios</button>
+        </div>
+    </div>
+</div>
+
+{# ── MODAL CENTRALES DE RIESGO ──────────────────────────────────────────── #}
+<div class="modal-overlay" id="centralesModal">
+    <div class="modal-content" style="max-width:500px;">
+        <div class="modal-header">
+            <div class="modal-title">Editar Centrales de Riesgo</div>
+            <button class="btn-close" onclick="closeCentralesModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="centrales-form">
+                {% csrf_token %}
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Clave DataCrédito</label>
+                        <input type="text" name="clave_datacredito" value="{{ primer_proceso.clave_datacredito|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Score DataCrédito</label>
+                        <input type="number" name="score_datacredito" value="{{ primer_proceso.score_datacredito|default:'' }}" min="0" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Clave TransUnion</label>
+                        <input type="text" name="clave_transunion" value="{{ primer_proceso.clave_transunion|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Score TransUnion</label>
+                        <input type="number" name="score_transunion" value="{{ primer_proceso.score_transunion|default:'' }}" min="0" max="1000">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeCentralesModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="submitCentrales()" class="btn-submit">Guardar</button>
+        </div>
+    </div>
+</div>
+
+{# ── MODAL ESTRUCTURA DE COBRO ──────────────────────────────────────────── #}
+<div class="modal-overlay" id="cobroModal">
+    <div class="modal-content" style="max-width:500px;">
+        <div class="modal-header">
+            <div class="modal-title">Editar Estructura de Cobro</div>
+            <button class="btn-close" onclick="closeCobroModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="cobro-form">
+                {% csrf_token %}
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Expectativa Total (COP)</label>
+                        <input type="number" name="valor_expectativa_total" step="0.01" value="{{ primer_proceso.valor_expectativa_total|default:'0' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>% Anticipo</label>
+                        <input type="number" name="porcentaje_anticipo" step="0.01" value="{{ primer_proceso.porcentaje_anticipo|default:'0' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Reportes Objetivo</label>
+                        <input type="number" name="cantidad_reportes" value="{{ primer_proceso.cantidad_reportes|default:'0' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Cuotas Anticipo</label>
+                        <input type="number" name="cuotas_anticipo" value="{{ primer_proceso.cuotas_anticipo|default:'1' }}" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Pactado</label>
+                        <input type="number" name="valor_pactado" step="0.01" value="{{ primer_proceso.valor_pactado|default:'0' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Saldo Pendiente</label>
+                        <input type="number" name="saldo_pendiente" step="0.01" value="{{ primer_proceso.saldo_pendiente|default:'0' }}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeCobroModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="submitCobro()" class="btn-submit">Guardar</button>
+        </div>
+    </div>
+</div>
+
+{# ── MODAL REPORTE NEGATIVO ─────────────────────────────────────────────── #}
+<div class="modal-overlay" id="reporteModal">
+    <div class="modal-content" style="max-width:550px;">
+        <div class="modal-header">
+            <div class="modal-title" id="reporteModalTitle">Agregar Reporte Negativo</div>
+            <button class="btn-close" onclick="closeReporteModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="reporte-form">
+                {% csrf_token %}
+                <input type="hidden" name="reporte_id" id="reporte_id" value="">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Entidad</label>
+                        <input type="text" name="entidad" id="rep_entidad" required>
+                    </div>
+                    <div class="form-group">
+                        <label>No. Obligación</label>
+                        <input type="text" name="numero_obligacion" id="rep_numero_obligacion">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Central</label>
+                        <input type="text" name="estado_central" id="rep_estado_central" placeholder="Ej: Cartera castigada">
+                    </div>
+                    <div class="form-group">
+                        <label>Gestión</label>
+                        <select name="gestion" id="rep_gestion">
+                            <option value="PENDIENTE">PENDIENTE</option>
+                            <option value="GESTIONADO">GESTIONADO</option>
+                            <option value="ACUERDO">ACUERDO</option>
+                            <option value="ELIMINADO">ELIMINADO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado de la Obligación</label>
+                        <select name="obligation_status" id="rep_obligation_status">
+                            <option value="">— Sin estado —</option>
+                            {% for v, lbl in estados_obligacion %}
+                            <option value="{{ v }}">{{ lbl }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Saldo</label>
+                        <input type="number" name="saldo" id="rep_saldo" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Perm. Negativa hasta</label>
+                        <input type="date" name="permiso_negativa_hasta" id="rep_permiso">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Notas</label>
+                    <textarea name="notas" id="rep_notas" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeReporteModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="submitReporte()" class="btn-submit" id="btnGuardarReporte">Agregar</button>
+        </div>
+    </div>
+</div>
+
+{# ── MODAL SUBIR DOCUMENTO ──────────────────────────────────────────────── #}
+<div class="modal-overlay" id="documentoModal">
+    <div class="modal-content" style="max-width:500px;">
+        <div class="modal-header">
+            <div class="modal-title">Subir Documento</div>
+            <button class="btn-close" onclick="closeDocumentoModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="documento-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Caso Jurídico (opcional)</label>
+                    <select name="caso_pk">
+                        <option value="">— Sin caso (documento del cliente) —</option>
+                        {% for c in casos_juridicos %}
+                        <option value="{{ c.pk }}">{{ c.titulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Tipo de Documento</label>
+                    <input type="text" name="descripcion" placeholder="Ej: Contrato Firmado, Reporte Centrales...">
+                </div>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Archivo</label>
+                    <input type="file" name="archivo" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeDocumentoModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="submitDocumento()" class="btn-submit">Subir</button>
+        </div>
+    </div>
+</div>
+
+{# ── MODAL NUEVO CASO ───────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="nuevoCasoModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="briefcase" width="16" height="16"></i> Nuevo Caso Jurídico</div>
+            <button class="btn-close" onclick="closeNuevoCasoModal()"><i data-lucide="x"></i></button>
+        </div>
+        <form method="post" action="{% url 'procesos_crear_caso' cliente.pk %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                <p style="font-weight:700; margin-bottom:1rem;">Cliente: {{ cliente.nombre }} — {{ cliente.id_comercial }}</p>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Tipo de proceso *</label>
+                        <select name="tipo_proceso" required>
+                            <option value="TUTELA">Acción de Tutela</option>
+                            <option value="SIC">SIC</option>
+                            <option value="CARTERA">Cartera</option>
+                            <option value="ELIMINACION_REPORTES">Eliminación de Reportes</option>
+                            <option value="OTRO">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" name="titulo" placeholder="Ej: {{ cliente.nombre }} - Tutela">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Descripción</label>
+                    <textarea name="descripcion_caso" rows="4" placeholder="Resumen del caso..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closeNuevoCasoModal()" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-submit">Crear Caso</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# ── MODAL EDITAR PROCESO ─────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="procesoModal">
+    <div class="modal-content" style="max-width:600px;">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="edit"></i> Editar datos del proceso</div>
+            <button class="btn-close" onclick="closeProcesoModal()"><i data-lucide="x"></i></button>
+        </div>
+        <form id="procesoForm">
+            {% csrf_token %}
+            <input type="hidden" name="proceso_id" id="procesoId" value="{{ primer_proceso.pk|default:'' }}">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre / Título del proceso</label>
+                        <input type="text" name="nombre" id="procNombre">
+                    </div>
+                    <div class="form-group">
+                        <label>Radicado</label>
+                        <input type="text" name="radicado" id="procRadicado">
+                    </div>
+                    <div class="form-group">
+                        <label>Juzgado</label>
+                        <input type="text" name="juzgado" id="procJuzgado">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Legal</label>
+                        <select name="estado_legal" id="procEstadoLegal">
+                            <option value="ACTIVO">Activo</option>
+                            <option value="SUSPENDIDO">Suspendido</option>
+                            <option value="TERMINADO">Terminado</option>
+                            <option value="ARCHIVADO">Archivado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Colaborador asignado</label>
+                        <select name="colaborador" id="procColaborador">
+                            <option value="">— Sin asignar —</option>
+                            {% for col in colaboradores %}
+                            <option value="{{ col.pk }}">{{ col.get_full_name|default:col.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Departamento competente</label>
+                        <input type="text" name="departamento_competente" id="procDepto">
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad / Juzgado competente</label>
+                        <input type="text" name="ciudad_juzgado_competente" id="procCiudad">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha inicio contrato</label>
+                        <input type="date" name="fecha_inicio" id="procFechaInicio">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha vencimiento</label>
+                        <input type="date" name="fecha_vencimiento" id="procFechaVenc">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea name="observaciones" id="procObservaciones" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closeProcesoModal()" class="btn-cancel">Cancelar</button>
+                <button type="button" onclick="guardarProceso()" class="btn-submit">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# ── MODAL AGREGAR SERVICIO ───────────────────────────────────────────────── #}
+<div class="modal-overlay" id="servicioModal">
+    <div class="modal-content" style="max-width:520px;">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="briefcase"></i> Nuevo Servicio</div>
+            <button class="btn-close" onclick="closeServicioModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Tipo *</label>
+                    <select name="tipo" id="servTipo" required>
+                        <option value="TUTELA">Acción de Tutela</option>
+                        <option value="DERECHO_PETICION">Derecho de Petición</option>
+                        <option value="DEMANDA">Demanda</option>
+                        <option value="RECURSO">Recurso</option>
+                        <option value="CONCILIACION">Conciliación</option>
+                        <option value="PRUEBA">Práctica de Prueba</option>
+                        <option value="NOTIFICACION">Notificación</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Valor facturable ($)</label>
+                    <input type="number" name="precio" id="servPrecio" step="0.01" min="0" placeholder="0.00">
+                </div>
+                <div class="form-group full-width">
+                    <label>Título *</label>
+                    <input type="text" name="titulo" id="servTitulo" required placeholder="Ej: Tutela para protección de datos">
+                </div>
+                <div class="form-group full-width">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" id="servDescripcion" rows="3" placeholder="Detalles del servicio..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeServicioModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="guardarServicio()" class="btn-submit">Crear Servicio</button>
+        </div>
+    </div>
+</div>
+
+{# ── MODAL AGREGAR ACTIVIDAD MANUAL ─────────────────────────────────────── #}
+<div class="modal-overlay" id="actividadModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Agregar actividad</div>
+            <button class="btn-close" onclick="closeActividadModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Novedad / observación *</label>
+                <textarea id="actividadDesc" rows="4" placeholder="Describe la novedad registrada..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Fecha de la novedad</label>
+                <input type="date" id="actividadFecha" value="{{ hoy|date:'Y-m-d' }}">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem;">
+                <button class="section-btn" onclick="closeActividadModal()">Cancelar</button>
+                <button class="section-btn" style="background:var(--primary); color:white; border-color:var(--primary);" onclick="guardarActividad()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        const match = document.cookie.match(new RegExp('(^|;)\\s*' + name + '=([^;]+)'));
+        return match ? match.pop() : '';
+    }
+
+    // ── Tab switching ───────────────────────────
+    document.querySelectorAll('[data-tab]').forEach(function(tab) {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('[data-tab]').forEach(function(t) {
+                t.style.background = 'transparent';
+                t.style.color = 'var(--muted)';
+                t.style.fontWeight = '600';
+            });
+            this.style.background = 'var(--brand)';
+            this.style.color = 'white';
+            this.style.fontWeight = '700';
+            var tabName = this.getAttribute('data-tab');
+            document.querySelectorAll('div[id^="tab-"]').forEach(function(d) { d.style.display = 'none'; });
+            var target = document.getElementById('tab-' + tabName);
+            if (target) target.style.display = 'block';
+        });
+    });
+
+    // ── Edit Modal (Cliente) ────────────────────
+    function openEditModal() {
+        document.getElementById('editClienteModal').classList.add('active');
+    }
+    function closeEditModal() {
+        document.getElementById('editClienteModal').classList.remove('active');
+    }
+    function submitEditCliente() {
+        var form = document.getElementById('edit-cliente-form');
+        var data = new URLSearchParams(new FormData(form));
+        var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+        var csrf = csrfInput ? csrfInput.value : getCsrfToken();
+        fetch("{% url 'comercial_editar_cliente' cliente.pk %}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrf, 'Accept': 'application/json' },
+            body: data
+        }).then(r => r.json()).then(resp => {
+            if (resp.success) { location.reload(); }
+            else { alert('Error actualizando cliente'); }
+        }).catch(() => alert('Error de red'));
+    }
+
+    // ── Centrales de Riesgo Modal ───────────────
+    function openCentralesModal() {
+        document.getElementById('centralesModal').classList.add('active');
+    }
+    function closeCentralesModal() {
+        document.getElementById('centralesModal').classList.remove('active');
+    }
+    function submitCentrales() {
+        var form = document.getElementById('centrales-form');
+        var data = new URLSearchParams(new FormData(form));
+        var csrf = getCsrfToken();
+        fetch("{% url 'comercial_editar_centrales' primer_proceso.pk %}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrf, 'Accept': 'application/json' },
+            body: data
+        }).then(r => r.json()).then(resp => {
+            if (resp.success) { location.reload(); }
+            else { alert(resp.error || 'Error al guardar'); }
+        }).catch(() => alert('Error de red'));
+    }
+
+    // ── Estructura de Cobro Modal ──────────────
+    function openCobroModal() {
+        document.getElementById('cobroModal').classList.add('active');
+    }
+    function closeCobroModal() {
+        document.getElementById('cobroModal').classList.remove('active');
+    }
+    function submitCobro() {
+        var form = document.getElementById('cobro-form');
+        var data = new URLSearchParams(new FormData(form));
+        var csrf = getCsrfToken();
+        fetch("{% url 'comercial_editar_cobro' primer_proceso.pk %}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrf, 'Accept': 'application/json' },
+            body: data
+        }).then(r => r.json()).then(resp => {
+            if (resp.success) { location.reload(); }
+            else { alert(resp.error || 'Error al guardar'); }
+        }).catch(() => alert('Error de red'));
+    }
+
+    // ── Reporte Negativo Modal ──────────────────
+    var reporteEditId = null;
+    function openReporteModal() {
+        reporteEditId = null;
+        document.getElementById('reporteModalTitle').textContent = 'Agregar Reporte Negativo';
+        document.getElementById('btnGuardarReporte').textContent = 'Agregar';
+        document.getElementById('reporte-form').reset();
+        document.getElementById('reporte_id').value = '';
+        document.getElementById('reporteModal').classList.add('active');
+    }
+    function closeReporteModal() {
+        document.getElementById('reporteModal').classList.remove('active');
+    }
+    function editarReporte(id) {
+        reporteEditId = id;
+        document.getElementById('reporteModalTitle').textContent = 'Editar Reporte Negativo';
+        document.getElementById('btnGuardarReporte').textContent = 'Guardar Cambios';
+        var row = document.querySelector('button[onclick="editarReporte(' + id + ')"]').closest('tr');
+        if (!row) return;
+        var cells = row.querySelectorAll('td');
+        document.getElementById('reporte_id').value = id;
+        var entidadDiv = cells[1].querySelector('div');
+        document.getElementById('rep_entidad').value = entidadDiv ? entidadDiv.textContent.trim() : '';
+        var numSpan = cells[1].querySelector('div[style*="font-size"]');
+        if (numSpan) document.getElementById('rep_numero_obligacion').value = numSpan.textContent.replace('No. ', '').trim();
+        document.getElementById('rep_estado_central').value = cells[2].textContent.trim();
+        document.getElementById('rep_gestion').value = cells[3].textContent.trim();
+        var obliBadge = cells[4].querySelector('.hal-badge');
+        var obliSelect = document.getElementById('rep_obligation_status');
+        obliSelect.value = '';
+        if (obliBadge) {
+            var obliText = obliBadge.textContent.trim();
+            for (var oi = 0; oi < obliSelect.options.length; oi++) {
+                if (obliSelect.options[oi].textContent.trim() === obliText) { obliSelect.value = obliSelect.options[oi].value; break; }
+            }
+        }
+        document.getElementById('rep_saldo').value = cells[5].textContent.replace(/[^0-9.-]/g, '').trim();
+        var permText = cells[6].textContent.trim();
+        if (permText && permText !== '—') {
+            var parts = permText.replace('Hasta ', '').split('/');
+            if (parts.length === 3) document.getElementById('rep_permiso').value = parts[2] + '-' + parts[1] + '-' + parts[0];
+        }
+        document.getElementById('reporteModal').classList.add('active');
+    }
+    function submitReporte() {
+        var form = document.getElementById('reporte-form');
+        var data = new URLSearchParams(new FormData(form));
+        var csrf = getCsrfToken();
+        var url, isEdit = reporteEditId !== null;
+        if (isEdit) {
+            url = "{% url 'comercial_editar_reporte' 0 %}".replace('/0/', '/' + reporteEditId + '/');
+        } else {
+            url = "{% url 'comercial_agregar_reporte' cliente.pk %}";
+        }
+        fetch(url, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrf, 'Accept': 'application/json' },
+            body: data
+        }).then(r => r.json()).then(resp => {
+            if (resp.success) { location.reload(); }
+            else { alert(resp.error || 'Error al guardar'); }
+        }).catch(() => alert('Error de red'));
+    }
+    function eliminarReporte(id) {
+        if (!confirm('Eliminar este reporte?')) return;
+        fetch("{% url 'comercial_eliminar_reporte' 0 %}".replace('/0/', '/' + id + '/'), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken(), 'Accept': 'application/json' },
+        }).then(r => r.json()).then(resp => {
+            if (resp.success) { location.reload(); }
+            else { alert(resp.error || 'Error al eliminar'); }
+        }).catch(() => alert('Error de red'));
+    }
+
+    // ── Documento Modal ─────────────────────────
+    function openDocumentoModal() {
+        document.getElementById('documentoModal').classList.add('active');
+    }
+    function closeDocumentoModal() {
+        document.getElementById('documentoModal').classList.remove('active');
+    }
+    function submitDocumento() {
+        var form = document.getElementById('documento-form');
+        var data = new FormData(form);
+        var csrf = getCsrfToken();
+        fetch("{% url 'comercial_subir_documento' cliente.pk %}", {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrf, 'Accept': 'application/json' },
+            body: data
+        }).then(r => r.json()).then(resp => {
+            if (resp.success) { location.reload(); }
+            else { alert(resp.error || 'Error al subir'); }
+        }).catch(() => alert('Error de red'));
+    }
+
+    // ── Caso Modal ──────────────────────────────
+    function openNuevoCasoModal() {
+        document.getElementById('nuevoCasoModal').classList.add('active');
+    }
+    function closeNuevoCasoModal() {
+        document.getElementById('nuevoCasoModal').classList.remove('active');
+    }
+
+    // ── Estado Banner (Dropdown superior) ──────
+    function guardarEstadoBanner(selectEl) {
+        var estado = selectEl.value;
+        var procesoId = {{ primer_proceso.pk|default:0 }};
+        if (!procesoId) { alert('No hay proceso asignado'); return; }
+        var observacion = window.prompt('Observación obligatoria del cambio de estado:', '');
+        if (observacion === null || observacion.trim() === '') {
+            alert('Debe registrar una observación para cambiar el estado.');
+            selectEl.value = '{{ primer_proceso.estado_comercial }}';
+            return;
+        }
+        var fechaContrato = '';
+        if (estado === 'CONTRATO_FIRMADO') {
+            fechaContrato = window.prompt('Fecha del contrato (AAAA-MM-DD):', '{{ primer_proceso.fecha_contrato|date:"Y-m-d"|default:"" }}') || '';
+            if (fechaContrato === '') {
+                alert('Debe indicar la fecha del contrato cuando está firmado.');
+                selectEl.value = '{{ primer_proceso.estado_comercial }}';
+                return;
+            }
+            var d = new Date(fechaContrato);
+            if (isNaN(d.getTime())) {
+                alert('Fecha de contrato inválida.');
+                selectEl.value = '{{ primer_proceso.estado_comercial }}';
+                return;
+            }
+        }
+        var baseUrl = "{% url 'comercial_cambiar_estado' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + procesoId + '/');
+        var body = new URLSearchParams({ 'estado': estado, 'fecha_contrato': fechaContrato });
+        body.append('observacion', observacion.trim());
+        fetch(url, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCsrfToken(), 'Accept': 'application/json' },
+            body: body
+        }).then(r => r.json()).then(data => {
+            if (!data.success) {
+                alert(data.error || 'Error al guardar estado');
+                selectEl.value = '{{ primer_proceso.estado_comercial }}';
+                return;
+            }
+            alert('Estado actualizado a ' + estado + ' con observación.');
+        }).catch(() => { alert('Error de red'); selectEl.value = '{{ primer_proceso.estado_comercial }}'; });
+    }
+
+    // ── Crear nuevo estado (engranaje) ─────────
+    async function crearEstado() {
+        const nombre = prompt('Nombre del nuevo estado:');
+        if (!nombre || nombre.trim() === '') return;
+        try {
+            const resp = await fetch("{% url 'crear_estado_ajax' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                body: JSON.stringify({ nombre: nombre.trim() })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                var sel = document.querySelector('.banner-estado-select');
+                var opt = document.createElement('option');
+                opt.value = data.nombre;
+                opt.textContent = data.nombre;
+                sel.appendChild(opt);
+                sel.value = data.nombre;
+                document.querySelectorAll('.estado-popup select').forEach(function(s) {
+                    var o2 = document.createElement('option');
+                    o2.value = data.nombre;
+                    o2.textContent = data.nombre;
+                    s.appendChild(o2);
+                });
+                alert('Estado "' + data.nombre + '" creado correctamente.');
+            } else {
+                alert(data.error || 'Error al crear estado');
+            }
+        } catch(e) {
+            alert('Error de red');
+        }
+    }
+
+    // ── Popup estado en tabla de procesos ──────
+    function toggleEstadoProc(id) {
+        var popup = document.getElementById('epop-' + id);
+        if (!popup) return;
+        var visible = popup.style.display === 'block';
+        document.querySelectorAll('.estado-popup').forEach(el => el.style.display = 'none');
+        popup.style.display = visible ? 'none' : 'block';
+    }
+    function submitEstadoProc(id) {
+        var popup = document.getElementById('epop-' + id);
+        var select = popup.querySelector('select[name="estado"]');
+        var estado = select.value;
+        var baseUrl = "{% url 'comercial_cambiar_estado' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + id + '/');
+        fetch(url, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCsrfToken(), 'Accept': 'application/json' },
+            body: new URLSearchParams({ 'estado': estado })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                var badge = popup.previousElementSibling;
+                if (badge) badge.textContent = data.display || estado;
+                popup.style.display = 'none';
+            } else {
+                alert(data.error || 'Error al guardar');
+            }
+        }).catch(() => alert('Error de red'));
+    }
+
+    // ── Proceso Modal ────────────────────────────
+    function openProcesoModal() {
+        var id = document.getElementById('procesoId').value;
+        if (!id) { alert('No hay proceso asignado a este cliente.'); return; }
+        var baseUrl = "{% url 'comercial_editar_proceso' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + id + '/');
+        document.getElementById('procesoModal').classList.add('active');
+        fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken(), 'Accept': 'application/json' },
+            body: new URLSearchParams({ _fetch: '1', csrfmiddlewaretoken: getCsrfToken() })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                var p = data.proceso;
+                document.getElementById('procNombre').value = p.nombre || '';
+                document.getElementById('procRadicado').value = p.radicado || '';
+                document.getElementById('procJuzgado').value = p.juzgado || '';
+                document.getElementById('procEstadoLegal').value = p.estado_legal || 'ACTIVO';
+                document.getElementById('procColaborador').value = p.colaborador_id || '';
+                document.getElementById('procDepto').value = p.departamento_competente || '';
+                document.getElementById('procCiudad').value = p.ciudad_juzgado_competente || '';
+                document.getElementById('procFechaInicio').value = p.fecha_inicio || '';
+                document.getElementById('procFechaVenc').value = p.fecha_vencimiento || '';
+                document.getElementById('procObservaciones').value = p.observaciones || '';
+            } else {
+                alert(data.error || 'Error al cargar datos del proceso');
+            }
+        }).catch(function() { alert('Error de red'); });
+    }
+    function closeProcesoModal() {
+        document.getElementById('procesoModal').classList.remove('active');
+    }
+    function guardarProceso() {
+        var id = document.getElementById('procesoId').value;
+        if (!id) { alert('No hay proceso asignado.'); return; }
+        var form = document.getElementById('procesoForm');
+        var data = new FormData(form);
+        var baseUrl = "{% url 'comercial_editar_proceso' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + id + '/');
+        fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function(r) { return r.json(); }).then(function(resp) {
+            if (resp.success) {
+                closeProcesoModal();
+                location.reload();
+            } else {
+                alert(resp.error || 'Error al guardar');
+            }
+        }).catch(function() { alert('Error de red'); });
+    }
+
+    // ── Servicio Modal ────────────────────────────
+    var servicioProcesoId = null;
+    function openServicioModal(procesoId) {
+        servicioProcesoId = procesoId;
+        document.getElementById('servTipo').value = 'OTRO';
+        document.getElementById('servPrecio').value = '';
+        document.getElementById('servTitulo').value = '';
+        document.getElementById('servDescripcion').value = '';
+        document.getElementById('servicioModal').classList.add('active');
+    }
+    function closeServicioModal() {
+        document.getElementById('servicioModal').classList.remove('active');
+    }
+    function guardarServicio() {
+        if (!servicioProcesoId) { alert('Error: no hay proceso seleccionado'); return; }
+        var data = new URLSearchParams({
+            csrfmiddlewaretoken: getCsrfToken(),
+            tipo: document.getElementById('servTipo').value,
+            titulo: document.getElementById('servTitulo').value,
+            precio: document.getElementById('servPrecio').value,
+            descripcion: document.getElementById('servDescripcion').value,
+        });
+        var baseUrl = "{% url 'procesos_crear_servicio' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + servicioProcesoId + '/');
+        fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function(r) { return r.json(); }).then(function(resp) {
+            if (resp.success) {
+                closeServicioModal();
+                location.reload();
+            } else {
+                alert(resp.error || 'Error al crear servicio');
+            }
+        }).catch(function() { alert('Error de red'); });
+    }
+
+    // ── Facturar servicios listos ─────────────────
+    function facturarServicios(procesoId) {
+        var baseUrl = "{% url 'tesoreria_generar_pi' %}";
+        window.location.href = baseUrl + '?cliente_id={{ cliente.pk }}&from_proceso=' + procesoId;
+    }
+
+    // ── Facturar cobro (BORRADOR en tesorería) ────
+    function facturarCobro() {
+        if (!window.confirm('Generar factura BORRADOR del cobro de este cliente?')) return;
+        window.location.href = "{% url 'comercial_facturar_cobro' cliente.pk %}";
+    }
+
+    // ── Eliminar documento de la ficha ────────────
+    function eliminarDocumento(docId) {
+        if (!window.confirm('¿Eliminar este documento?')) return;
+        var baseUrl = "{% url 'comercial_eliminar_documento' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + docId + '/');
+        fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken(), 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function(r) { return r.json(); }).then(function(resp) {
+            if (resp.success) location.reload();
+            else alert(resp.error || 'Error al eliminar');
+        }).catch(function() { alert('Error de red'); });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.proc-badge-estado') && !e.target.closest('.estado-popup')) {
+            document.querySelectorAll('.estado-popup').forEach(el => el.style.display = 'none');
+        }
+    });
+
+    // ── Agregar actividad manual ──────────────────
+    function openActividadModal() { document.getElementById('actividadModal').classList.add('active'); }
+    function closeActividadModal() { document.getElementById('actividadModal').classList.remove('active'); }
+    function guardarActividad() {
+        var desc = document.getElementById('actividadDesc').value.trim();
+        if (!desc) { alert('Escribe la novedad'); return; }
+        var url = "{% url 'comercial_agregar_actividad' cliente.pk %}";
+        var body = 'descripcion=' + encodeURIComponent(desc) + '&fecha=' + encodeURIComponent(document.getElementById('actividadFecha').value);
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCsrfToken(), 'X-Requested-With': 'XMLHttpRequest' },
+            body: body
+        }).then(function(r) { return r.json(); }).then(function(resp) {
+            if (resp.success) location.reload();
+            else alert(resp.error || 'Error al guardar');
+        }).catch(function() { alert('Error de red'); });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,73 @@
+{
+  "name": "LegalAction",
+  "type": "object",
+  "properties": {
+    "macro_process_id": {
+      "type": "string",
+      "description": "FK: ID del expediente macro (Process)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "tutela",
+        "peticion",
+        "recurso",
+        "queja_sic",
+        "demanda",
+        "incidente",
+        "otro"
+      ],
+      "description": "Tipo de actuaci\u00f3n jur\u00eddica"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo o descripci\u00f3n corta de la actuaci\u00f3n"
+    },
+    "judge_entity": {
+      "type": "string",
+      "description": "Juzgado o entidad accionada"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "activo",
+        "en_tramite",
+        "finalizado",
+        "archivado"
+      ],
+      "description": "Estado global de esta actuaci\u00f3n"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "alta",
+        "media",
+        "baja"
+      ],
+      "description": "Prioridad"
+    },
+    "next_deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Pr\u00f3ximo vencimiento"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de inicio"
+    },
+    "case_number": {
+      "type": "string",
+      "description": "N\u00famero de radicado de esta actuaci\u00f3n"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observaciones"
+    }
+  },
+  "required": [
+    "macro_process_id",
+    "type",
+    "status"
+  ]
+}

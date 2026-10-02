@@ -1,0 +1,45 @@
+{
+  "name": "ProcessFinance",
+  "type": "object",
+  "properties": {
+    "process_id": {
+      "type": "string",
+      "description": "ID del proceso"
+    },
+    "concept": {
+      "type": "string",
+      "description": "Concepto"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Monto en COP"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "ingreso",
+        "egreso"
+      ],
+      "description": "Tipo de movimiento"
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "M\u00e9todo de pago"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas"
+    }
+  },
+  "required": [
+    "process_id",
+    "concept",
+    "amount",
+    "type"
+  ]
+}

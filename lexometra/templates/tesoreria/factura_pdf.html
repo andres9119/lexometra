@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Factura {{ factura.numero }}</title>
+{% load humanize %}
+<style>
+    @page { margin: 2cm; size: letter; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 11pt; color: #1C2B3A; line-height: 1.5; }
+    .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #203A5E; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .logo { font-size: 1.5rem; font-weight: 800; color: #1C2B3A; letter-spacing: 0.02em; }
+    .factura-title { font-size: 1.6rem; font-weight: 700; color: #203A5E; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .info-box { background: #F3F5F7; padding: 0.75rem 1rem; border-radius: 6px; }
+    .info-label { font-size: 0.7rem; color: #5C6B7A; text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-value { font-weight: 700; margin-top: 0.15rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th { background: #EDF0F3; text-align: left; padding: 0.5rem; font-size: 0.75rem; text-transform: uppercase; color: #5C6B7A; }
+    td { padding: 0.5rem; border-bottom: 1px solid #E3E7EB; }
+    .totals { text-align: right; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #E3E7EB; }
+    .totals div { margin: 0.25rem 0; }
+    .totals .grand-total { font-size: 1.3rem; font-weight: 800; color: #1C2B3A; }
+    .estado-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #E3E7EB; font-size: 0.75rem; color: #8A97A6; text-align: center; }
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="logo">LEXOMETRA</div>
+    <div class="factura-title">FACTURA {{ factura.numero }}</div>
+</div>
+
+<div class="grid-2">
+    <div>
+        <div class="info-box"><div class="info-label">Cliente</div><div class="info-value">{{ factura.cliente.nombre }}</div><div style="font-size:0.85rem;color:#5C6B7A;">{{ factura.cliente.identificacion }}</div></div>
+    </div>
+    <div>
+        <div class="info-box"><div class="info-label">Estado</div><div class="info-value"><span class="estado-badge" style="background:{% if factura.estado == 'PAGADA' %}#E8F4EE;color:#1E7F4E{% else %}#FBF3E3;color:#9A6A1E{% endif %};">{{ factura.get_estado_display }}</span></div></div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div>
+        <div class="info-box"><div class="info-label">Fecha de emisi&oacute;n</div><div class="info-value">{{ factura.fecha_emision|date:'Y-m-d' }}</div></div>
+    </div>
+    <div>
+        <div class="info-box"><div class="info-label">Fecha de vencimiento</div><div class="info-value">{{ factura.fecha_vencimiento|date:'Y-m-d' }}</div></div>
+    </div>
+</div>
+
+<div class="info-box" style="margin-bottom:1rem;"><div class="info-label">Concepto</div><div class="info-value">{{ factura.concepto }}</div></div>
+
+<table>
+<thead><tr><th>Descripci&oacute;n</th><th style="text-align:center;">Cantidad</th><th style="text-align:right;">Valor unitario</th><th style="text-align:right;">Subtotal</th></tr></thead>
+<tbody>
+{% for item in factura.items.all %}
+<tr><td>{{ item.descripcion }}</td><td style="text-align:center;">{{ item.cantidad }}</td><td style="text-align:right;">${{ item.valor_unitario|floatformat:2|intcomma }}</td><td style="text-align:right;">${{ item.subtotal|floatformat:2|intcomma }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+<div class="totals">
+    <div>Subtotal: ${{ factura.subtotal|floatformat:2|intcomma }}</div>
+    <div>Descuento: ${{ factura.descuento|floatformat:2|intcomma }}</div>
+    <div>IVA: ${{ factura.iva|floatformat:2|intcomma }}</div>
+    <div class="grand-total">Total: ${{ factura.total|floatformat:2|intcomma }}</div>
+    {% if factura.valor_pagado > 0 %}
+    <div style="color:#1E7F4E;">Pagado: ${{ factura.valor_pagado|floatformat:2|intcomma }}</div>
+    <div style="color:#B23B3B;">Saldo pendiente: ${{ factura.saldo_pendiente|floatformat:2|intcomma }}</div>
+    {% endif %}
+</div>
+
+{% if factura.cufe %}
+<div style="margin-top:1rem;font-size:0.7rem;color:#8A97A6;">
+    <div>CUFE: {{ factura.cufe }}</div>
+    <div>CUDS: {{ factura.cuds }}</div>
+</div>
+{% endif %}
+
+<div class="footer">
+    <p>Lexometra — M&oacute;dulo Integral de Gesti&oacute;n Jur&iacute;dica</p>
+    <p>Factura generada el {{ factura.fecha_creacion|date:'Y-m-d H:i' }}</p>
+</div>
+</body>
+</html>

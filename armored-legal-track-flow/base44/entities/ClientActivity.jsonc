@@ -1,0 +1,36 @@
+{
+  "name": "ClientActivity",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Comentario o actividad"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "comentario",
+        "llamada",
+        "correo",
+        "reunion",
+        "documento",
+        "pago",
+        "estado"
+      ],
+      "description": "Tipo de actividad"
+    },
+    "author": {
+      "type": "string",
+      "description": "Autor"
+    }
+  },
+  "required": [
+    "client_id",
+    "comment",
+    "activity_type"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "CreditInstallment",
+  "type": "object",
+  "properties": {
+    "agreement_id": {
+      "type": "string",
+      "description": "ID del acuerdo/cr\u00e9dito"
+    },
+    "installment_number": {
+      "type": "number",
+      "description": "N\u00famero de cuota"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de vencimiento"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Valor de la cuota"
+    },
+    "capital": {
+      "type": "number",
+      "description": "Capital de la cuota"
+    },
+    "interest": {
+      "type": "number",
+      "description": "Inter\u00e9s de la cuota"
+    },
+    "balance": {
+      "type": "number",
+      "description": "Saldo capital restante"
+    },
+    "amount_paid": {
+      "type": "number",
+      "description": "Valor pagado"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendiente",
+        "pagada",
+        "vencida"
+      ],
+      "description": "Estado de la cuota"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de pago"
+    }
+  },
+  "required": [
+    "agreement_id",
+    "installment_number",
+    "amount",
+    "status"
+  ]
+}

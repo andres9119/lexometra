@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Procesos Internos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pi-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+    .pi-header h1 { font-family:var(--font-display); font-size:1.45rem; font-weight:600; color:var(--ink); margin:0; }
+    .pi-count { font-size:0.82rem; color:var(--muted); }
+    .pi-filters { display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; }
+    .pi-filters select, .pi-filters input { padding:0.4rem 0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.8rem; background:var(--surface); color:var(--ink); outline:none; }
+    .pi-filters select:focus, .pi-filters input:focus { border-color:var(--accent); }
+    .pi-filters .btn-filter { padding:0.4rem 0.8rem; border-radius:6px; border:1px solid var(--line); background:var(--surface); cursor:pointer; font-size:0.8rem; color:var(--ink); text-decoration:none; }
+    .pi-filters .btn-filter:hover { background:var(--line-soft); }
+    .pi-table { width:100%; border-collapse:collapse; }
+    .pi-table th { background:var(--line-soft); padding:0.45rem 0.65rem; font-size:0.7rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; text-align:left; border-bottom:1px solid var(--line); }
+    .pi-table td { padding:0.5rem 0.65rem; font-size:0.82rem; border-bottom:1px solid var(--line-soft); vertical-align:middle; }
+    .pi-table tr:hover td { background:var(--line-soft); }
+    .codigo-badge { font-family:var(--font-mono); font-size:0.75rem; background:var(--line-soft); padding:0.15rem 0.45rem; border-radius:4px; color:var(--ink); }
+    .st-pi { display:inline-block; padding:0.15rem 0.45rem; border-radius:999px; font-size:0.7rem; font-weight:600; }
+    .st-activo { background:var(--success-bg); color:var(--success); }
+    .st-en_proceso { background:var(--info-bg); color:var(--info); }
+    .st-resuelto { background:var(--success-bg); color:var(--success); }
+    .st-archivado { background:var(--line-soft); color:var(--muted); }
+    .st-apelacion { background:var(--warn-bg); color:var(--warn); }
+    .vencido { color:var(--danger); font-weight:600; }
+    .btn-pi { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.5rem; border-radius:4px; border:1px solid var(--line); background:var(--surface); cursor:pointer; font-size:0.72rem; color:var(--ink); text-decoration:none; }
+    .btn-pi:hover { background:var(--line-soft); }
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,32,0.5); z-index:1000; justify-content:center; align-items:center; }
+    .modal-overlay.active { display:flex; }
+    .modal { background:var(--surface); border-radius:8px; padding:1.5rem; width:100%; max-width:560px; box-shadow:0 20px 40px rgba(15,23,32,0.18); }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+    .modal-title { font-size:1rem; font-weight:600; color:var(--ink); }
+    .btn-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted); }
+    .form-group { margin-bottom:0.7rem; }
+    .form-group label { display:block; font-size:0.78rem; font-weight:600; color:var(--ink); margin-bottom:0.2rem; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:0.45rem 0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.85rem; background:var(--surface); color:var(--ink); outline:none; box-sizing:border-box; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(32,58,94,0.08); }
+    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .modal-footer { display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line); }
+    .btn-cancel { padding:0.4rem 1rem; border-radius:6px; border:1px solid var(--line); background:var(--surface); cursor:pointer; font-size:0.82rem; color:var(--ink); }
+    .btn-cancel:hover { background:var(--line-soft); }
+    .btn-submit { padding:0.4rem 1rem; border-radius:6px; border:none; background:var(--accent); color:#FFFFFF; font-weight:600; cursor:pointer; font-size:0.82rem; }
+    .btn-submit:hover { background:var(--brand); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="pi-header">
+    <div>
+        <h1>Procesos Internos</h1>
+        <div class="pi-count">{{ paginator.count }} registros</div>
+    </div>
+    <form class="pi-filters" method="get">
+        <input type="text" name="q" placeholder="Buscar por título o código..." value="{{ q }}">
+        <select name="tipo" onchange="this.form.submit()">
+            <option value="">Todos los tipos</option>
+            {% for k,v in tipo_choices %}
+            <option value="{{ k }}" {% if filtro_tipo == k %}selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+        </select>
+        <select name="estado" onchange="this.form.submit()">
+            <option value="">Todos los estados</option>
+            {% for k,v in estado_choices %}
+            <option value="{{ k }}" {% if filtro_estado == k %}selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+        </select>
+        <select name="abogado" onchange="this.form.submit()">
+            <option value="">Todos los abogados</option>
+            {% for a in abogados %}
+            <option value="{{ a.pk }}" {% if filtro_abogado|stringformat:'s' == a.pk|stringformat:'s' %}selected{% endif %}>{{ a.get_full_name|default:a.username }}</option>
+            {% endfor %}
+        </select>
+        {% if q or filtro_tipo or filtro_estado or filtro_abogado %}
+        <a href="{% url 'lista_procesos_internos' %}" class="btn-filter">Limpiar</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="card" style="padding:0; overflow-x:auto;">
+    <table class="pi-table">
+        <thead>
+            <tr>
+                <th style="width:110px;">Código</th>
+                <th>Título</th>
+                <th style="width:100px;">Tipo</th>
+                <th style="width:90px;">Estado</th>
+                <th style="width:110px;">Vencimiento</th>
+                <th style="width:140px;">Abogado</th>
+                <th style="width:100px;">Valor</th>
+                <th style="width:120px;">Caso</th>
+                <th style="width:60px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pi in procesos_internos %}
+            <tr>
+                <td><a href="{% url 'detalle_proceso_interno' pi.pk %}" style="text-decoration:none;"><span class="codigo-badge">{{ pi.codigo_interno|default:'—' }}</span></a></td>
+                <td style="font-weight:600;"><a href="{% url 'detalle_proceso_interno' pi.pk %}" style="text-decoration:none; color:inherit;">{{ pi.titulo }}</a></td>
+                <td>{{ pi.get_tipo_display }}</td>
+                <td>
+                    {% with cls=pi.estado|lower %}
+                    <span class="st-pi st-{{ cls }}">{{ pi.get_estado_display }}</span>
+                    {% endwith %}
+                </td>
+                <td>
+                    {% if pi.fecha_vencimiento %}
+                    <span {% if pi.fecha_vencimiento < today %}class="vencido"{% endif %}>{{ pi.fecha_vencimiento|date:'d/m/Y' }}</span>
+                    {% else %}<span style="color:var(--muted-2);">—</span>{% endif %}
+                </td>
+                <td>{% if pi.abogado %}{{ pi.abogado.get_full_name|default:pi.abogado.username }}{% else %}—{% endif %}</td>
+                <td>{% if pi.precio %}${{ pi.precio|floatformat:0 }}{% else %}—{% endif %}</td>
+                <td><a href="{% url 'procesos_detalle' pi.caso_id %}" style="text-decoration:none; color:var(--accent); font-size:0.78rem;">{{ pi.caso.titulo|truncatewords:5 }}</a></td>
+                <td><button class="btn-pi" onclick="editarPI({{ pi.pk }})"><i data-lucide="pencil" width="12" height="12"></i></button></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9" style="text-align:center; padding:3rem; color:var(--muted-2);">No hay procesos internos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include '_pagination.html' %}
+</div>
+
+{# ── MODAL ──────────────────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="piModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="piModalTitle">Editar Proceso Interno</div>
+            <button class="btn-close" onclick="closePIModal()"><i data-lucide="x" width="16" height="16"></i></button>
+        </div>
+        <form id="piForm">
+            {% csrf_token %}
+            <input type="hidden" name="pi_id" id="piId">
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" name="titulo" id="piTitulo" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select name="tipo" id="piTipo">
+                        {% for k,v in tipo_choices %}
+                        <option value="{{ k }}">{{ v }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select name="estado" id="piEstado">
+                        {% for k,v in estado_choices %}
+                        <option value="{{ k }}">{{ v }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Abogado</label>
+                    <select name="abogado" id="piAbogado">
+                        <option value="">— Sin asignar —</option>
+                        {% for a in abogados %}
+                        <option value="{{ a.pk }}">{{ a.get_full_name|default:a.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" id="piFechaInicio">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Vencimiento</label>
+                    <input type="date" name="fecha_vencimiento" id="piFechaVenc">
+                </div>
+                <div class="form-group full-width" style="grid-column:1/-1;">
+                    <label>Valor facturable ($)</label>
+                    <input type="number" name="precio" id="piPrecio" step="0.01" min="0">
+                </div>
+                <div class="form-group full-width" style="grid-column:1/-1;">
+                    <label>Fecha Resolución</label>
+                    <input type="date" name="fecha_resolucion" id="piFechaResol">
+                </div>
+                <div class="form-group full-width" style="grid-column:1/-1;">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" id="piDescripcion" rows="3"></textarea>
+                </div>
+                <div class="form-group full-width" style="grid-column:1/-1;">
+                    <label>Resultado</label>
+                    <textarea name="resultado" id="piResultado" rows="3"></textarea>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" onclick="closePIModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="guardarPI()" class="btn-submit">Guardar</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function editarPI(id) {
+    document.getElementById('piModalTitle').textContent = 'Editar Proceso Interno';
+    document.getElementById('piId').value = id;
+    var row = document.querySelector('button[onclick="editarPI(' + id + ')"]').closest('tr');
+    var cells = row.querySelectorAll('td');
+    document.getElementById('piTitulo').value = cells[1].textContent.trim();
+    document.getElementById('piTipo').value = cells[2].textContent.trim();
+    var estadoSpan = cells[3].querySelector('.st-pi');
+    var estadoMap = { 'Activo': 'ACTIVO', 'En Proceso': 'EN_PROCESO', 'Resuelto': 'RESUELTO', 'Archivado': 'ARCHIVADO', 'En Apelacion': 'APELACION', 'En Apelaci\u00f3n': 'APELACION' };
+    document.getElementById('piEstado').value = estadoMap[estadoSpan.textContent.trim()] || 'ACTIVO';
+    document.getElementById('piFechaVenc').value = '';
+    // Try to find date in row - we need to fetch full data via AJAX
+    fetch('/procesos-internos/' + id + '/editar/', {
+        method: 'POST',
+        body: new URLSearchParams({
+            csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value,
+            _fetch: '1'
+        }),
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+            document.getElementById('piTitulo').value = data.pi.titulo;
+            document.getElementById('piTipo').value = data.pi.tipo;
+            document.getElementById('piEstado').value = data.pi.estado;
+            document.getElementById('piFechaInicio').value = data.pi.fecha_inicio || '';
+            document.getElementById('piFechaVenc').value = data.pi.fecha_vencimiento || '';
+            document.getElementById('piFechaResol').value = data.pi.fecha_resolucion || '';
+            document.getElementById('piDescripcion').value = data.pi.descripcion || '';
+            document.getElementById('piResultado').value = data.pi.resultado || '';
+            document.getElementById('piPrecio').value = data.pi.precio || '';
+            document.getElementById('piAbogado').value = data.pi.abogado_id || '';
+        }
+    });
+    document.getElementById('piModal').classList.add('active');
+}
+
+function closePIModal() {
+    document.getElementById('piModal').classList.remove('active');
+}
+
+function guardarPI() {
+    var id = document.getElementById('piId').value;
+    var form = document.getElementById('piForm');
+    var data = new FormData(form);
+    fetch('/procesos-internos/' + id + '/editar/', {
+        method: 'POST',
+        body: data,
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(function(r) { return r.json(); }).then(function(resp) {
+        if (resp.success) {
+            closePIModal();
+            location.reload();
+        } else {
+            alert(resp.error || 'Error al guardar');
+        }
+    });
+}
+</script>
+{% endblock %}

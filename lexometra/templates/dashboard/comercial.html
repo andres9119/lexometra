@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Comercial — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title { font-family:var(--font-display); font-size:1.45rem; font-weight:600; display:flex; align-items:center; gap:0.6rem; color:var(--ink); letter-spacing:-0.01em; }
+    .page-title i { color:var(--accent); }
+
+    .dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+
+    .section-header { display:flex; align-items:center; gap:0.6rem; padding:0.75rem 1rem; border-bottom:1px solid var(--topbar-border); background:transparent; }
+    .section-header .icon { display:inline-flex; align-items:center; color:var(--accent-blue); }
+    .section-header .title { font-size:0.78rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; }
+    .card-body { padding:1rem 1.25rem; }
+
+    .list-item { display:flex; justify-content:space-between; align-items:center; padding:0.65rem 0.75rem; border-bottom:1px solid var(--topbar-border); color:inherit; text-decoration:none; }
+    .list-item:last-child { border-bottom:none; }
+    a.list-item:hover { background:var(--line-soft); }
+    .item-title { font-size:0.85rem; font-weight:600; }
+    .item-sub { font-size:0.72rem; color:var(--text-muted); margin-top:0.1rem; }
+
+    .status-badge { padding:0.2rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:inline-block; }
+    .status-vencido { background:var(--danger); color:#fff; }
+    .status-hoy { background:var(--danger-bg); color:var(--danger); }
+    .status-dias { background:var(--warn-bg); color:var(--warn); border:1px solid var(--warn-border); }
+    .status-ok { background:var(--success-bg); color:var(--success); }
+
+    .badge { font-size:0.65rem; padding:0.15rem 0.4rem; border-radius:4px; font-weight:600; display:inline-block; }
+    .badge-outline { background:transparent; border:1px solid var(--topbar-border); color:var(--text-muted); }
+
+    .quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+    .action-btn { background:var(--content-bg); border:1px solid var(--topbar-border); border-radius:12px; padding:1rem; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:500; color:var(--text-main); transition:all 0.2s; cursor:pointer; }
+    .action-btn:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+
+    .venc-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+    .venc-table th { text-align:left; padding:0.5rem 0.75rem; font-size:0.7rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; border-bottom:1px solid var(--topbar-border); background:var(--line-soft); }
+    .venc-table td { padding:0.5rem 0.75rem; border-bottom:1px solid var(--topbar-border); }
+    .venc-table a { color:inherit; text-decoration:none; font-weight:500; }
+    .venc-table a:hover { color:var(--accent); text-decoration:underline; }
+
+    @media (max-width:900px){ .dash-grid{grid-template-columns:1fr;} .quick-actions{grid-template-columns:repeat(2,1fr);} }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+    <h1 class="page-title"><i data-lucide="briefcase"></i> Panel Comercial</h1>
+    <span style="font-size:0.82rem;color:var(--text-muted);">{{ today|date:"l, d M Y" }}</span>
+</div>
+
+<div class="dash-grid">
+    <div class="card">
+        <div class="section-header">
+            <span class="icon"><i data-lucide="alert-circle" width="16" height="16"></i></span>
+            <span class="title">Próximos Vencimientos</span>
+            <span class="badge" style="background:var(--line-soft);">{{ venc_prox|length }}</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if venc_prox %}
+            <table class="venc-table">
+                <thead><tr><th>Fecha</th><th>Cliente</th><th>Días</th></tr></thead>
+                <tbody>
+                    {% for p in venc_prox %}
+                    <tr>
+                        <td>{{ p.fecha_vencimiento|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if p.cliente %}
+                            <a href="{% url 'comercial_detalle_cliente' p.cliente.pk %}">{{ p.cliente.nombre }}</a>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge
+                                {% if p.fecha_vencimiento < today %}status-vencido
+                                {% elif p.fecha_vencimiento == today %}status-hoy
+                                {% else %}status-dias{% endif %}">
+                                {% if p.fecha_vencimiento < today %}VENCIDO
+                                {% elif p.fecha_vencimiento == today %}HOY
+                                {% else %}{{ p.fecha_vencimiento|timeuntil:today }}{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.85rem;">Sin vencimientos próximos</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-header">
+            <span class="icon"><i data-lucide="users" width="16" height="16"></i></span>
+            <span class="title">Clientes Recientes</span>
+            <span class="badge" style="background:var(--line-soft);">{{ recent|length }}</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if recent %}
+            {% for c in recent %}
+            <a href="{% url 'comercial_detalle_cliente' c.pk %}" class="list-item">
+                <div>
+                    <div class="item-title">{{ c.nombre }}</div>
+                    <div class="item-sub">{{ c.identificacion }} · ID {{ c.id_comercial }} — {{ c.fecha_registro|date:"Y-m-d" }}</div>
+                </div>
+                <span class="badge badge-outline">#{{ c.procesos.count }}</span>
+            </a>
+            {% endfor %}
+            {% else %}
+            <div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.85rem;">Sin clientes registrados</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<p style="font-size:0.85rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+    <i data-lucide="zap" width="16" height="16"></i> Acciones rápidas
+</p>
+<div class="quick-actions">
+    <a href="{% url 'comercial_lista' %}" class="action-btn"><i data-lucide="user-plus" width="22" height="22"></i>Nuevo prospecto</a>
+    <a href="{% url 'comercial_nuevo_recaudo' %}" class="action-btn"><i data-lucide="circle-dollar-sign" width="22" height="22"></i>Registrar recaudo</a>
+    <a href="{% url 'comercial_lista' %}" class="action-btn"><i data-lucide="users" width="22" height="22"></i>Mis clientes</a>
+    <a href="{% url 'calendario' %}" class="action-btn"><i data-lucide="calendar" width="22" height="22"></i>Calendario</a>
+</div>
+{% endblock %}

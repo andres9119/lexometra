@@ -1,0 +1,49 @@
+{
+  "name": "DocumentoExpediente",
+  "type": "object",
+  "properties": {
+    "macro_process_id": {
+      "type": "string",
+      "description": "FK: ID del expediente macro (Process)"
+    },
+    "actuacion_id": {
+      "type": "string",
+      "description": "FK nullable: ID de la actuaci\u00f3n jur\u00eddica (LegalAction). NULL = Documento General del expediente."
+    },
+    "nombre_original": {
+      "type": "string",
+      "description": "Nombre original del archivo"
+    },
+    "tipo_mime": {
+      "type": "string",
+      "enum": [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "application/zip",
+        "image/gif",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "otro"
+      ],
+      "description": "Tipo MIME del archivo"
+    },
+    "peso_bytes": {
+      "type": "number",
+      "description": "Tama\u00f1o del archivo en bytes"
+    },
+    "url_storage": {
+      "type": "string",
+      "description": "URL p\u00fablica del archivo en storage"
+    },
+    "descripcion": {
+      "type": "string",
+      "description": "Descripci\u00f3n opcional del documento"
+    }
+  },
+  "required": [
+    "macro_process_id",
+    "nombre_original",
+    "url_storage"
+  ]
+}

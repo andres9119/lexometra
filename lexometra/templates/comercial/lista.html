@@ -1,0 +1,972 @@
+{% extends 'base.html' %}
+
+{% block title %}Comercial — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Top Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-title {
+        font-family: var(--font-display);
+        font-size: 1.45rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .page-title i { color: var(--accent); }
+    
+    .btn-primary {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    .btn-primary:hover { background: var(--brand); }
+
+    /* Tabs Bar */
+    .status-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--topbar-border);
+    }
+    
+    .status-tab {
+        background: white;
+        border-right: 1px solid var(--topbar-border);
+        border-bottom: 2px solid transparent;
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        white-space: nowrap;
+        text-transform: uppercase;
+    }
+    
+    .status-tab.active {
+        color: var(--text-main);
+        border-bottom-color: var(--accent);
+    }
+    
+    .status-tab:hover:not(.active) {
+        background: var(--line-soft);
+        color: var(--text-main);
+    }
+    
+    .tab-count {
+        background: var(--line-soft);
+        color: var(--text-main);
+        border-radius: 4px;
+        padding: 0.1rem 0.4rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+    }
+    
+    .search-box {
+        position: relative;
+        flex: 1;
+        max-width: 600px;
+    }
+    .search-box input {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-bottom: 1px solid var(--topbar-border);
+        font-size: 0.9rem;
+        outline: none;
+        background: transparent;
+        color: var(--text-main);
+    }
+    .search-box input::placeholder {
+        color: var(--text-muted);
+    }
+    
+    .service-filters { display: flex; gap: 1rem; align-items: center; }
+    .service-filters select {
+        padding: 0.4rem 1rem;
+        border: none;
+        border-bottom: 1px solid var(--topbar-border);
+        background: transparent;
+        font-size: 0.85rem;
+        color: var(--text-main);
+        outline: none;
+    }
+
+    /* Table */
+    .table-card {
+        background: white;
+        border: 1px solid var(--topbar-border);
+        border-radius: 8px;
+        overflow-x: auto;
+    }
+    
+    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+    
+    th {
+        text-align: left;
+        padding: 0.8rem 1rem;
+        font-size: 0.75rem;
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        background: var(--brand);
+        border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    th:last-child { border-right: none; }
+    
+    td {
+        padding: 0.8rem 1rem;
+        font-size: 0.8rem;
+        border-bottom: 1px solid var(--topbar-border);
+        border-right: 1px solid var(--topbar-border);
+        color: var(--text-main);
+        vertical-align: middle;
+    }
+    td:last-child { border-right: none; }
+    
+    .td-cedula { color: var(--accent); font-weight: 600; }
+    .td-cedula a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .td-cedula a:hover { text-decoration: underline; }
+    .td-cliente { font-weight: 600; color: var(--ink); }
+    .td-cliente a { color: inherit; text-decoration: none; }
+    .td-cliente a:hover { color: var(--accent); text-decoration: underline; }
+    .td-tiempo-ok      { color: var(--success); font-weight: 700; text-align: center; font-size: 0.75rem; }
+    .td-tiempo-warn    { color: var(--warn); font-weight: 700; text-align: center; font-size: 0.75rem; }
+    .td-tiempo-danger  { color: var(--danger); font-weight: 700; text-align: center; font-size: 0.75rem; }
+    .td-tiempo-none    { color: var(--muted-2); font-weight: 500; text-align: center; font-size: 0.75rem; }
+    .td-tiempo-vencido { color: var(--danger); font-weight: 700; text-align: center; font-size: 0.75rem; background: var(--danger-bg); border-radius: 4px; padding: 0.15rem 0.4rem; }
+    
+    .badge-service {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: inline-block;
+        background: var(--line-soft); color: var(--muted);
+        text-align: center;
+    }
+    
+    .badge-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: inline-block;
+        text-transform: uppercase;
+        background: var(--line-soft); color: var(--muted);
+        text-align: center;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 1000;
+        display: none; justify-content: center; align-items: flex-start;
+        overflow-y: auto; padding: 2rem;
+    }
+    
+    .modal-overlay.active { display: flex; }
+    
+    /* New Form Layout for Modal */
+    #clienteModal .modal-content {
+        background: white;
+        width: 100%; max-width: 900px;
+        border-radius: 6px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    #clienteModal .modal-header {
+        background: var(--brand);
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    #clienteModal .modal-title {
+        color: white;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex; align-items: center; gap: 0.5rem;
+    }
+    #clienteModal .modal-title i { display: none; }
+    #clienteModal .btn-close {
+        background: none; border: none; cursor: pointer; color: #A9B5C2;
+    }
+    #clienteModal .btn-close:hover { color: white; }
+    
+    .custom-form-layout {
+        padding: 1.5rem;
+        background: var(--surface);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .form-panel {
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .form-panel-header {
+        background: var(--brand);
+        color: white;
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .form-table {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 220px 1fr 220px 1fr;
+        border-top: 1px solid var(--line);
+    }
+    .form-row:first-child { border-top: none; }
+    
+    .form-label {
+        background: var(--line-soft);
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--muted);
+        border-right: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-input {
+        padding: 0;
+        border-right: 1px solid var(--line);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+    }
+    .form-input:last-child { border-right: none; }
+    
+    .form-input input, .form-input select, .form-input textarea {
+        width: 100%;
+        border: none;
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        color: var(--ink);
+        outline: none;
+        background: transparent;
+        font-family: inherit;
+    }
+    .form-input input:focus, .form-input select:focus, .form-input textarea:focus {
+        background: var(--line-soft);
+    }
+    
+    .form-table.two-cols .form-row {
+        grid-template-columns: 220px 1fr;
+    }
+    
+    .conditions-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .condition-pill {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+        padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: 500; color: var(--muted);
+        cursor: pointer; user-select: none; transition: all 0.2s;
+    }
+    .condition-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .condition-pill input { display: none; }
+    
+    #clienteModal .modal-footer {
+        background: var(--surface); padding: 1.25rem 1.5rem;
+        border-top: none;
+        display: flex; justify-content: flex-end; gap: 1rem;
+    }
+    
+    .d-flex { display: flex; }
+    .align-items-center { align-items: center; }
+
+    /* For other modals that might use old styles */
+    .modal-body { padding: 2rem; background: var(--bg); }
+    .modal-content:not(#clienteModal .modal-content) { background: var(--surface); border-radius: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    .form-group label { font-size: 0.85rem; color: var(--text-main); font-weight: 500; }
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 0.75rem 1rem; border: 1px solid var(--line); border-radius: 8px;
+        font-size: 0.9rem; outline: none; background: var(--surface); font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(32,58,94,0.08); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="page-header">
+    <h1 class="page-title">
+        <i data-lucide="users"></i> GESTIÓN COMERCIAL — CARTERA Y TRÁMITES
+    </h1>
+    {% if not read_only %}
+    <button class="btn-primary" onclick="openModal()">
+        <i data-lucide="plus" width="18" height="18"></i> Nuevo Cliente
+    </button>
+    {% endif %}
+</div>
+
+<!-- Tabs -->
+<div class="status-tabs">
+    {% for tab in tabs_data %}
+    <a href="{% url 'comercial_lista' %}{% if tab.estado_val %}?estado={{ tab.estado_val|urlencode }}{% endif %}" class="status-tab {% if tab.active %}active{% endif %}">
+        {{ tab.nombre }} <span class="tab-count">{{ tab.count }}</span>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <div class="search-box">
+        <input type="text" placeholder="Buscar nombre, cédula, celular...">
+    </div>
+    <div class="service-filters">
+        <select>
+            <option>Todos los servicios</option>
+            {% for s in servicios %}
+            <option>{{ s.nombre }}</option>
+            {% endfor %}
+        </select>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">{{ paginator.count }} registros</span>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 100px;">CÉDULA</th>
+                <th>CLIENTE</th>
+                <th style="width: 150px; text-align: center;">SERVICIO</th>
+                <th style="width: 180px; text-align: center;">ESTADO</th>
+                <th style="width: 150px;">CANAL</th>
+                <th style="width: 120px;">FECHA INGRESO</th>
+                <th style="width: 80px; text-align: center;">TIEMPO</th>
+                <th style="width: 90px; text-align: center;">CONTRATO</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proceso in procesos %}
+            <tr data-proceso-id="{{ proceso.id }}"
+                data-cliente-nombre="{{ proceso.cliente.nombre }}"
+                data-identificacion="{{ proceso.cliente.identificacion }}"
+                data-servicio="{{ proceso.tipo_servicio_display }}"
+                data-estado="{{ proceso.estado_comercial }}"
+                data-cliente-pk="{{ proceso.cliente.pk }}">
+                <td class="td-cedula">
+                    {% if proceso.cliente %}
+                    <a href="{% url 'comercial_detalle_cliente' proceso.cliente.pk %}" title="Ver ficha completa">{{ proceso.cliente.identificacion }}</a>
+                    {% else %}—{% endif %}
+                </td>
+                <td class="td-cliente">
+                    {% if proceso.cliente %}
+                    <a href="{% url 'comercial_detalle_cliente' proceso.cliente.pk %}" title="Ver ficha completa">{{ proceso.cliente.nombre }}</a>
+                    {% else %}—{% endif %}
+                </td>
+                <td style="text-align: center;">
+                    <span class="badge-service">{{ proceso.tipo_servicio_display }}</span>
+                </td>
+                <td style="text-align: center;">
+                    <div style="position:relative;">
+                        <span class="badge-status {% if read_only %}no-click{% endif %}" {% if not read_only %}onclick="toggleEstado({{ proceso.id }})"{% endif %}>{{ proceso.estado_comercial }}</span>
+                        {% if not read_only %}
+                        <form method="post" id="estado-form-{{ proceso.id }}" style="display:none; position:absolute; top:28px; left:0; right:0; background:var(--content-bg); padding:0.5rem; border:1px solid var(--topbar-border); border-radius:8px; z-index:50; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+                            {% csrf_token %}
+                            <select name="estado" style="width:100%; padding:0.35rem; border-radius:4px; border:1px solid var(--line); outline:none;">
+                                {% for e in estados %}
+                                <option value="{{ e.nombre }}" {% if proceso.estado_comercial == e.nombre %}selected{% endif %}>{{ e.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <div style="display:flex; gap:0.5rem; margin-top:0.5rem; justify-content:flex-end;">
+                                <button type="button" class="btn" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="document.getElementById('estado-form-{{ proceso.id }}').style.display='none'">Cancelar</button>
+                                <button type="button" onclick="submitEstadoAjax({{ proceso.id }});" class="btn" style="background:var(--sidebar-active-bg); color:white; border-color:transparent; padding:0.2rem 0.5rem; font-size:0.7rem;">Guardar</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>{{ proceso.referidor|default:"—" }}</td>
+                <td>{{ proceso.cliente.fecha_registro|date:"d/m/Y" }}</td>
+                <td class="td-tiempo">{{ proceso.dias_ingreso }}d</td>
+                <td style="text-align:center;">
+                    <a href="{% url 'comercial_generar_contrato' proceso.cliente.pk %}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:0.75rem;" title="Previsualizar">HTML</a>
+                    &nbsp;|&nbsp;
+                    <a href="{% url 'comercial_generar_contrato' proceso.cliente.pk %}?pdf=1" style="color:var(--accent); text-decoration:none; font-size:0.75rem;" title="Descargar PDF">PDF</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 3rem;">
+                    <i data-lucide="inbox" width="48" height="48" style="color: var(--topbar-border); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--text-muted);">No hay registros aún.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include '_pagination.html' %}
+</div>
+
+<!-- Modal Form -->
+<div class="modal-overlay" id="clienteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">NUEVO CLIENTE / CASO</div>
+            <button type="button" class="btn-close" onclick="closeModal()"><i data-lucide="x"></i></button>
+        </div>
+        
+        <form method="POST" action="{% url 'comercial_nuevo' %}">
+            {% csrf_token %}
+            <div class="modal-body custom-form-layout">
+                
+                <!-- I. IDENTIFICACIÓN Y CONTACTO -->
+                <div class="form-panel">
+                    <div class="form-panel-header">I. IDENTIFICACIÓN Y CONTACTO</div>
+                    <div class="form-table">
+                        <div class="form-row">
+                            <div class="form-label">CÉDULA *</div>
+                            <div class="form-input"><input type="text" name="identificacion" required placeholder="No. cédula"></div>
+                            <div class="form-label">NOMBRE COMPLETO *</div>
+                            <div class="form-input"><input type="text" name="nombre" required placeholder="Nombre completo"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">CELULAR *</div>
+                            <div class="form-input"><input type="text" name="telefono" required placeholder="3001234567"></div>
+                            <div class="form-label">CORREO ELECTRÓNICO *</div>
+                            <div class="form-input"><input type="email" name="email" required placeholder="correo@ejemplo.com"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">CANAL DE ORIGEN</div>
+                            <div class="form-input">
+                                <select name="canal_origen">
+                                    <option value="">— Sin canal —</option>
+                                    {% for v, lbl in canales_origen %}
+                                    <option value="{{ v }}">{{ lbl }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-label"></div>
+                            <div class="form-input"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- II. DOMICILIO -->
+                <div class="form-panel">
+                    <div class="form-panel-header">II. DOMICILIO</div>
+                    <div class="form-table">
+                        <div class="form-row">
+                            <div class="form-label">DEPARTAMENTO</div>
+                            <div class="form-input">
+                                <select name="departamento" id="select-departamento">
+                                    <option value="">— Seleccionar —</option>
+                                </select>
+                            </div>
+                            <div class="form-label">CIUDAD / MUNICIPIO</div>
+                            <div class="form-input">
+                                <select name="ciudad" id="select-ciudad" disabled>
+                                    <option value="">— Seleccionar —</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">DIRECCIÓN</div>
+                            <div class="form-input"><input type="text" name="direccion" placeholder="Calle 15 #22-34"></div>
+                            <div class="form-label">BARRIO</div>
+                            <div class="form-input"><input type="text" name="barrio" placeholder="Nombre del barrio"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">VEREDA</div>
+                            <div class="form-input" style="grid-column: 2 / span 3;"><input type="text" name="vereda" placeholder="Zona rural — opcional"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- III. SERVICIO Y ESTADO -->
+                <div class="form-panel">
+                    <div class="form-panel-header">III. SERVICIO Y ESTADO</div>
+                    <div class="form-table two-cols">
+                        <div class="form-row">
+                            <div class="form-label">TIPO DE SERVICIO</div>
+                            <div class="form-input d-flex align-items-center" style="padding-right: 1rem;">
+                                <select name="tipo_servicio" id="select-tipo-servicio" style="flex:1;">
+                                    <option value="">— Seleccionar servicio —</option>
+                                    {% for servicio in servicios %}
+                                    <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <i data-lucide="settings" onclick="gestionarServicios()" style="margin-left:8px; color:var(--muted-2); cursor:pointer; width: 16px; height: 16px;"></i>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">CANAL / REFERIDOR *</div>
+                            <div class="form-input">
+                                <select name="referidor" required>
+                                    <option value="">— Seleccionar referidor —</option>
+                                    <option value="NINGUNO">Ninguno</option>
+                                    {% for ref in referidores %}
+                                    <option value="{{ ref.nombre }}">{{ ref.nombre }} ({{ ref.cedula }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IV. CONDICIONES ESPECIALES -->
+                <div class="form-panel">
+                    <div class="form-panel-header">IV. CONDICIONES ESPECIALES</div>
+                    <div class="form-table two-cols">
+                        <div class="form-row">
+                            <div class="form-label" style="align-items: flex-start; padding-top: 1rem;">CONDICIONES</div>
+                            <div class="form-input" style="padding: 1rem;">
+                                <div class="conditions-container">
+                                    <label class="condition-pill"><input type="checkbox" name="es_victima_conflicto"> Víctima del conflicto</label>
+                                    <label class="condition-pill"><input type="checkbox" name="es_indigena"> Indígena</label>
+                                    <label class="condition-pill"><input type="checkbox" name="es_adulto_mayor"> Adulto mayor</label>
+                                    <label class="condition-pill"><input type="checkbox" name="es_afectacion_psicologica"> Afectación psicológica</label>
+                                    <label class="condition-pill"><input type="checkbox" name="es_madre_cabeza_familia"> Madre cabeza de familia</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VI. OBSERVACIONES -->
+                <div class="form-panel">
+                    <div class="form-panel-header">VI. OBSERVACIONES</div>
+                    <div style="padding: 0;">
+                        <textarea name="observaciones" rows="3" placeholder="Observaciones generales del caso..." style="width:100%; border:none; padding:1rem; outline:none; resize:vertical; font-family:inherit; font-size: 0.85rem; color: var(--ink);"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal()" style="padding: 0.5rem 1.5rem; border:1px solid var(--line); border-radius:8px; background:var(--surface); font-weight:600; color: var(--muted); cursor: pointer;">Cancelar</button>
+                <button type="submit" class="btn-submit" style="padding: 0.5rem 1.5rem; border:none; border-radius:8px; background:var(--accent); color:white; font-weight:600; cursor: pointer;">Registrar Cliente</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Quick view modal for changing estado from the list -->
+<div class="modal-overlay" id="quickViewModal" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="eye"></i> Ver proceso</div>
+            <button class="btn-close" onclick="closeQuickView()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="quick-view-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <div id="qv-cliente" class="field-value" style="font-weight:600;"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Cédula</label>
+                        <div id="qv-identificacion" class="field-value"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Servicio</label>
+                        <div id="qv-servicio" class="field-value"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Estado comercial</label>
+                    <select name="estado" id="qv-estado" class="form-control" style="padding:0.5rem; border-radius:8px; border:1px solid var(--line);">
+                        {% for e in estados %}
+                        <option value="{{ e.nombre }}">{{ e.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.75rem;">
+                    <button type="button" class="btn-cancel" onclick="closeQuickView()">Cancelar</button>
+                    <button type="button" class="btn-submit" onclick="submitQuickView()">Guardar</button>
+                </div>
+            </form>
+            <div style="margin-top:0.75rem; font-size:0.85rem;"><a href="#" id="qv-full-link">Ver ficha completa</a></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Modal controls
+    function openModal() {
+        document.getElementById('clienteModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+        document.getElementById('clienteModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Conditions Pill Toggle logic
+    document.querySelectorAll('.condition-pill input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            this.parentElement.classList.toggle('active', this.checked);
+        });
+    });
+
+    // Cargar Departamentos y Municipios de Colombia
+    let colombiaData = [];
+    
+    fetch('https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.json')
+        .then(response => response.json())
+        .then(data => {
+            colombiaData = data;
+            const depSelect = document.getElementById('select-departamento');
+            
+            // Ordenar departamentos alfabéticamente
+            data.sort((a, b) => a.departamento.localeCompare(b.departamento));
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.departamento;
+                option.textContent = item.departamento;
+                depSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error("Error cargando departamentos:", err));
+
+    document.getElementById('select-departamento').addEventListener('change', function() {
+        const ciudadSelect = document.getElementById('select-ciudad');
+        ciudadSelect.innerHTML = '<option value="">Seleccione una ciudad...</option>';
+        
+        if(this.value) {
+            ciudadSelect.disabled = false;
+            const deptData = colombiaData.find(d => d.departamento === this.value);
+            if(deptData) {
+                // Ordenar ciudades
+                deptData.ciudades.sort((a, b) => a.localeCompare(b));
+                deptData.ciudades.forEach(ciudad => {
+                    const option = document.createElement('option');
+                    option.value = ciudad;
+                    option.textContent = ciudad;
+                    ciudadSelect.appendChild(option);
+                });
+            }
+        } else {
+            ciudadSelect.disabled = true;
+            ciudadSelect.innerHTML = '<option value="">Seleccione primero un departamento...</option>';
+        }
+    });
+
+    // Toggle Password Visibility
+    function togglePwd(inputId, iconEl) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            iconEl.setAttribute("data-lucide", "eye-off");
+        } else {
+            input.type = "password";
+            iconEl.setAttribute("data-lucide", "eye");
+        }
+        lucide.createIcons(); // re-render the specific icon if needed, though direct SVG replacement is better.
+        // Quick hack to force lucide re-render:
+        iconEl.innerHTML = ''; 
+        lucide.createIcons();
+    }
+
+    function toggleEdit(id) {
+        var form = document.getElementById('estado-form-' + id);
+        if (!form) return;
+        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+    }
+
+    function toggleEstado(id) {
+        var form = document.getElementById('estado-form-' + id);
+        if (!form) return;
+        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+    }
+
+    function getCsrfToken() {
+        // Get CSRF token from cookie (Django default)
+        const name = 'csrftoken';
+        const match = document.cookie.match(new RegExp('(^|;)\\s*' + name + '=([^;]+)'));
+        return match ? match.pop() : '';
+    }
+
+    function servicioModalOpen() { document.getElementById('servicioModal').style.display = 'flex'; }
+    function servicioModalClose() { document.getElementById('servicioModal').style.display = 'none'; }
+
+    function agregarOpcionServicioSelect(nombre) {
+        const select = document.getElementById('select-tipo-servicio');
+        if (select) {
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === nombre) {
+                    select.selectedIndex = i;
+                    return;
+                }
+            }
+            const opt = document.createElement('option');
+            opt.value = nombre;
+            opt.textContent = nombre;
+            select.appendChild(opt);
+            select.value = nombre;
+        }
+    }
+
+    async function gestionarServicios() {
+        try {
+            const resp = await fetch('{% url "gestionar_servicios_ajax" %}');
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Error al cargar servicios');
+            const tbody = document.querySelector('#servicioTabla tbody');
+            tbody.innerHTML = '';
+            for (const s of data.servicios) {
+                const tr = document.createElement('tr');
+                tr.dataset.servicioId = s.id;
+                tr.innerHTML = `
+                    <td class="servicio-nombre" style="padding:8px 12px;">${s.nombre}</td>
+                    <td style="padding:8px 12px;">${s.activo ? '<span style="color:var(--success); font-weight:600;">Activo</span>' : '<span style="color:var(--danger); font-weight:600;">Inactivo</span>'}</td>
+                    <td style="padding:8px 12px;">
+                        <button class="btn-cancel" onclick="editarServicio(this)" style="padding:4px 10px; font-size:0.75rem;">Editar</button>
+                        ${s.activo ? `<button class="btn-cancel" onclick="eliminarServicio(this)" style="padding:4px 10px; font-size:0.75rem; color:var(--danger); border-color:var(--danger-border);">Desactivar</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+            servicioModalOpen();
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+
+    async function crearServicioDesdeModal() {
+        const input = document.getElementById('servicioModalNuevoInput');
+        const nombre = input.value.trim();
+        if (!nombre) return alert('Ingrese un nombre para el servicio.');
+        try {
+            const resp = await fetch('{% url "crear_servicio_ajax" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                body: JSON.stringify({ nombre })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                agregarOpcionServicioSelect(data.nombre);
+                input.value = '';
+                gestionarServicios();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (e) {
+            alert('Error de conexión: ' + e.message);
+        }
+    }
+
+    function editarServicio(btn) {
+        const tr = btn.closest('tr');
+        const td = tr.querySelector('.servicio-nombre');
+        const nombreActual = td.textContent;
+        const nuevo = prompt('Editar nombre del servicio:', nombreActual);
+        if (!nuevo || nuevo.trim() === '' || nuevo.trim() === nombreActual) return;
+        const servicioId = tr.dataset.servicioId;
+        fetch('{% url "editar_servicio_ajax" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            body: JSON.stringify({ id: parseInt(servicioId), nombre: nuevo.trim() })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                td.textContent = data.nombre;
+                // Actualizar select si corresponde
+                const select = document.getElementById('select-tipo-servicio');
+                if (select) {
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === nombreActual) {
+                            select.options[i].value = data.nombre;
+                            select.options[i].textContent = data.nombre;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(e => alert('Error de conexión: ' + e.message));
+    }
+
+    function eliminarServicio(btn) {
+        if (!confirm('¿Desactivar este servicio? Dejará de estar disponible en los formularios.')) return;
+        const tr = btn.closest('tr');
+        const servicioId = tr.dataset.servicioId;
+        fetch('{% url "eliminar_servicio_ajax" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            body: JSON.stringify({ id: parseInt(servicioId) })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                gestionarServicios();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(e => alert('Error de conexión: ' + e.message));
+    }
+
+    // Quick view modal handlers
+    var _qv_currentProceso = null;
+    function openQuickViewFromRow(btn) {
+        var tr = btn.closest('tr');
+        if (!tr) return;
+        _qv_currentProceso = tr.dataset.procesoId;
+        document.getElementById('qv-cliente').textContent = tr.dataset.clienteNombre || '';
+        document.getElementById('qv-identificacion').textContent = tr.dataset.identificacion || '';
+        document.getElementById('qv-servicio').textContent = tr.dataset.servicio || '';
+        var estado = tr.dataset.estado || '';
+        var sel = document.getElementById('qv-estado');
+        if (sel) sel.value = estado;
+        // set full link
+        var link = document.getElementById('qv-full-link');
+        if (link) link.href = "{% url 'comercial_detalle_cliente' 0 %}".replace('/0/', '/' + tr.dataset.clientePk + '/');
+        document.getElementById('quickViewModal').style.display = 'flex';
+    }
+
+    function submitEstadoAjax(id) {
+        var form = document.getElementById('estado-form-' + id);
+        var select = form.querySelector('select[name="estado"]');
+        var estado = select.value;
+        var baseUrl = "{% url 'comercial_cambiar_estado' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + id + '/');
+        var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+        var csrf = csrfInput ? csrfInput.value : getCsrfToken();
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrf,
+                'Accept': 'application/json'
+            },
+            body: new URLSearchParams({'estado': estado})
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                var tr = document.querySelector('tr[data-proceso-id="' + id + '"]');
+                if (tr) {
+                    var badge = tr.querySelector('.badge-status');
+                    if (badge) badge.textContent = data.display || estado;
+                }
+                form.style.display = 'none';
+            } else {
+                alert(data.error || 'Error actualizando estado');
+            }
+        }).catch(err => { console.error(err); alert('Error actualizando estado'); });
+    }
+
+    function closeQuickView() {
+        document.getElementById('quickViewModal').style.display = 'none';
+        _qv_currentProceso = null;
+    }
+
+    function submitQuickView() {
+        if (!_qv_currentProceso) return;
+        var form = document.getElementById('quick-view-form');
+        var select = document.getElementById('qv-estado');
+        var estado = select.value;
+        var baseUrl = "{% url 'comercial_cambiar_estado' 0 %}";
+        var url = baseUrl.replace('/0/', '/' + _qv_currentProceso + '/');
+        var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+        var csrf = csrfInput ? csrfInput.value : getCsrfToken();
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrf,
+                'Accept': 'application/json'
+            },
+            body: new URLSearchParams({'estado': estado})
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                // update row badge and data-estado
+                var tr = document.querySelector('tr[data-proceso-id="' + _qv_currentProceso + '"]');
+                if (tr) {
+                    tr.dataset.estado = estado;
+                    var badge = tr.querySelector('.badge-status');
+                    if (badge) badge.textContent = data.display || estado;
+                }
+                closeQuickView();
+            } else {
+                alert(data.error || 'Error actualizando estado');
+            }
+        }).catch(err => { console.error(err); alert('Error actualizando estado'); });
+    }
+</script>
+
+<!-- Modal Gestionar Servicios -->
+<div class="modal-overlay" id="servicioModal" style="display:none;">
+    <div class="modal-content" style="max-width:600px;">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="settings"></i> Gestionar Servicios</div>
+            <button class="btn-close" onclick="servicioModalClose()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="display:flex; gap:8px; margin-bottom:16px;">
+                <input type="text" id="servicioModalNuevoInput" placeholder="Nuevo servicio..." style="flex:1; padding:8px 12px; border:1px solid var(--line); border-radius:6px;">
+                <button class="btn-submit" onclick="crearServicioDesdeModal()">Crear</button>
+            </div>
+            <table class="table" id="servicioTabla" style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="background:var(--line-soft); text-align:left;">
+                        <th style="padding:8px 12px; font-size:0.8rem;">Nombre</th>
+                        <th style="padding:8px 12px; font-size:0.8rem;">Estado</th>
+                        <th style="padding:8px 12px; font-size:0.8rem;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

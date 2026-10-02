@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Contratos — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ct-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .ct-header h1 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; color: var(--ink); margin: 0; display: flex; align-items: center; gap: 0.6rem; }
+    .ct-header h1 i { color: var(--accent); }
+    .ct-count { font-size: 0.82rem; color: var(--muted); }
+    .ct-search { padding: 0.4rem 0.75rem; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; background: var(--surface); color: var(--ink); outline: none; width: 260px; }
+    .ct-search:focus { border-color: var(--accent); }
+    .ct-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .ct-table th { background: var(--line-soft); padding: 0.6rem 0.9rem; font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; text-align: left; border-bottom: 1px solid var(--line); }
+    .ct-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+    .ct-table tr:hover td { background: var(--line-soft); }
+    .ct-cliente { font-weight: 600; color: var(--ink); text-decoration: none; }
+    .ct-cliente:hover { color: var(--accent); }
+    .ct-acciones { white-space: nowrap; }
+    .btn-ct { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border: 1px solid var(--line); border-radius: 5px; font-size: 0.75rem; font-weight: 600; text-decoration: none; color: var(--muted); background: var(--surface); }
+    .btn-ct:hover { background: var(--line-soft); color: var(--ink); }
+    .btn-ct-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-ct-primary:hover { background: var(--brand); color: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ct-header">
+    <div>
+        <h1><i data-lucide="file-text" width="22" height="22"></i> Contratos</h1>
+        <div class="ct-count">{{ paginator.count }} contrato(s) generable(s)</div>
+    </div>
+    <input type="text" class="ct-search" placeholder="Buscar por cliente o cédula..." value="{{ q }}" onkeydown="if(event.key==='Enter'){window.location.href='?q='+encodeURIComponent(this.value)}">
+</div>
+
+<div class="card" style="padding:0; overflow-x:auto;">
+    <table class="ct-table">
+        <thead>
+            <tr>
+                <th style="width:36px;">#</th>
+                <th>Cliente</th>
+                <th style="width:120px;">ID</th>
+                <th>Servicio</th>
+                <th style="width:130px;">Estado</th>
+                <th style="width:110px;">Fec. Contrato</th>
+                <th style="width:170px;">Contrato</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in procesos %}
+            <tr>
+                <td style="color:var(--muted-2); font-size:0.75rem;">{{ forloop.counter }}</td>
+                <td>
+                    {% if p.cliente %}
+                    <a href="{% url 'comercial_detalle_cliente' p.cliente.pk %}" class="ct-cliente" title="Ver ficha completa">{{ p.cliente.nombre }}</a>
+                    <div style="font-size:0.72rem; color:var(--muted);">CC {{ p.cliente.identificacion }}</div>
+                    {% else %}—{% endif %}
+                </td>
+                <td style="font-size:0.8rem; font-family:var(--font-mono);">{{ p.cliente.id_comercial }}</td>
+                <td><span style="font-size:0.8rem;">{{ p.tipo_servicio_display }}</span></td>
+                <td><span class="badge {% if p.estado_comercial == 'CONTRATO_FIRMADO' %}badge-success{% else %}badge-outline{% endif %}">{{ p.estado_comercial }}</span></td>
+                <td style="font-size:0.8rem;">
+                    {% if p.fecha_contrato %}{{ p.fecha_contrato|date:"d/m/Y" }}{% else %}<span style="color:var(--muted-2);">—</span>{% endif %}
+                </td>
+                <td class="ct-acciones">
+                    <a href="{% url 'comercial_generar_contrato' p.cliente.pk %}" target="_blank" class="btn-ct btn-ct-primary" title="Previsualizar contrato"><i data-lucide="eye" width="12" height="12"></i> Ver</a>
+                    <a href="{% url 'comercial_generar_contrato' p.cliente.pk %}?pdf=1" class="btn-ct" title="Descargar PDF"><i data-lucide="download" width="12" height="12"></i> PDF</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center; padding:2.5rem; color:var(--muted-2);">No hay contratos para generar.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include '_pagination.html' %}
+</div>
+{% endblock %}

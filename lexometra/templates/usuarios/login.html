@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión — Lexometra</title>
+    <meta name="description" content="Acceso privado al sistema de gestión jurídica y comercial Lexometra">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --brand: #1C2B3A;
+            --brand-2: #24394D;
+            --accent: #203A5E;
+            --ink: #1A2430;
+            --muted: #5C6B7A;
+            --muted-2: #8A97A6;
+            --bg: #F3F5F7;
+            --surface: #FFFFFF;
+            --line: #E3E7EB;
+            --danger: #B23B3B;
+            --danger-bg: #FBECEC;
+            --danger-border: #EFC4C4;
+            --font-display: 'Source Serif 4', Georgia, serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 2.5rem 2.25rem;
+            box-shadow: 0 12px 30px rgba(16,26,36,0.06);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 1.75rem;
+        }
+        .login-logo .mark {
+            width: 48px; height: 48px;
+            margin: 0 auto 1rem;
+            border-radius: 10px;
+            background: var(--brand);
+            color: #FFFFFF;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-logo h1 {
+            font-family: var(--font-display);
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+        }
+        .login-logo p {
+            font-size: 0.72rem;
+            color: var(--muted-2);
+            margin-top: 0.35rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--line);
+            margin: 1.5rem 0 1.75rem;
+        }
+
+        .form-group { margin-bottom: 1.1rem; }
+        label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 0.4rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0.7rem 0.9rem;
+            color: var(--ink);
+            font-size: 0.92rem;
+            font-family: var(--font-body);
+            transition: border-color 0.15s, box-shadow 0.15s;
+            outline: none;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(32,58,94,0.08);
+        }
+        input::placeholder { color: var(--muted-2); }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: #FFFFFF;
+            font-size: 0.92rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-login:hover { background: var(--brand); }
+
+        .error-msg {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-bottom: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.74rem;
+            color: var(--muted-2);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="mark"><i data-lucide="scale" width="26" height="26"></i></div>
+                <h1>Lexometra</h1>
+                <p>Gestión Jurídica &amp; Comercial</p>
+            </div>
+
+            <div class="divider"></div>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="error-msg"><i data-lucide="alert-circle" width="16" height="16"></i> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i data-lucide="log-in" width="16" height="16"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+        <p class="footer-text">Acceso privado · Solo usuarios autorizados</p>
+    </div>
+    <script>
+      lucide.createIcons();
+    </script>
+</body>
+</html>

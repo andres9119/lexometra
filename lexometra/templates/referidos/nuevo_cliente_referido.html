@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo cliente para {{ referidor.nombre }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Referidos</div>
+        <h1 class="page-title"><i data-lucide="user-plus"></i> Nuevo cliente del referidor</h1>
+        <p class="page-sub">El cliente quedará vinculado a <strong>{{ referidor.nombre }}</strong> y en estado <span class="badge badge-info">NUEVO</span>.</p>
+    </div>
+    <a href="{% url 'panel_referidos' %}" class="btn"><i data-lucide="arrow-left" width="16" height="16"></i> Volver</a>
+</div>
+
+<div class="card" style="max-width:720px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="card-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Cédula *</label>
+                    <input type="text" name="identificacion" required>
+                </div>
+                <div class="form-group">
+                    <label>Celular</label>
+                    <input type="text" name="telefono">
+                </div>
+                <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label>Departamento</label>
+                    <input type="text" name="departamento">
+                </div>
+                <div class="form-group">
+                    <label>Ciudad / Municipio</label>
+                    <input type="text" name="ciudad">
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion">
+                </div>
+                <div class="form-group">
+                    <label>Barrio</label>
+                    <input type="text" name="barrio">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="{% url 'panel_referidos' %}" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-submit"><i data-lucide="check" width="16" height="16"></i> Crear cliente</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

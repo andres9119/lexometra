@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Recaudo — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-wrapper { max-width:720px; margin:2rem auto; }
+    .form-wrapper .card { padding:0 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="card">
+        <div class="card-header">Registrar Recaudo</div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        {{ form.cliente }}
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        {{ form.fecha }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Concepto</label>
+                    {{ form.concepto }}
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Valor</label>
+                        {{ form.valor }}
+                    </div>
+                    <div class="form-group">
+                        <label>Observaciones</label>
+                        {{ form.observaciones }}
+                    </div>
+                </div>
+                <div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem;">
+                    <a href="{% url 'comercial_lista' %}" class="btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn-submit">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{
+  "name": "ClientAuditLog",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "Tipo de entidad modificada: Client, CreditAgreement, GeneratedContract, Invoice"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID de la entidad modificada"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "description": "Tipo de acci\u00f3n"
+    },
+    "field_name": {
+      "type": "string",
+      "description": "Campo modificado"
+    },
+    "field_label": {
+      "type": "string",
+      "description": "Etiqueta legible del campo"
+    },
+    "old_value": {
+      "type": "string",
+      "description": "Valor anterior"
+    },
+    "new_value": {
+      "type": "string",
+      "description": "Nuevo valor"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Nombre del usuario que realiz\u00f3 el cambio"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID del usuario"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Descripci\u00f3n resumida del cambio"
+    }
+  },
+  "required": [
+    "client_id",
+    "entity_type",
+    "action"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Referrer",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Nombre completo"
+    },
+    "cc": {
+      "type": "string",
+      "description": "C\u00e9dula"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono"
+    },
+    "email": {
+      "type": "string",
+      "description": "Correo"
+    },
+    "commission_percent": {
+      "type": "number",
+      "description": "Porcentaje de comisi\u00f3n (%)"
+    },
+    "bank_name": {
+      "type": "string",
+      "description": "Banco"
+    },
+    "bank_account": {
+      "type": "string",
+      "description": "N\u00famero de cuenta"
+    },
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "ahorros",
+        "corriente",
+        "nequi",
+        "daviplata",
+        "otro"
+      ],
+      "description": "Tipo de cuenta"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "activo",
+        "inactivo"
+      ],
+      "description": "Estado"
+    },
+    "comisiones_causadas": {
+      "type": "number",
+      "default": 0,
+      "description": "Acumulado de comisiones causadas (solo en facturas Pagadas)"
+    },
+    "comisiones_pendientes": {
+      "type": "number",
+      "default": 0,
+      "description": "Comisiones a\u00fan no pagadas al referidor"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas"
+    }
+  },
+  "required": [
+    "full_name",
+    "cc",
+    "commission_percent",
+    "status"
+  ]
+}

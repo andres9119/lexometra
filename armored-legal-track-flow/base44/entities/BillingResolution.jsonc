@@ -1,0 +1,45 @@
+{
+  "name": "BillingResolution",
+  "type": "object",
+  "properties": {
+    "prefix": {
+      "type": "string",
+      "description": "Prefijo de facturaci\u00f3n (ej: FE, POS, DV)"
+    },
+    "initial_consecutive": {
+      "type": "number",
+      "description": "Consecutivo inicial"
+    },
+    "final_consecutive": {
+      "type": "number",
+      "description": "Consecutivo final (l\u00edmite)"
+    },
+    "current_consecutive": {
+      "type": "number",
+      "description": "\u00daltimo consecutivo emitido"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha vencimiento de la resoluci\u00f3n"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "activa",
+        "inactiva"
+      ],
+      "description": "Estado"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas / n\u00famero de resoluci\u00f3n DIAN"
+    }
+  },
+  "required": [
+    "prefix",
+    "initial_consecutive",
+    "final_consecutive",
+    "status"
+  ]
+}

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-title { font-family:var(--font-display); font-size:1.45rem; font-weight:600; display:flex; align-items:center; gap:0.6rem; color:var(--ink); letter-spacing:-0.01em; }
+.page-title i { color:var(--accent); }
+
+.summary-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:0.75rem; margin-bottom:1.25rem; }
+.summary-card { position:relative; padding:1rem; border-radius:8px; color:#fff; overflow:hidden; min-height:100px; }
+.summary-card .sc-icon { position:absolute; right:0.75rem; bottom:0.5rem; opacity:0.12; }
+.summary-card .sc-title { font-size:0.7rem; opacity:.9; text-transform:uppercase; letter-spacing:0.04em; }
+.summary-card .sc-value { font-size:1.5rem; font-weight:700; margin:0.15rem 0; }
+.summary-card .sc-sub { font-size:0.75rem; opacity:.8; }
+
+.bg-blue{background:#24394D} .bg-red{background:#3A4A5A} .bg-purple{background:#1C2B3A}
+.bg-green{background:#2E475F} .bg-orange{background:#33414F} .bg-teal{background:#203A5E}
+.bg-rose{background:#4A5868} .bg-indigo{background:#2E475F}
+
+.dash-grid { display:grid; grid-template-columns:2fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+.dash-full { margin-bottom:1.25rem; }
+
+.section-header { display:flex; align-items:center; gap:0.6rem; padding:0.75rem 1rem; border-bottom:1px solid var(--topbar-border); background:transparent; }
+.section-header .icon { display:inline-flex; align-items:center; color:var(--accent-blue); }
+.section-header .title { font-size:0.78rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; }
+.card-body { padding:1rem 1.25rem; }
+
+.chart-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+.chart-box { padding:1rem; height:260px; }
+.chart-box canvas { max-height:200px; }
+
+.finance-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+.fin-row { padding:0.5rem 0; border-bottom:1px solid var(--topbar-border); display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; }
+.fin-row:last-child { border-bottom:none; }
+.fin-row .label { color:var(--text-muted); }
+.fin-row .value { color:var(--text-main); }
+.fin-row .value.green { color:var(--accent-green); }
+.fin-row .value.red { color:var(--accent-red); }
+
+.venc-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+.venc-table th { text-align:left; padding:0.5rem 0.75rem; font-size:0.7rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; border-bottom:1px solid var(--topbar-border); background:var(--line-soft); }
+.venc-table td { padding:0.5rem 0.75rem; border-bottom:1px solid var(--topbar-border); }
+.status-badge { padding:0.2rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:inline-block; }
+.status-vencido { background:var(--danger); color:#fff; }
+.status-hoy { background:var(--danger-bg); color:var(--danger); }
+.status-dias { background:var(--warn-bg); color:var(--warn); border:1px solid var(--warn-border); }
+.status-ok { background:var(--success-bg); color:var(--success); }
+
+.list-item { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.75rem; border-bottom:1px solid var(--topbar-border); }
+.list-item:last-child { border-bottom:none; }
+.item-title { font-size:0.82rem; font-weight:600; }
+.item-sub { font-size:0.7rem; color:var(--text-muted); margin-top:0.1rem; }
+.item-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--line); color:var(--text-muted); font-weight:600; font-size:0.8rem; flex-shrink:0; }
+
+.badge { font-size:0.65rem; padding:0.15rem 0.4rem; border-radius:4px; font-weight:600; display:inline-block; }
+.badge-outline { background:transparent; border:1px solid var(--topbar-border); color:var(--text-muted); }
+
+.actuacion-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:0.3rem; }
+.dot-vencimiento { background:var(--danger); }
+.dot-inicio { background:var(--success); }
+.dot-resolucion { background:var(--accent); }
+.dot-actuacion { background:var(--warn); }
+
+@media (max-width:1200px){ .summary-grid{grid-template-columns:repeat(3,1fr);} .chart-row{grid-template-columns:1fr 1fr;} }
+@media (max-width:768px){ .summary-grid{grid-template-columns:repeat(2,1fr);} .dash-grid{grid-template-columns:1fr;} .chart-row{grid-template-columns:1fr;} }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+    <h1 class="page-title"><i data-lucide="bar-chart-2"></i> Panel de Control</h1>
+    <span style="font-size:0.82rem;color:var(--text-muted);">{{ today|date:"l, d M Y" }}</span>
+</div>
+
+<div class="chart-row">
+    <div class="card chart-box">
+        <div class="section-header" style="padding:0 0 0.75rem 0; border-bottom:1px solid var(--topbar-border); margin-bottom:0.75rem;">
+            <span class="icon"><i data-lucide="pie-chart" width="16" height="16"></i></span>
+            <span class="title">Procesos por Estado Legal</span>
+        </div>
+        <canvas id="procesosChart"></canvas>
+    </div>
+    <div class="card chart-box">
+        <div class="section-header" style="padding:0 0 0.75rem 0; border-bottom:1px solid var(--topbar-border); margin-bottom:0.75rem;">
+            <span class="icon"><i data-lucide="bar-chart-3" width="16" height="16"></i></span>
+            <span class="title">Casos por Tipo</span>
+        </div>
+        <canvas id="casosChart"></canvas>
+    </div>
+    <div class="card chart-box">
+        <div class="section-header" style="padding:0 0 0.75rem 0; border-bottom:1px solid var(--topbar-border); margin-bottom:0.75rem;">
+            <span class="icon"><i data-lucide="trending-up" width="16" height="16"></i></span>
+            <span class="title">Estado Comercial</span>
+        </div>
+        <canvas id="comercialChart"></canvas>
+    </div>
+</div>
+
+<div class="dash-grid">
+    <div class="card">
+        <div class="section-header">
+            <span class="icon"><i data-lucide="alert-circle" width="16" height="16"></i></span>
+            <span class="title">Vencimientos Próximos</span>
+            <span class="badge" style="background:var(--line-soft);">{{ vencimientos|length }}</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if vencimientos %}
+            <table class="venc-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Tipo</th>
+                        <th>Días</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in vencimientos %}
+                    {% with p=item.proceso %}
+                    <tr>
+                        <td>{{ p.fecha_vencimiento|date:"d/m/Y" }}</td>
+                        <td style="font-weight:500;">{{ p.cliente.nombre|default:"—" }}</td>
+                        <td><span class="badge badge-outline">{{ p.tipo_servicio_display }}</span></td>
+                        <td><span class="status-badge {{ item.cls }}">{{ item.label }}</span></td>
+                    </tr>
+                    {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.85rem;">No hay vencimientos próximos</div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        new Chart(document.getElementById('procesosChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Activos','Suspendidos','Terminados','Archivados'],
+                datasets: [{ data: {{ procesos_estado_json|safe }}, backgroundColor:['#1C2B3A','#2E475F','#3A4A5A','#8A97A6'], borderWidth:0, cutout:'70%' }]
+            },
+            options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, font:{size:10} } } } }
+        });
+
+        new Chart(document.getElementById('casosChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ casos_tipo_labels_json|safe }},
+                datasets: [{ data: {{ casos_tipo_counts_json|safe }}, backgroundColor:'#203A5E', borderRadius:4 }]
+            },
+            options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ font:{size:9} } }, x:{ ticks:{ font:{size:9} } } } }
+        });
+
+        new Chart(document.getElementById('comercialChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ com_labels_json|safe }},
+                datasets: [{ data: {{ com_counts_json|safe }}, backgroundColor:['#203A5E','#2E475F','#3A4A5A','#8A97A6'], borderRadius:4 }]
+            },
+            options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ font:{size:9} } }, x:{ ticks:{ font:{size:9} } } } }
+        });
+    } catch(e) { console.error(e); }
+});
+</script>
+{% endblock %}

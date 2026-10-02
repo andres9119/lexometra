@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Editar {{ caso.titulo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-page { max-width: 800px; margin: 0 auto; }
+    .edit-page h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--ink); margin-bottom: 0.25rem; }
+    .edit-page .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 0.75rem; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--ink); margin-bottom: 0.25rem; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem 0.65rem; border: 1px solid var(--line); border-radius: 6px; font-size: 0.88rem; background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(32,58,94,0.08); }
+    .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+    .btn-back { padding: 0.45rem 1rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.85rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .btn-back:hover { background: var(--line-soft); }
+    .btn-save { padding: 0.45rem 1.5rem; border-radius: 6px; border: none; background: var(--accent); color: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+    .btn-save:hover { background: var(--brand); }
+    .full-width { grid-column: 1 / -1; }
+    @media (max-width: 640px) { .form-grid-2 { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-page">
+    <a href="{% url 'procesos_detalle' caso.pk %}" class="btn-back" style="margin-bottom:1rem;"><i data-lucide="arrow-left" width="14" height="14"></i> Volver al caso</a>
+    <h2>Editar Caso Jurídico</h2>
+    <div class="sub">{{ caso.titulo }} — {{ caso.get_tipo_proceso_display }}</div>
+
+    <div class="card" style="padding:1.5rem;">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" name="titulo" value="{{ caso.titulo }}">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Proceso</label>
+                    <select name="tipo_proceso">
+                        <option value="TUTELA" {% if caso.tipo_proceso == 'TUTELA' %}selected{% endif %}>Acción de Tutela</option>
+                        <option value="SIC" {% if caso.tipo_proceso == 'SIC' %}selected{% endif %}>SIC</option>
+                        <option value="CARTERA" {% if caso.tipo_proceso == 'CARTERA' %}selected{% endif %}>Cartera</option>
+                        <option value="ELIMINACION_REPORTES" {% if caso.tipo_proceso == 'ELIMINACION_REPORTES' %}selected{% endif %}>Eliminación de Reportes</option>
+                        <option value="OTRO" {% if caso.tipo_proceso == 'OTRO' %}selected{% endif %}>Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <select name="prioridad">
+                        <option value="ALTA" {% if caso.prioridad == 'ALTA' %}selected{% endif %}>Alta</option>
+                        <option value="MEDIA" {% if caso.prioridad == 'MEDIA' %}selected{% endif %}>Media</option>
+                        <option value="BAJA" {% if caso.prioridad == 'BAJA' %}selected{% endif %}>Baja</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select name="estado">
+                        <option value="ACTIVO" {% if caso.estado == 'ACTIVO' %}selected{% endif %}>Activo</option>
+                        <option value="SUSPENDIDO" {% if caso.estado == 'SUSPENDIDO' %}selected{% endif %}>Suspendido</option>
+                        <option value="TERMINADO" {% if caso.estado == 'TERMINADO' %}selected{% endif %}>Terminado</option>
+                        <option value="ARCHIVADO" {% if caso.estado == 'ARCHIVADO' %}selected{% endif %}>Archivado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Abogado Asignado</label>
+                    <select name="abogado_asignado">
+                        <option value="">— Sin asignar —</option>
+                        {% for a in abogados %}
+                        <option value="{{ a.pk }}" {% if caso.abogado_asignado_id == a.pk %}selected{% endif %}>{{ a.get_full_name|default:a.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Radicado Externo</label>
+                    <input type="text" name="radicado_externo" value="{{ caso.radicado_externo|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Demandante / Accionante</label>
+                    <input type="text" name="demandante_accionante" value="{{ caso.demandante_accionante }}">
+                </div>
+                <div class="form-group">
+                    <label>Demandado / Accionado</label>
+                    <input type="text" name="demandado_accionado" value="{{ caso.demandado_accionado }}">
+                </div>
+                <div class="form-group">
+                    <label>Juzgado / Entidad</label>
+                    <input type="text" name="juzgado_entidad" value="{{ caso.juzgado_entidad }}">
+                </div>
+                <div class="form-group">
+                    <label>Etapa Actual</label>
+                    <input type="text" name="etapa_actual" value="{{ caso.etapa_actual }}">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Inicio</label>
+                    <input type="date" name="fecha_inicio" value="{{ caso.fecha_inicio|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Próximo Vencimiento</label>
+                    <input type="date" name="proximo_vencimiento" value="{{ caso.proximo_vencimiento|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="form-group full-width">
+                    <label>Descripción del Caso</label>
+                    <textarea name="descripcion_caso" rows="4">{{ caso.descripcion_caso }}</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label>Notas Adicionales</label>
+                    <textarea name="notas_adicionales" rows="3">{{ caso.notas_adicionales|default:'' }}</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label>URL SharePoint</label>
+                    <input type="url" name="url_sharepoint" value="{{ caso.url_sharepoint|default:'' }}">
+                </div>
+                <div class="form-group full-width" style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="contrato_autenticado_recibido" {% if caso.contrato_autenticado_recibido %}checked{% endif %}> Contrato autenticado recibido
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
+                        <input type="checkbox" name="habilitado_modulo_juridico" {% if caso.habilitado_modulo_juridico %}checked{% endif %}> Módulo jurídico habilitado
+                    </label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a href="{% url 'procesos_detalle' caso.pk %}" class="btn-back">Cancelar</a>
+                <button type="submit" class="btn-save">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

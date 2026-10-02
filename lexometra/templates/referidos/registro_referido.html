@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicita tu asesoría — Lexometra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #141e2b 0%, #1c2b3a 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.25rem; color: #1a2430;
+        }
+        .rf-card { background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(0,0,0,0.35); width: 100%; max-width: 540px; overflow: hidden; }
+        .rf-header { background: linear-gradient(135deg, #d99f2b 0%, #c68a1e 100%); padding: 1.5rem 1.75rem; }
+        .rf-header h1 { color: #fff; font-size: 1.3rem; font-weight: 700; }
+        .rf-header p { color: rgba(255,255,255,0.92); font-size: 0.85rem; margin-top: 0.25rem; }
+        .rf-ref { background: #fbf3e3; border-bottom: 1px solid #ebd7a8; padding: 0.65rem 1.75rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: #9a6a1e; }
+        .rf-ref strong { color: #7a530f; }
+        .rf-body { padding: 1.5rem 1.75rem; }
+        .rf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+        .rf-field { display: flex; flex-direction: column; gap: 0.35rem; }
+        .rf-field.full { grid-column: 1 / -1; }
+        .rf-field label { font-size: 0.75rem; font-weight: 600; color: #1a2430; }
+        .rf-field input, .rf-field select, .rf-field textarea {
+            padding: 0.6rem 0.7rem; border: 1px solid #d6dde3; border-radius: 8px;
+            font-size: 0.88rem; font-family: inherit; outline: none; background: #fff; color: #1a2430;
+        }
+        .rf-field input:focus, .rf-field select:focus, .rf-field textarea:focus { border-color: #c68a1e; box-shadow: 0 0 0 3px rgba(198,138,30,0.15); }
+        .rf-error { display: flex; align-items: center; gap: 0.5rem; background: #fbebeb; border: 1px solid #efc4c4; color: #b23b3b; padding: 0.7rem 0.9rem; border-radius: 8px; font-size: 0.82rem; margin-top: 1rem; }
+        .rf-submit { width: 100%; margin-top: 1.1rem; background: #c68a1e; border: none; color: #fff; font-weight: 700; font-size: 0.92rem; padding: 0.85rem; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+        .rf-submit:hover { background: #b07513; }
+        .rf-note { font-size: 0.68rem; text-align: center; color: #8a97a6; margin-top: 1rem; }
+        .rf-ok { text-align: center; padding: 1.5rem; }
+        .rf-ok .icon { width: 58px; height: 58px; border-radius: 50%; background: #e8f4ee; color: #1e7f4e; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.8rem; }
+        .rf-ok h2 { font-size: 1.4rem; color: #1a2430; margin-bottom: 0.5rem; }
+        .rf-ok p { color: #5c6b7a; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .rf-ok .ref-name { color: #c68a1e; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="rf-card">
+        {% if enviado %}
+        <div class="rf-ok">
+            <div class="icon">✓</div>
+            <h2>¡Solicitud enviada!</h2>
+            <p>Recibimos tu información correctamente.</p>
+            <p>Uno de nuestros asesores se comunicará contigo pronto.</p>
+            {% if referidor %}<p>Referido por: <span class="ref-name">{{ referidor.nombre }}</span></p>{% endif %}
+        </div>
+        {% elif not referidor %}
+        <div class="rf-body" style="text-align:center; padding:3rem 1.75rem;">
+            <div style="font-size:2rem; color:#b23b3b; margin-bottom:0.75rem;">⚠</div>
+            <h2 style="font-size:1.2rem; color:#1a2430;">Enlace no válido</h2>
+            <p style="color:#5c6b7a; font-size:0.85rem; margin-top:0.5rem;">Este enlace de referido no existe o no está activo.</p>
+        </div>
+        {% else %}
+        <div class="rf-header">
+            <h1>Solicita tu asesoría</h1>
+            <p>Completa tus datos para que un asesor te contacte</p>
+        </div>
+        <div class="rf-ref">👤 Referido por: <strong>{{ referidor.nombre }}</strong></div>
+        <div class="rf-body">
+            <form method="post" action="{% url 'registro_referido' %}?ref={{ referidor.pk }}">
+                {% csrf_token %}
+                <input type="hidden" name="ref" value="{{ referidor.pk }}">
+                <div class="rf-grid">
+                    <div class="rf-field full">
+                        <label>Nombre completo *</label>
+                        <input type="text" name="nombre" placeholder="Tu nombre completo" required>
+                    </div>
+                    <div class="rf-field">
+                        <label>Cédula *</label>
+                        <input type="text" name="identificacion" placeholder="1234567890" inputmode="numeric" required>
+                    </div>
+                    <div class="rf-field">
+                        <label>Teléfono / Celular *</label>
+                        <input type="text" name="telefono" placeholder="3001234567" inputmode="tel" required>
+                    </div>
+                    <div class="rf-field">
+                        <label>Correo electrónico</label>
+                        <input type="email" name="email" placeholder="tu@correo.com">
+                    </div>
+                    <div class="rf-field">
+                        <label>Ciudad</label>
+                        <input type="text" name="ciudad" placeholder="Bogotá">
+                    </div>
+                    <div class="rf-field full">
+                        <label>Servicio de interés *</label>
+                        <select name="servicio">
+                            <option value="ELIMINACION_REPORTES">Eliminación de Reportes Negativos</option>
+                            <option value="TUTELA">Tutela</option>
+                            <option value="SIC">Queja ante SIC</option>
+                            <option value="CARTERA">Gestión de Cartera</option>
+                            <option value="OTRO">Otro</option>
+                        </select>
+                    </div>
+                    <div class="rf-field full">
+                        <label>¿Cuéntanos tu situación? <span style="font-weight:400; color:#8a97a6;">(opcional)</span></label>
+                        <textarea name="notas" rows="3" placeholder="Describe brevemente tu caso..."></textarea>
+                    </div>
+                </div>
+                {% if error %}
+                <div class="rf-error">⚠ {{ error }}</div>
+                {% endif %}
+                <button type="submit" class="rf-submit">Enviar solicitud</button>
+                <p class="rf-note">Tus datos son tratados con total confidencialidad conforme a la Ley 1581 de 2012.</p>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

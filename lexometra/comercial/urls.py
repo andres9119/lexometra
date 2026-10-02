@@ -1,0 +1,31 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('comercial/', views.lista_comercial_view, name='comercial_lista'),
+    path('comercial/cliente/<int:pk>/', views.detalle_cliente, name='comercial_detalle_cliente'),
+    path('comercial/cliente/<int:pk>/asignar/', views.asignar_comercial_a_mi, name='comercial_asignar'),
+    path('comercial/proceso/<int:pk>/estado/', views.cambiar_estado_proceso, name='comercial_cambiar_estado'),
+    path('comercial/cliente/<int:pk>/editar/', views.editar_cliente, name='comercial_editar_cliente'),
+    path('comercial/nuevo/', views.crear_cliente_proceso, name='comercial_nuevo'),
+    path('comercial/servicio/nuevo/', views.crear_servicio_ajax, name='crear_servicio_ajax'),
+    path('comercial/servicio/gestionar/', views.gestionar_servicios_ajax, name='gestionar_servicios_ajax'),
+    path('comercial/servicio/editar/', views.editar_servicio_ajax, name='editar_servicio_ajax'),
+    path('comercial/servicio/eliminar/', views.eliminar_servicio_ajax, name='eliminar_servicio_ajax'),
+    path('comercial/estado/nuevo/', views.crear_estado_ajax, name='crear_estado_ajax'),
+    path('comercial/recaudo/nuevo/', views.nuevo_recaudo, name='comercial_nuevo_recaudo'),
+    path('comercial/actuacion/nuevo/', views.nuevo_actuacion, name='comercial_nuevo_actuacion'),
+    path('comercial/proceso/<int:pk>/editar-centrales/', views.editar_centrales_riesgo, name='comercial_editar_centrales'),
+    path('comercial/proceso/<int:pk>/editar-cobro/', views.editar_estructura_cobro, name='comercial_editar_cobro'),
+    path('comercial/proceso/<int:pk>/editar/', views.editar_proceso, name='comercial_editar_proceso'),
+    path('comercial/cliente/<int:cliente_pk>/reporte/agregar/', views.agregar_reporte_negativo, name='comercial_agregar_reporte'),
+    path('comercial/reporte/<int:pk>/editar/', views.editar_reporte_negativo, name='comercial_editar_reporte'),
+    path('comercial/reporte/<int:pk>/eliminar/', views.eliminar_reporte_negativo, name='comercial_eliminar_reporte'),
+    path('comercial/cliente/<int:cliente_pk>/documento/subir/', views.subir_documento_cliente, name='comercial_subir_documento'),
+    path('comercial/documento/<int:pk>/eliminar/', views.eliminar_documento_ficha, name='comercial_eliminar_documento'),
+    path('comercial/cliente/<int:pk>/contrato/', views.generar_contrato, name='comercial_generar_contrato'),
+    path('comercial/cliente/<int:pk>/actividad/', views.historial_actividad_view, name='comercial_historial'),
+    path('comercial/cliente/<int:pk>/actividad/agregar/', views.agregar_actividad_manual, name='comercial_agregar_actividad'),
+    path('contratos/', views.lista_contratos, name='comercial_contratos'),
+    path('comercial/cliente/<int:cliente_pk>/facturar-cobro/', views.generar_factura_cobro, name='comercial_facturar_cobro'),
+]

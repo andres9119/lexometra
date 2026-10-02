@@ -1,0 +1,65 @@
+{
+  "name": "CommissionPayment",
+  "type": "object",
+  "properties": {
+    "referrer_id": {
+      "type": "string",
+      "description": "ID del referidor"
+    },
+    "referrer_name": {
+      "type": "string",
+      "description": "Nombre del referidor (desnormalizado)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Monto pagado al referidor en COP"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha del pago"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "transferencia",
+        "efectivo",
+        "nequi",
+        "daviplata",
+        "cheque",
+        "otro"
+      ],
+      "description": "M\u00e9todo de pago"
+    },
+    "reference": {
+      "type": "string",
+      "description": "N\u00famero de comprobante o referencia"
+    },
+    "receipt_url": {
+      "type": "string",
+      "description": "URL del comprobante adjunto"
+    },
+    "invoice_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs de facturas cubiertas por este pago"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas del pago"
+    },
+    "created_by_name": {
+      "type": "string",
+      "description": "Usuario que registr\u00f3 el pago"
+    }
+  },
+  "required": [
+    "referrer_id",
+    "referrer_name",
+    "amount",
+    "payment_date",
+    "payment_method"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "name": "Notificacion",
+  "type": "object",
+  "properties": {
+    "usuario_destino_id": {
+      "type": "string",
+      "description": "ID del usuario destinatario"
+    },
+    "usuario_destino_nombre": {
+      "type": "string",
+      "description": "Nombre del destinatario (desnormalizado)"
+    },
+    "usuario_origen_nombre": {
+      "type": "string",
+      "description": "Nombre del usuario que gener\u00f3 la notificaci\u00f3n"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "mencion",
+        "asignacion",
+        "vencimiento",
+        "comentario",
+        "otro"
+      ],
+      "description": "Tipo de notificaci\u00f3n"
+    },
+    "mensaje": {
+      "type": "string",
+      "description": "Texto de la notificaci\u00f3n"
+    },
+    "url": {
+      "type": "string",
+      "description": "Ruta interna a la que redirige (ej: /process/123)"
+    },
+    "process_id": {
+      "type": "string",
+      "description": "ID del expediente relacionado"
+    },
+    "leido": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u00bfEl usuario la ha visto?"
+    },
+    "email_enviado": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u00bfYa se incluy\u00f3 en el email digest?"
+    }
+  },
+  "required": [
+    "usuario_destino_id",
+    "tipo",
+    "mensaje"
+  ]
+}

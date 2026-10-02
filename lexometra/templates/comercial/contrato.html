@@ -1,0 +1,195 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Contrato de Prestacion de Servicios - {{ cliente.nombre }}</title>
+<style>
+    @page { margin: 2cm; size: letter; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 10.5pt; color: #1C2B3A; line-height: 1.6; }
+    h1 { font-size: 14pt; text-align: center; text-transform: uppercase; margin-bottom: 1.5rem; letter-spacing: 0.05em; font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; color: #1C2B3A; }
+    h2 { font-size: 10pt; text-transform: uppercase; margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid #E3E7EB; padding-bottom: 0.25rem; color: #203A5E; font-weight: 600; letter-spacing: 0.04em; }
+    .partes { margin: 1rem 0; }
+    .partes p { margin: 0.25rem 0; }
+    .clausula { margin: 0.75rem 0; text-align: justify; }
+    .clausula strong { display: inline; color: #1C2B3A; }
+    table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; }
+    th, td { border: 1px solid #D5DBE0; padding: 0.4rem 0.6rem; text-align: left; font-size: 9.5pt; }
+    th { background: #F3F5F7; }
+    .firma-section { margin-top: 3rem; display: flex; justify-content: space-between; gap: 2rem; }
+    .firma-box { flex: 1; text-align: center; }
+    .firma-line { border-top: 1px solid #1C2B3A; margin-top: 3rem; padding-top: 0.5rem; }
+    .firma-box p { margin: 0.15rem 0; font-size: 9pt; }
+    .monto-texto { font-weight: 700; color: #1C2B3A; }
+    .anexo { margin-top: 2rem; }
+    .page-break { page-break-before: always; }
+    @media screen {
+        body { max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #F3F5F7; }
+    }
+</style>
+</head>
+<body>
+
+<h1>Contrato de Prestacion de Servicios</h1>
+
+<p>Entre las partes, se suscribe el presente contrato de prestacion de servicios, que se regira por las siguientes clausulas y se sujeta a las leyes de la Republica de Colombia.</p>
+
+<h2>Partes Contratantes</h2>
+
+<div class="partes">
+<p><strong>EL CONTRATISTA:</strong></p>
+<p>{{ empresa.razon_social }}, identificado con {{ empresa.tipo_documento|lower }} {{ empresa.nit }}, con domicilio en la ciudad de {{ empresa.ciudad }}, quien actua en calidad de <strong>EL CONTRATISTA</strong>.</p>
+
+<p style="margin-top:1rem;"><strong>EL CONTRATANTE:</strong></p>
+<p>{{ cliente.nombre }}, identificado(a) con cedula de ciudadania {{ cliente.identificacion }}, quien para los efectos del presente contrato se denominara <strong>EL CONTRATANTE</strong> y se designa como lugar de cumplimiento de la obligacion su lugar de residencia.</p>
+</div>
+
+<h2>Clausulas</h2>
+
+<div class="clausula">
+<p><strong>PRIMERA: OBJETO DEL CONTRATO</strong></p>
+<p>EL CONTRATISTA se obliga a prestar, por sus propios medios y con plena autonomia tecnica y presupuestal, los servicios de gestion de reportes negativos en centrales de riesgo. Estos servicios incluyen la eliminacion o actualizacion de dichos reportes a traves de mecanismos legales como derechos de peticion, recursos de reposicion, acciones de tutela, y denuncias ante las autoridades competentes. El alcance de este servicio se limita a las obligaciones descritas en el anexo de este contrato.</p>
+</div>
+
+<div class="clausula">
+<p><strong>SEGUNDA: VALOR Y FORMA DE PAGO</strong></p>
+<p>El valor total del contrato asciende a: <span class="monto-texto">{{ valor_total_letras }} M/cte. (${{ valor_total|floatformat:0|intcomma }}).</span></p>
+
+{% if anticipo > 0 %}
+<p>Se realizara un pago inicial en la(s) siguiente(s) fecha(s) a la firma del contrato. Asi:</p>
+
+<table>
+<thead><tr><th>Fecha de pago</th><th>Valor Pactado</th></tr></thead>
+<tbody>
+{% for cuota in cuotas %}
+<tr><td>{{ cuota.fecha }}</td><td>${{ cuota.valor|floatformat:0|intcomma }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+<p><strong>Paragrafo:</strong> Se deja constancia que el dia {{ fecha_hoy }} fue recibida la suma de {{ anticipo_letras }} (${{ anticipo|floatformat:0|intcomma }}) en efectivo. Saldo que sera descontado del saldo total.</p>
+{% endif %}
+
+<p>El saldo restante, por la suma de: <span class="monto-texto">{{ saldo_letras }} M/cte. (${{ saldo|floatformat:0|intcomma }})</span> se pagara una vez que se complete la tarea o cuando EL CONTRATISTA garantice la eliminacion o actualizacion de los reportes negativos.</p>
+
+<p>Las sumas de dineros aqui pactadas seran pagaderas en favor de EL CONTRATISTA mediante transferencia bancaria a la cuenta que disponga.</p>
+</div>
+
+<div class="clausula">
+<p><strong>TERCERA: PLAZO DE EJECUCION</strong></p>
+<p>El plazo estimado para la ejecucion del contrato es de uno (1) a tres (3) meses, a partir de la firma del acuerdo. Este plazo es una estimacion, ya que la duracion real del proceso dependera de la respuesta de la fuente de informacion que esta generando el reporte negativo, por tanto, puede ser mayor dependiendo la complejidad del caso.</p>
+</div>
+
+<div class="clausula">
+<p><strong>CUARTA: OBLIGACIONES DE LAS PARTES</strong></p>
+
+<p><strong>4.1. EL CONTRATISTA</strong> se compromete a:</p>
+<ul>
+<li>Ejecutar las actividades necesarias para el cumplimiento del objeto del contrato.</li>
+<li>No se compromete en ningun caso a eliminar las deudas que EL CONTRATANTE pueda tener con las obligaciones objeto de este contrato.</li>
+</ul>
+
+<p><strong>4.2. EL CONTRATANTE</strong> asume y entiende que:</p>
+<ul>
+<li>La eliminacion o modificacion de los reportes negativos se refiere exclusivamente a la informacion en su historial crediticio, no a la condonacion de la deuda.</li>
+<li>Los reportes negativos eliminados pueden ser reincorporados a su historial si la fuente de informacion cumple con los requisitos legales para hacerlo.</li>
+<li>Cualquier reporte negativo adicional, no incluido en el anexo inicial, sera considerado como un nuevo proceso y se cotizara de manera independiente.</li>
+<li>Si un reporte eliminado vuelve a aparecer y desea gestionarlo nuevamente despues de 30 dias de la entrega de evidencias por parte del CONTRATISTA, se considerara un nuevo proceso y debera pagar los honorarios acordados.</li>
+</ul>
+</div>
+
+<div class="clausula">
+<p><strong>QUINTA: CLAUSULA PENAL</strong></p>
+<p>En caso de que EL CONTRATANTE decida, de manera unilateral y sin causa justificada, no continuar con la labor encomendada despues de la firma del presente contrato, este debera reconocer a favor de EL CONTRATISTA una suma equivalente al 50% del valor total del contrato como pena, valor que se descontara del pago inicial en caso de haberse realizado.</p>
+<p>Esta suma se entendera como indemnizacion por los perjuicios causados por la terminacion anticipada.</p>
+</div>
+
+<div class="clausula">
+<p><strong>SEXTA: EXIGIBILIDAD Y MERITO EJECUTIVO</strong></p>
+<p>El incumplimiento de la obligacion de pago por parte de EL CONTRATANTE dara merito ejecutivo a este contrato. En caso de mora, se generaran intereses a la tasa maxima legal permitida por la Superintendencia Financiera de Colombia, asi como los gastos de cobranza judicial que sean necesarios.</p>
+</div>
+
+<div class="clausula">
+<p><strong>SEPTIMA: AUTORIZACION PARA EL TRATAMIENTO DE DATOS PERSONALES</strong></p>
+<p>EL CONTRATANTE autoriza expresamente a EL CONTRATISTA para recopilar, usar, almacenar y tratar sus datos personales con el fin de ejecutar las actividades derivadas de este contrato.</p>
+<p>Asimismo, autoriza a reportar a las centrales de informacion financiera su cumplimiento o incumplimiento de las obligaciones contractuales, asi como a las autoridades tributarias, aduaneras o judiciales la informacion requerida en el marco de sus funciones.</p>
+</div>
+
+<div class="clausula">
+<p><strong>OCTAVA: DOMICILIO Y NOTIFICACIONES</strong></p>
+<p>Para todos los efectos legales, judiciales y extrajudiciales del presente contrato, las partes establecen como domicilio contractual las siguientes direcciones y medios de contacto, a traves de los cuales se podran realizar todas las notificaciones requeridas via SMS, mensaje de datos o domicilio.</p>
+
+<table>
+<thead><tr><th></th><th>EL CONTRATANTE</th><th>EL CONTRATISTA</th></tr></thead>
+<tbody>
+<tr><td><strong>Nombre</strong></td><td>{{ cliente.nombre }}</td><td>{{ empresa.razon_social }}</td></tr>
+<tr><td><strong>Celular</strong></td><td>{{ cliente.telefono }}</td><td>{{ empresa.telefono }}</td></tr>
+<tr><td><strong>Direccion</strong></td><td>{{ cliente.direccion }}, {{ cliente.ciudad }} ({{ cliente.departamento }})</td><td>{{ empresa.direccion }}</td></tr>
+<tr><td><strong>Correo</strong></td><td>{{ cliente.email }}</td><td>{{ empresa.email }}</td></tr>
+</tbody>
+</table>
+
+<p>Cualquier cambio en la informacion de contacto debe ser notificado a la otra parte por escrito. Las partes autorizan expresamente que las notificaciones puedan realizarse a traves de los correos electronicos o direcciones fisicas aqui consignadas.</p>
+</div>
+
+<div class="clausula">
+<p><strong>NOVENA: SOLUCION DE CONFLICTOS</strong></p>
+<p>Cualquier controversia derivada de la ejecucion o liquidacion de este contrato se resolvera, en primera instancia, en un centro de conciliacion certificado. Si no se llegara a un acuerdo, la controversia se sometera a la jurisdiccion ordinaria de Colombia.</p>
+</div>
+
+<div class="clausula">
+<p><strong>DECIMA: FIRMA ELECTRONICA</strong></p>
+<p>Las partes acuerdan que la firma del presente contrato se realizara por medios electronicos, lo que confiere plena validez juridica al documento, conforme a la Ley 527 de 1999.</p>
+</div>
+
+<p style="margin-top:1.5rem;">En constancia de lo anterior, las partes firman el presente documento.</p>
+
+<div class="firma-section">
+    <div class="firma-box">
+        <p><strong>EL CONTRATANTE</strong></p>
+        <p>{{ cliente.nombre }}</p>
+        <p>CC {{ cliente.identificacion }}</p>
+        <div class="firma-line"></div>
+    </div>
+    <div class="firma-box">
+        <p><strong>EL CONTRATISTA</strong></p>
+        <p>{{ empresa.razon_social }}</p>
+        <p>{{ empresa.tipo_documento }} {{ empresa.nit }}</p>
+        <div class="firma-line"></div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<h1 class="anexo">Anexo de Obligaciones</h1>
+
+<p>Las obligaciones objeto de este contrato son las siguientes:</p>
+
+<table>
+<thead><tr><th>Entidad</th><th>No. Obligacion</th><th>Saldo</th></tr></thead>
+<tbody>
+{% for r in reportes %}
+<tr>
+    <td>{{ r.entidad }}</td>
+    <td>{{ r.numero_obligacion }}</td>
+    <td>${{ r.saldo|floatformat:0|intcomma }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<p>La(s) presente(s) obligacion(es) aqui descrita(s) presenta(n) dato(s) negativo(s) en la(s) centrales de riesgo.</p>
+
+<div class="firma-section">
+    <div class="firma-box">
+        <p><strong>EL CONTRATANTE</strong></p>
+        <div class="firma-line"></div>
+    </div>
+    <div class="firma-box">
+        <p><strong>EL CONTRATISTA</strong></p>
+        <div class="firma-line"></div>
+    </div>
+</div>
+
+</body>
+</html>

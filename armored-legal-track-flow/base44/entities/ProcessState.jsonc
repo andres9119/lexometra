@@ -1,0 +1,49 @@
+{
+  "name": "ProcessState",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre interno del estado (ej: peticion_radicada)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Nombre mostrado en UI"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color hexadecimal del badge (ej: #10b981)"
+    },
+    "order": {
+      "type": "number",
+      "description": "Orden secuencial en el flujo"
+    },
+    "is_terminal": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u00bfEs estado final del proceso?"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "\u00bfEstado disponible para usar?"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n interna del estado"
+    },
+    "allowed_transitions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nombres (name) de estados destino permitidos desde este. Vac\u00edo = todos los estados son accesibles."
+    }
+  },
+  "required": [
+    "name",
+    "display_name",
+    "color",
+    "order"
+  ]
+}

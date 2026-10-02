@@ -1,0 +1,621 @@
+﻿{% extends 'base.html' %}
+{% block title %}TesorerÃ­a â€” Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tesoreria-subnav { display:flex; gap:0.25rem; border-bottom:1px solid var(--line); margin-bottom:1.5rem; }
+    .tesoreria-subnav a { text-decoration:none; font-weight:600; font-size:0.85rem; padding:0.65rem 1rem; border-radius:8px 8px 0 0; color:var(--text-muted); transition:all 0.15s; display:inline-flex; align-items:center; gap:0.35rem; }
+    .tesoreria-subnav a:hover { color:var(--ink); background:var(--line-soft); }
+    .tesoreria-subnav a.active { color:var(--ink); background:var(--surface); border:1px solid var(--line); border-bottom-color:var(--surface); margin-bottom:-1px; }
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .kpi-card { background:var(--surface); border-radius:10px; padding:1rem 1.25rem; border:1px solid var(--topbar-border); box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:0.75rem; }
+    .kpi-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .kpi-icon.blue { background:var(--info-bg); color:var(--info); }
+    .kpi-icon.purple { background:var(--info-bg); color:var(--accent); }
+    .kpi-icon.green { background:var(--success-bg); color:var(--success); }
+    .kpi-icon.red { background:var(--danger-bg); color:var(--danger); }
+    .kpi-icon.orange { background:var(--warn-bg); color:var(--warn); }
+    .kpi-number { font-size:1.2rem; font-weight:700; color:var(--ink); line-height:1.2; }
+    .kpi-label { font-size:0.7rem; color:var(--text-muted); font-weight:500; }
+    .progress-bar { width:100%; height:8px; background:var(--line); border-radius:999px; overflow:hidden; margin-top:0.35rem; }
+    .progress-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--brand)); transition:width 0.5s; }
+    .filter-row { display:flex; gap:0.75rem; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; }
+    .filter-row select, .filter-row input { padding:0.4rem 0.7rem; border:1px solid var(--line); border-radius:6px; font-size:0.8rem; background:var(--surface); color:var(--ink); }
+    .filter-row input[type=search] { min-width:220px; }
+    .badge-estado { font-size:0.65rem; font-weight:600; padding:0.2rem 0.5rem; border-radius:999px; }
+    .badge-estado.borrador { background:var(--line-soft); color:var(--muted); }
+    .badge-estado.pendiente { background:var(--warn-bg); color:var(--warn); }
+    .badge-estado.emitida { background:var(--info-bg); color:var(--info); }
+    .badge-estado.rechazada { background:var(--danger-bg); color:var(--danger); }
+    .badge-estado.pago_parcial { background:var(--warn-bg); color:var(--warn); }
+    .badge-estado.pagada { background:var(--success-bg); color:var(--success); }
+    .badge-estado.vencida { background:var(--danger-bg); color:var(--danger); }
+    .badge-estado.anulada { background:var(--line-soft); color:var(--muted-2); }
+    .btn-dian { background:var(--accent); color:white; border-color:var(--accent); }
+    .btn-dian:hover { background:var(--brand); }
+    .cufe-badge { font-size:0.65rem; font-family:var(--font-mono); background:var(--line-soft); padding:0.1rem 0.3rem; border-radius:4px; word-break:break-all; display:inline-block; max-width:200px; }
+    table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+    th { text-align:left; padding:0.6rem 0.5rem; color:var(--text-muted); font-weight:600; border-bottom:2px solid var(--line); white-space:nowrap; }
+    td { padding:0.55rem 0.5rem; border-bottom:1px solid var(--line-soft); }
+    tr:hover td { background:var(--line-soft); }
+    .actions-cell { display:flex; gap:0.25rem; flex-wrap:wrap; }
+    .actions-cell a, .actions-cell button { padding:0.25rem 0.4rem; border-radius:6px; font-size:0.7rem; border:1px solid var(--line); background:var(--surface); cursor:pointer; color:var(--text-main); text-decoration:none; transition:all 0.1s; display:inline-flex; align-items:center; gap:0.2rem; }
+    .actions-cell a:hover, .actions-cell button:hover { border-color:var(--accent); color:var(--accent); }
+    .actions-cell .btn-danger:hover { border-color:var(--danger); color:var(--danger); }
+    .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,32,0.5); z-index:1000; display:none; justify-content:center; align-items:flex-start; overflow-y:auto; padding:2rem; }
+    .modal-overlay.active { display:flex; }
+    .modal-content { background:var(--surface); width:100%; max-width:720px; border-radius:10px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); overflow:hidden; }
+    .modal-header { background:var(--brand); padding:1.25rem 1.75rem; border-bottom:1px solid var(--topbar-border); display:flex; justify-content:space-between; align-items:center; }
+    .modal-title { font-size:1rem; font-weight:600; color:#FFFFFF; display:flex; align-items:center; gap:0.5rem; }
+    .modal-body { padding:1.5rem 1.75rem; background:var(--surface); }
+    .modal-footer { background:var(--surface); padding:1.25rem 1.75rem; border-top:1px solid var(--topbar-border); display:flex; justify-content:flex-end; gap:1rem; }
+    .items-table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
+    .items-table th { padding:0.4rem 0.3rem; font-size:0.7rem; border-bottom:1px solid var(--line); }
+    .items-table td { padding:0.3rem; }
+    .items-table input { width:100%; padding:0.3rem; border:1px solid var(--line); border-radius:6px; font-size:0.8rem; box-sizing:border-box; }
+    .search-client-wrap { position:relative; }
+    .search-results { position:absolute; top:100%; left:0; right:0; background:var(--surface); border:1px solid var(--line); border-radius:8px; max-height:200px; overflow-y:auto; z-index:50; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .search-results .result-item { padding:0.5rem 0.75rem; cursor:pointer; font-size:0.82rem; border-bottom:1px solid var(--line-soft); }
+    .search-results .result-item:hover { background:var(--line-soft); }
+    .total-line { text-align:right; font-weight:700; margin-top:0.5rem; font-size:1rem; }
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .field-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; }
+    .field-value { font-weight:600; color:var(--text-main); margin-top:0.25rem; }
+    .flex-between { display:flex; justify-content:space-between; align-items:center; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tesoreria-subnav">
+    <a href="{% url 'tesoreria_panel' %}" class="{% if seccion_activa == 'facturacion' %}active{% endif %}"><i data-lucide="file-text" width="16" height="16"></i> FacturaciÃ³n</a>
+    <a href="{% url 'tesoreria_cartera' %}" class="{% if seccion_activa == 'cartera' %}active{% endif %}"><i data-lucide="briefcase" width="16" height="16"></i> Cartera</a>
+    <a href="{% url 'tesoreria_tesoreria' %}" class="{% if seccion_activa == 'tesoreria' %}active{% endif %}"><i data-lucide="landmark" width="16" height="16"></i> TesorerÃ­a</a>
+    <a href="{% url 'tesoreria_reportes' %}" class="{% if seccion_activa == 'reportes' %}active{% endif %}"><i data-lucide="bar-chart-2" width="16" height="16"></i> Reportes</a>
+    <a href="{% url 'tesoreria_notas' %}" class="{% if seccion_activa == 'notas' %}active{% endif %}"><i data-lucide="rotate-ccw" width="16" height="16"></i> Notas CrÃ©dito/DÃ©bito</a>
+    <a href="{% url 'tesoreria_factus_list' %}" class="{% if seccion_activa == 'factus_list' %}active{% endif %}"><i data-lucide="cloud" width="16" height="16"></i> Factus</a>
+</div>
+
+{% if seccion_activa == 'facturacion' %}
+{% if modo_creacion %}
+<div class="flex-between" style="margin-bottom:1.25rem;">
+    <h3 style="margin:0;">Nueva Factura</h3>
+    <a href="{% url 'tesoreria_panel' %}" class="btn-cancel"><i data-lucide="chevron-left" width="16" height="16"></i> Volver</a>
+</div>
+
+<form method="post" action="{% url 'tesoreria_crear_factura' %}" id="facturaForm">{% csrf_token %}
+
+<div class="card" style="margin-bottom:1rem;">
+    <div class="section-header">
+        <span class="icon"><i data-lucide="user"></i></span>
+        <span class="title">Datos del cliente</span>
+    </div>
+    <div class="card-body">
+        <div class="form-grid">
+            <div class="form-group search-client-wrap">
+                <label>Cliente *</label>
+                <input type="text" id="clienteSearch" placeholder="Buscar por nombre o c&eacute;dula..." oninput="buscarClientes()" autocomplete="off">
+                <input type="hidden" name="cliente_id" id="clienteId" required>
+                <div class="search-results" id="clienteResults"></div>
+            </div>
+            <div class="form-group">
+                <label>Expediente (opcional)</label>
+                <input type="text" id="procesoCasoSearch" placeholder="Buscar expediente o caso..." oninput="buscarProcesosCasos()" autocomplete="off">
+                <input type="hidden" name="proceso_id" id="procesoId">
+                <input type="hidden" name="caso_id" id="casoId">
+                <div class="search-results" id="procesoCasoResults"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+    <div class="section-header">
+        <span class="icon"><i data-lucide="file-text"></i></span>
+        <span class="title">Detalle del servicio</span>
+    </div>
+    <div class="card-body">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Concepto del servicio *</label>
+                <input type="text" name="concepto" required placeholder="Ej: Honorarios jur&iacute;dicos">
+            </div>
+            <div class="form-group">
+                <label>Tipo de servicio</label>
+                <select name="tipo_servicio">
+                    <option value="">Seleccionar...</option>
+                    <option value="TUTELA">Tutela</option>
+                    <option value="CARTERA">Cartera</option>
+                    <option value="SIC">SIC</option>
+                    <option value="ELIMINACION_REPORTES">Eliminaci&oacute;n Reportes</option>
+                    <option value="CONSULTORIA">Consultor&iacute;a</option>
+                    <option value="OTRO">Otro</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>T&eacute;rmino de pago</label>
+                <select name="termino_pago" onchange="calcularVencimiento()">
+                    <option value="CONTADO">Contado</option>
+                    <option value="15_DIAS">15 D&iacute;as</option>
+                    <option value="30_DIAS" selected>30 D&iacute;as</option>
+                    <option value="45_DIAS">45 D&iacute;as</option>
+                    <option value="60_DIAS">60 D&iacute;as</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fecha de vencimiento</label>
+                <input type="date" name="fecha_vencimiento" id="fechaVencimiento">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+    <div class="section-header">
+        <span class="icon"><i data-lucide="list"></i></span>
+        <span class="title">&Iacute;tems de cobro</span>
+    </div>
+    <div class="card-body" style="padding:0;">
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width:42%;">Descripci&oacute;n</th>
+                    <th style="width:12%;">Cantidad</th>
+                    <th style="width:18%;">Valor unitario</th>
+                    <th style="width:15%;">Subtotal</th>
+                    <th style="width:8%;"></th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody">
+                <tr class="item-row">
+                    <td><input type="text" name="item_descripcion[]" placeholder="Nombre del concepto"></td>
+                    <td><input type="number" name="item_cantidad[]" value="1" min="1" oninput="calcItem(this); calcTotales();"></td>
+                    <td><input type="number" name="item_valor_unitario[]" step="0.01" min="0" oninput="calcItem(this); calcTotales();" placeholder="0.00"></td>
+                    <td><input type="text" class="item-subtotal" readonly value="$0"></td>
+                    <td><button type="button" class="btn-cancel" style="padding:0.2rem 0.4rem;font-size:0.7rem;" onclick="this.closest('tr').remove(); calcTotales();"><i data-lucide="x"></i></button></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="padding:0.6rem 0.75rem; border-top:1px solid var(--topbar-border);">
+            <button type="button" class="btn" style="font-size:0.8rem;padding:0.35rem 0.75rem;" onclick="agregarItem()">+ Agregar &iacute;tem</button>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+    <div class="section-header">
+        <span class="icon"><i data-lucide="calculator"></i></span>
+        <span class="title">Totales</span>
+    </div>
+    <div class="card-body">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Descuento ($)</label>
+                <input type="number" name="descuento" value="0" step="0.01" min="0" oninput="calcTotales()">
+            </div>
+            <div class="form-group">
+                <label>IVA (19% auto)</label>
+                <input type="number" name="iva" value="0" step="0.01" min="0" oninput="calcTotales()" readonly style="background:var(--line-soft);">
+            </div>
+        </div>
+        <div style="background:var(--line-soft); border:1px solid var(--line); border-radius:10px; padding:0.75rem 1rem; margin-top:0.75rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted);">
+                <span>Subtotal</span>
+                <span>$&thinsp;<span id="displaySubtotal">0</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:700; color:var(--ink); margin-top:0.35rem; padding-top:0.35rem; border-top:1px solid var(--line);">
+                <span>Total</span>
+                <span>$&thinsp;<span id="displayTotal">0</span></span>
+            </div>
+        </div>
+        <div class="form-group" style="margin-top:0.75rem;">
+            <label>Notas internas</label>
+            <textarea name="notas_internas" rows="2" placeholder="Comentarios administrativos..."></textarea>
+        </div>
+    </div>
+</div>
+
+<div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:2rem;">
+    <a href="{% url 'tesoreria_panel' %}" class="btn-cancel">Cancelar</a>
+    <button type="submit" class="btn-submit">Crear Factura</button>
+</div>
+</form>
+
+{% elif modo_detalle %}
+{% with factura as f %}
+<div class="flex-between" style="margin-bottom:1.25rem;"><h3 style="margin:0;">Factura {{ f.numero }}</h3><div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+    {% if f.estado == 'BORRADOR' or f.estado == 'RECHAZADA' %}
+    <form method="post" action="{% url 'tesoreria_emitir' f.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn" style="background:var(--accent);color:white;border-color:var(--accent);">Emitir DIAN</button></form>
+    {% endif %}
+    {% if f.cufe %}
+    <a href="{% url 'tesoreria_consultar_dian' f.pk %}" class="btn" style="background:var(--brand);color:white;border-color:var(--brand);">Consultar DIAN</a>
+    <a href="{% url 'tesoreria_descargar_xml' f.pk %}" class="btn" style="background:var(--accent);color:white;border-color:var(--accent);">XML DIAN</a>
+    <a href="{% url 'tesoreria_descargar_pdf' f.pk %}" class="btn" style="background:var(--accent);color:white;border-color:var(--accent);">PDF DIAN</a>
+    {% endif %}
+    {% if f.estado == 'PENDIENTE' or f.estado == 'RECHAZADA' %}
+    <form method="post" action="{% url 'tesoreria_eliminar_factus' f.pk %}" style="display:inline;" onsubmit="return confirm('Â¿Eliminar {{ f.numero }} de Factus? PodrÃ¡s corregirla y reemitirla.');">{% csrf_token %}<button type="submit" class="btn" style="background:var(--danger);color:white;border-color:var(--danger);">Eliminar de Factus</button></form>
+    {% endif %}
+    <a href="{% url 'tesoreria_editar' f.pk %}" class="btn" style="background:var(--accent-blue);color:white;border-color:transparent;">Editar</a>
+    <a href="{% url 'tesoreria_pdf' f.pk %}" class="btn">PDF</a>
+    <a href="{% url 'tesoreria_panel' %}" class="btn-cancel"><i data-lucide="chevron-left" width="16" height="16"></i> Volver</a>
+</div></div>
+<div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="dollar-sign" width="20" height="20"></i></div><div><div class="kpi-number">${{ f.total|floatformat:0 }}</div><div class="kpi-label">Total facturado</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon green"><i data-lucide="check-circle" width="20" height="20"></i></div><div><div class="kpi-number">${{ f.valor_pagado|floatformat:0 }}</div><div class="kpi-label">Valor pagado</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon orange"><i data-lucide="clock" width="20" height="20"></i></div><div><div class="kpi-number">${{ f.saldo_pendiente|floatformat:0 }}</div><div class="kpi-label">Saldo pendiente</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon purple"><i data-lucide="tag" width="20" height="20"></i></div><div><div><span class="badge-estado {{ f.estado|lower }}">{{ f.get_estado_display }}</span></div><div class="kpi-label">Estado</div></div></div>
+</div>
+<div class="card" style="margin-bottom:1rem;">
+<div class="card-body">
+<div class="detail-grid">
+    <div><div class="field-label">Cliente</div><div class="field-value">{{ f.cliente.nombre }}</div></div>
+    <div><div class="field-label">Documento</div><div class="field-value">{{ f.cliente.identificacion }}</div></div>
+    <div><div class="field-label">Concepto</div><div class="field-value">{{ f.concepto }}</div></div>
+    <div><div class="field-label">Tipo servicio</div><div class="field-value">{{ f.tipo_servicio|default:'&mdash;' }}</div></div>
+    <div><div class="field-label">Emisi&oacute;n</div><div class="field-value">{{ f.fecha_emision|date:'Y-m-d' }}</div></div>
+    <div><div class="field-label">Vencimiento</div><div class="field-value">{{ f.fecha_vencimiento|date:'Y-m-d' }}</div></div>
+    <div><div class="field-label">T&eacute;rmino pago</div><div class="field-value">{{ f.get_termino_pago_display }}</div></div>
+    {% if f.cufe %}<div><div class="field-label">CUFE</div><div class="field-value"><span class="cufe-badge">{{ f.cufe }}</span></div></div>{% endif %}
+    <div><div class="field-label">Creado por</div><div class="field-value">{{ f.creado_por.get_full_name|default:f.creado_por.username }}</div></div>
+</div>
+{% if f.notas_internas %}<div style="margin-top:0.75rem;"><div class="field-label">Notas</div><div style="margin-top:0.25rem;">{{ f.notas_internas|linebreaks }}</div></div>{% endif %}
+</div></div>
+
+<div class="card" style="margin-bottom:1rem;">
+<div class="section-header"><span class="icon"><i data-lucide="list"></i></span><span class="title">&Iacute;tems de cobro</span></div>
+<div class="card-body" style="padding:0;">
+<table><thead><tr><th>Descripci&oacute;n</th><th>Cantidad</th><th>Valor unitario</th><th>Subtotal</th></tr></thead>
+<tbody>{% for item in f.items.all %}<tr><td>{{ item.descripcion }}</td><td>{{ item.cantidad }}</td><td>${{ item.valor_unitario|floatformat:0 }}</td><td>${{ item.subtotal|floatformat:0 }}</td></tr>{% endfor %}</tbody></table>
+</div>
+<div class="card-body" style="border-top:1px solid var(--topbar-border);"><div style="text-align:right;"><strong>Subtotal:</strong> ${{ f.subtotal|floatformat:0 }} | <strong>Descuento:</strong> ${{ f.descuento|floatformat:0 }} | <strong>IVA:</strong> ${{ f.iva|floatformat:0 }} | <strong style="font-size:1.1rem;">Total: ${{ f.total|floatformat:0 }}</strong></div></div>
+</div>
+
+<div class="flex-between" style="margin-bottom:0.75rem;"><h4 style="margin:0;">Pagos registrados</h4><button class="btn" onclick="openPagoModal({{ f.id }})" style="background:var(--accent-blue);color:white;border-color:transparent;">+ Registrar pago</button></div>
+<div class="card" style="margin-bottom:1rem;">
+<div class="card-body" style="padding:0;">
+<table><thead><tr><th>Fecha</th><th>Valor</th><th>M&eacute;todo</th><th>Referencia</th><th>Observaciones</th></tr></thead>
+<tbody>{% for pago in f.pagos.all %}<tr><td>{{ pago.fecha|date:'Y-m-d' }}</td><td>${{ pago.valor|floatformat:0 }}</td><td>{{ pago.get_metodo_display }}</td><td>{{ pago.referencia|default:'&mdash;' }}</td><td>{{ pago.observaciones|default:'&mdash;' }}</td></tr>{% empty %}<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;">No hay pagos registrados</td></tr>{% endfor %}</tbody></table>
+</div></div>
+    {% if f.estado != 'ANULADA' %}<form method="post" action="{% url 'tesoreria_anular' f.pk %}" onsubmit="return confirm('&iquest;Anular factura {{ f.numero }}?');" style="display:inline;">{% csrf_token %}<button type="submit" class="btn-cancel" style="border-color:var(--danger);color:var(--danger);">Anular factura</button></form>{% endif %}
+{% endwith %}
+
+{% elif modo_generar_pi %}
+<div class="flex-between" style="margin-bottom:1.25rem;">
+    <h3 style="margin:0;">Generar borrador desde Procesos Internos</h3>
+    <a href="{% url 'tesoreria_panel' %}" class="btn-cancel"><i data-lucide="chevron-left" width="16" height="16"></i> Volver</a>
+</div>
+
+<form method="get" action="{% url 'tesoreria_generar_pi' %}" style="margin-bottom:1rem;">
+<div class="card" style="margin-bottom:1rem;">
+    <div class="card-body">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Cliente</label>
+                <select name="cliente_id" onchange="this.form.submit()">
+                    <option value="">&mdash; Seleccionar cliente &mdash;</option>
+                    {% for c in clientes %}
+                    <option value="{{ c.id }}" {% if selected_cliente and selected_cliente.id == c.id %}selected{% endif %}>{{ c.nombre }} ({{ c.identificacion }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+{% if selected_cliente %}
+<form method="post" action="{% url 'tesoreria_generar_pi' %}" id="generarPIFacturaForm">{% csrf_token %}
+    <input type="hidden" name="cliente_id" value="{{ selected_cliente.id }}">
+
+    <div class="card" style="margin-bottom:1rem;">
+        <div class="section-header">
+            <span class="icon"><i data-lucide="check-square"></i></span>
+            <span class="title">Procesos Internos Resueltos sin facturar ({{ pis_disponibles|length }})</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if pis_disponibles %}
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:40px;"><input type="checkbox" onchange="var c=this.checked;document.querySelectorAll('.pi-check').forEach(function(el){el.checked=c;});calcPITotales();"></th>
+                        <th>C&oacute;digo</th>
+                        <th>T&iacute;tulo</th>
+                        <th>Tipo</th>
+                        <th>Abogado</th>
+                        <th>Resoluci&oacute;n</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pi in pis_disponibles %}
+                    <tr>
+                        <td><input type="checkbox" name="procesos_internos[]" value="{{ pi.id }}" class="pi-check" data-precio="{{ pi.precio|default:'0' }}" onchange="calcPITotales()"></td>
+                        <td>{{ pi.codigo_interno }}</td>
+                        <td>{{ pi.titulo }}</td>
+                        <td>{{ pi.get_tipo_display }}</td>
+                        <td>{{ pi.abogado.get_full_name|default:pi.abogado.username|default:'&mdash;' }}</td>
+                        <td>{{ pi.fecha_resolucion|date:'Y-m-d'|default:'&mdash;' }}</td>
+                        <td><input type="number" step="0.01" min="0" value="{{ pi.precio|default:'0' }}" class="pi-precio-input" data-pi-id="{{ pi.id }}" style="width:120px;padding:0.25rem 0.4rem;border:1px solid var(--line);border-radius:6px;font-size:0.8rem;" onchange="calcPITotales()"></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="padding:2rem;text-align:center;color:var(--text-muted);">
+                <i data-lucide="check-circle" width="32" height="32" style="display:block;margin:0 auto 0.5rem;opacity:0.3;"></i>
+                No hay procesos internos resueltos pendientes de facturar para este cliente.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+        <div class="section-header">
+            <span class="icon"><i data-lucide="settings"></i></span>
+            <span class="title">Configuraci&oacute;n de factura</span>
+        </div>
+        <div class="card-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Concepto</label>
+                    <input type="text" name="concepto" value="Honorarios profesionales" placeholder="Concepto de la factura">
+                </div>
+                <div class="form-group">
+                    <label>T&eacute;rmino de pago</label>
+                    <select name="termino_pago">
+                        <option value="CONTADO">Contado</option>
+                        <option value="15_DIAS">15 D&iacute;as</option>
+                        <option value="30_DIAS" selected>30 D&iacute;as</option>
+                        <option value="45_DIAS">45 D&iacute;as</option>
+                        <option value="60_DIAS">60 D&iacute;as</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descuento ($)</label>
+                    <input type="number" name="descuento" value="0" step="0.01" min="0" oninput="calcPITotales()">
+                </div>
+            </div>
+            <div style="background:var(--line-soft);border:1px solid var(--line);border-radius:10px;padding:1rem;margin-top:0.75rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1rem;">
+                    <div><strong>Subtotal:</strong> $<span id="piSubtotal">0</span></div>
+                    <div><strong>IVA (19%):</strong> $<span id="piIVA">0</span></div>
+                    <div><strong>Descuento:</strong> $<span id="piDescuento">0</span></div>
+                    <div><strong style="font-size:1.1rem;">Total:</strong> $<span id="piTotal">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-bottom:2rem;">
+        <a href="{% url 'tesoreria_panel' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-submit" id="btnGenerarPI" onclick="if(document.querySelectorAll('.pi-check:checked').length===0){alert('Seleccione al menos un proceso interno.');return false;}">Generar Borrador</button>
+    </div>
+</form>
+{% endif %}
+
+{% else %}
+<div class="flex-between" style="margin-bottom:1rem;">
+<div class="filter-row" style="margin-bottom:0;">
+<select onchange="location=this.value">
+    <option value="{% url 'tesoreria_panel' %}" {% if not estado_activo %}selected{% endif %}>Todos los estados</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=BORRADOR" {% if estado_activo == 'BORRADOR' %}selected{% endif %}>Borrador</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=PENDIENTE" {% if estado_activo == 'PENDIENTE' %}selected{% endif %}>Pendiente DIAN</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=EMITIDA" {% if estado_activo == 'EMITIDA' %}selected{% endif %}>Emitida</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=RECHAZADA" {% if estado_activo == 'RECHAZADA' %}selected{% endif %}>Rechazada DIAN</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=PAGO_PARCIAL" {% if estado_activo == 'PAGO_PARCIAL' %}selected{% endif %}>Pago Parcial</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=PAGADA" {% if estado_activo == 'PAGADA' %}selected{% endif %}>Pagada</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=VENCIDA" {% if estado_activo == 'VENCIDA' %}selected{% endif %}>Vencida</option>
+    <option value="{% url 'tesoreria_panel' %}?estado=ANULADA" {% if estado_activo == 'ANULADA' %}selected{% endif %}>Anulada</option>
+</select>
+<form method="get" action="{% url 'tesoreria_panel' %}" style="display:flex;gap:0.5rem;"><input type="search" name="q" placeholder="Buscar cliente o factura..." value="{{ q }}" style="min-width:200px;"><button type="submit" class="btn" style="padding:0.4rem 0.7rem;font-size:0.8rem;">Buscar</button></form>
+</div>
+<a href="{% url 'tesoreria_crear_factura' %}" class="btn-yellow" style="background:var(--accent);color:white;padding:0.5rem 1rem;border-radius:8px;font-weight:600;font-size:0.85rem;text-decoration:none;border:none;display:inline-flex;align-items:center;gap:0.4rem;">+ Nueva Factura</a>
+<a href="{% url 'tesoreria_generar_pi' %}" class="btn" style="padding:0.5rem 1rem;border-radius:8px;font-weight:600;font-size:0.85rem;display:inline-flex;align-items:center;gap:0.4rem;">+ Desde Procesos Internos</a>
+</div>
+
+{% if total_facturado %}
+<div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="dollar-sign" width="20" height="20"></i></div><div><div class="kpi-number">${{ total_facturado|floatformat:0 }}</div><div class="kpi-label">Total facturado</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon green"><i data-lucide="trending-up" width="20" height="20"></i></div><div><div class="kpi-number">${{ total_recaudado|floatformat:0 }}</div><div class="kpi-label">Total recaudado</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon orange"><i data-lucide="clock" width="20" height="20"></i></div><div><div class="kpi-number">${{ por_cobrar|floatformat:0 }}</div><div class="kpi-label">Por cobrar</div><div class="progress-bar"><div class="progress-fill" style="width:{{ pct_recaudo }}%"></div></div></div></div>
+    <div class="kpi-card"><div class="kpi-icon red"><i data-lucide="alert-triangle" width="20" height="20"></i></div><div><div class="kpi-number">{{ vencidas }}</div><div class="kpi-label">Facturas vencidas</div></div></div>
+</div>
+{% endif %}
+
+<div class="card"><div class="card-body" style="padding:0;overflow-x:auto;">
+<table><thead><tr><th>N&deg; Factura</th><th>Cliente</th><th>Concepto</th><th>Emisi&oacute;n</th><th>Vencimiento</th><th>Total</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Acciones</th></tr></thead>
+<tbody>{% for f in facturas %}<tr>
+    <td><strong>{{ f.numero }}</strong></td>
+    <td>{{ f.cliente.nombre }}</td>
+    <td>{{ f.concepto|truncatechars:40 }}</td>
+    <td>{{ f.fecha_emision|date:'Y-m-d' }}</td>
+    <td>{{ f.fecha_vencimiento|date:'Y-m-d' }}</td>
+    <td><strong>${{ f.total|floatformat:0 }}</strong></td>
+    <td>${{ f.valor_pagado|floatformat:0 }}</td>
+    <td>${{ f.saldo_pendiente|floatformat:0 }}</td>
+    <td><span class="badge-estado {{ f.estado|lower }}">{{ f.get_estado_display }}</span></td>
+    <td><div class="actions-cell">
+        <a href="{% url 'tesoreria_detalle' f.pk %}">Ver</a>
+        <a href="{% url 'tesoreria_editar' f.pk %}">Editar</a>
+        {% if f.estado == 'BORRADOR' or f.estado == 'RECHAZADA' %}<form method="post" action="{% url 'tesoreria_emitir' f.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn-dian" style="border:none;padding:0.25rem 0.4rem;border-radius:6px;font-size:0.7rem;cursor:pointer;">Emitir DIAN</button></form>{% endif %}
+        {% if f.estado != 'ANULADA' and f.estado != 'PAGADA' and f.estado != 'PENDIENTE' and f.estado != 'RECHAZADA' and f.estado != 'BORRADOR' %}<a href="{% url 'tesoreria_detalle' f.pk %}" style="border-color:var(--success);color:var(--success);">+ Pago</a>{% endif %}
+        <a href="{% url 'tesoreria_pdf' f.pk %}">PDF</a>
+        {% if f.cufe %}<a href="{% url 'tesoreria_descargar_xml' f.pk %}" style="border-color:var(--accent);color:var(--accent);">XML</a>{% endif %}
+        {% if f.estado == 'PENDIENTE' or f.estado == 'RECHAZADA' %}<form method="post" action="{% url 'tesoreria_eliminar_factus' f.pk %}" style="display:inline;" onsubmit="return confirm('Â¿Eliminar {{ f.numero }} de Factus?');">{% csrf_token %}<button type="submit" style="border-color:var(--danger);color:var(--danger);background:white;border:1px solid var(--danger);padding:0.25rem 0.4rem;border-radius:6px;font-size:0.7rem;cursor:pointer;">Eliminar Factus</button></form>{% endif %}
+        {% if f.estado != 'ANULADA' %}<form method="post" action="{% url 'tesoreria_anular' f.pk %}" style="display:inline;" onsubmit="return confirm('&iquest;Anular {{ f.numero }}?');">{% csrf_token %}<button type="submit" style="border-color:var(--danger);color:var(--danger);background:white;border:1px solid var(--danger);padding:0.25rem 0.4rem;border-radius:6px;font-size:0.7rem;cursor:pointer;">Anular</button></form>{% endif %}
+    </div></td>
+</tr>{% empty %}<tr><td colspan="10" style="text-align:center;padding:2.5rem;color:var(--text-muted);">No hay facturas registradas. Crea la primera.</td></tr>{% endfor %}</tbody></table>
+{% include '_pagination.html' %}
+</div></div>
+{% endif %}
+{% endif %}
+
+{% if seccion_activa == 'cartera' %}
+<div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-icon red"><i data-lucide="alert-circle" width="20" height="20"></i></div><div><div class="kpi-number">${{ total_pendiente|floatformat:0 }}</div><div class="kpi-label">Total pendiente</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon orange"><i data-lucide="clock" width="20" height="20"></i></div><div><div class="kpi-number">{{ total_facturas }}</div><div class="kpi-label">Facturas en cartera</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon red"><i data-lucide="alert-triangle" width="20" height="20"></i></div><div><div class="kpi-number">${{ vencidas_total|floatformat:0 }}</div><div class="kpi-label">Vencidas ({{ vencidas_count }} facturas)</div></div></div>
+</div>
+<div class="card"><div class="card-body" style="padding:0;overflow-x:auto;">
+<table><thead><tr><th>N&deg; Factura</th><th>Cliente</th><th>Concepto</th><th>Vencimiento</th><th>Total</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Acciones</th></tr></thead>
+<tbody>{% for f in facturas %}<tr>
+    <td><strong>{{ f.numero }}</strong></td>
+    <td>{{ f.cliente.nombre }}</td>
+    <td>{{ f.concepto|truncatechars:40 }}</td>
+    <td>{{ f.fecha_vencimiento|date:'Y-m-d' }}</td>
+    <td>${{ f.total|floatformat:0 }}</td>
+    <td>${{ f.valor_pagado|floatformat:0 }}</td>
+    <td><strong>${{ f.saldo_pendiente|floatformat:0 }}</strong></td>
+    <td><span class="badge-estado {{ f.estado|lower }}">{{ f.get_estado_display }}</span></td>
+    <td><a href="{% url 'tesoreria_detalle' f.pk %}" class="btn" style="padding:0.25rem 0.5rem;font-size:0.7rem;">Ver</a></td>
+</tr>{% empty %}<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:var(--text-muted);">No hay facturas pendientes.</td></tr>{% endfor %}</tbody></table>
+{% include '_pagination.html' %}
+</div></div>
+{% endif %}
+
+{% if seccion_activa == 'tesoreria' %}
+<h3 style="margin-bottom:1rem;">Tesorer&iacute;a</h3>
+<div class="kpi-row" style="margin-bottom:1.5rem;">
+    <div class="kpi-card"><div class="kpi-icon green"><i data-lucide="trending-up" width="20" height="20"></i></div><div><div class="kpi-number">${{ ingresos|floatformat:0 }}</div><div class="kpi-label">Ingresos totales</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon red"><i data-lucide="trending-down" width="20" height="20"></i></div><div><div class="kpi-number">${{ egresos|floatformat:0 }}</div><div class="kpi-label">Egresos totales</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="wallet" width="20" height="20"></i></div><div><div class="kpi-number">${{ balance|floatformat:0 }}</div><div class="kpi-label">Balance general</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon purple"><i data-lucide="calendar" width="20" height="20"></i></div><div><div class="kpi-number">${{ ingresos_mes|floatformat:0 }}</div><div class="kpi-label">Ingresos del mes</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon orange"><i data-lucide="calendar" width="20" height="20"></i></div><div><div class="kpi-number">${{ egresos_mes|floatformat:0 }}</div><div class="kpi-label">Egresos del mes</div></div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <div class="card"><div class="section-header"><span class="icon"><i data-lucide="trending-up"></i></span><span class="title">&Uacute;ltimos ingresos</span></div><div class="card-body" style="padding:0;"><table><thead><tr><th>Factura</th><th>Cliente</th><th>Valor</th><th>M&eacute;todo</th><th>Fecha</th></tr></thead><tbody>{% for p in ultimos_ingresos %}<tr><td>{{ p.factura.numero }}</td><td>{{ p.factura.cliente.nombre }}</td><td>${{ p.valor|floatformat:0 }}</td><td>{{ p.get_metodo_display }}</td><td>{{ p.fecha|date:'Y-m-d' }}</td></tr>{% empty %}<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">Sin ingresos registrados</td></tr>{% endfor %}</tbody></table></div></div>
+    <div class="card"><div class="section-header"><span class="icon"><i data-lucide="trending-down"></i></span><span class="title">&Uacute;ltimos egresos</span></div><div class="card-body" style="padding:0;"><table><thead><tr><th>Concepto</th><th>Categor&iacute;a</th><th>Valor</th><th>Fecha</th></tr></thead><tbody>{% for e in ultimos_egresos %}<tr><td>{{ e.concepto }}</td><td>{{ e.get_categoria_display }}</td><td>${{ e.valor|floatformat:0 }}</td><td>{{ e.fecha|date:'Y-m-d' }}</td></tr>{% empty %}<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1rem;">Sin egresos registrados</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+<button class="btn" onclick="openEgresoModal()" style="margin-top:1rem;background:var(--accent-blue);color:white;border-color:transparent;">+ Registrar egreso</button>
+{% endif %}
+
+{% if seccion_activa == 'reportes' %}
+<div class="card" style="text-align:center;padding:3rem;"><i data-lucide="bar-chart-2" width="48" height="48" style="display:block;margin:0 auto 1rem;opacity:0.3;"></i><h4 style="margin:0 0 0.5rem;">Reportes financieros</h4><p style="color:var(--text-muted);">Pr&oacute;ximamente: flujo de caja, ingresos por per&iacute;odo, egresos por per&iacute;odo y balances generales.</p></div>
+{% endif %}
+
+{% if seccion_activa == 'factus_list' %}
+<div class="flex-between" style="margin-bottom:1rem;">
+    <h4 style="margin:0;">Facturas en Factus</h4>
+    {% if proveedor %}
+    <form method="get" action="{% url 'tesoreria_factus_list' %}" style="display:flex;gap:0.5rem;">
+        <input type="text" name="number" placeholder="N&uacute;mero Factus" style="padding:0.4rem 0.6rem;border:1px solid var(--line);border-radius:6px;font-size:0.8rem;">
+        <input type="text" name="reference_code" placeholder="C&oacute;digo ref." style="padding:0.4rem 0.6rem;border:1px solid var(--line);border-radius:6px;font-size:0.8rem;">
+        <select name="status" style="padding:0.4rem 0.6rem;border:1px solid var(--line);border-radius:6px;font-size:0.8rem;">
+            <option value="">Todos</option>
+            <option value="1">Validada</option>
+            <option value="0">Pendiente</option>
+        </select>
+        <button type="submit" class="btn" style="padding:0.4rem 0.7rem;font-size:0.8rem;">Buscar</button>
+    </form>
+    {% else %}
+    <span style="color:var(--text-muted);font-size:0.85rem;">No hay proveedor de facturaci&oacute;n activo.</span>
+    {% endif %}
+</div>
+<div class="card"><div class="card-body" style="padding:0;overflow-x:auto;">
+<table><thead><tr><th>N&deg; Factus</th><th>Ref.</th><th>Cliente</th><th>Total</th><th>CUFE</th><th>Validada</th><th>Fecha</th></tr></thead>
+<tbody>{% for f in factus_list %}<tr>
+    <td><strong>{{ f.number|default:'&mdash;' }}</strong></td>
+    <td>{{ f.reference_code|default:'&mdash;' }}</td>
+    <td>{{ f.customer.names|default:f.customer.company|default:'&mdash;' }}</td>
+    <td>${{ f.totals.total|default:'0' }}</td>
+    <td style="font-size:0.65rem;font-family:monospace;max-width:120px;overflow:hidden;text-overflow:ellipsis;">{{ f.cufe|default:'&mdash;'|truncatechars:16 }}</td>
+    <td>{% if f.is_validated %}<span class="badge-estado pagada">S&iacute;</span>{% else %}<span class="badge-estado pendiente">No</span>{% endif %}</td>
+    <td>{{ f.created_at|default:'&mdash;' }}</td>
+</tr>{% empty %}<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Sin resultados desde Factus.</td></tr>{% endfor %}</tbody></table>
+</div></div>
+{% if pagination %}
+<div style="display:flex;justify-content:center;gap:0.5rem;margin-top:1rem;">
+    {% if pagination.current_page and pagination.current_page > 1 %}<a href="{% url 'tesoreria_factus_list' %}?page={{ pagination.current_page|add:'-1' }}" class="btn" style="padding:0.3rem 0.7rem;font-size:0.8rem;"><i data-lucide="chevron-left" width="14" height="14"></i> Anterior</a>{% endif %}
+    <span style="padding:0.3rem 0.7rem;font-size:0.8rem;color:var(--text-muted);">P&aacute;gina {{ pagination.current_page }} de {{ pagination.last_page }}</span>
+    {% if pagination.current_page < pagination.last_page %}<a href="{% url 'tesoreria_factus_list' %}?page={{ pagination.current_page|add:'1' }}" class="btn" style="padding:0.3rem 0.7rem;font-size:0.8rem;">Siguiente <i data-lucide="chevron-right" width="14" height="14"></i></a>{% endif %}
+</div>
+{% endif %}
+{% endif %}
+
+{% if seccion_activa == 'notas' %}
+<div class="flex-between" style="margin-bottom:1rem;"><h4 style="margin:0;">Notas Cr&eacute;dito / D&eacute;bito</h4><button class="btn" onclick="openNotaModal()" style="background:var(--accent-blue);color:white;border-color:transparent;">+ Nueva nota</button></div>
+<div class="card"><div class="card-body" style="padding:0;overflow-x:auto;">
+<table><thead><tr><th>Factura</th><th>Tipo</th><th>Motivo</th><th>Valor</th><th>Fecha</th><th>Estado</th></tr></thead>
+<tbody>{% for n in notas %}<tr>
+    <td>{{ n.factura.numero }}</td>
+    <td><span class="badge-estado" style="background:{% if n.tipo == 'CREDITO' %}var(--success-bg);color:var(--success){% else %}var(--danger-bg);color:var(--danger){% endif %};">{{ n.get_tipo_display }}</span></td>
+    <td>{{ n.motivo }}</td>
+    <td><strong>${{ n.valor|floatformat:0 }}</strong></td>
+    <td>{{ n.fecha|date:'Y-m-d' }}</td>
+    <td>{% if n.anulada %}<span class="badge-estado anulada">Anulada</span>{% else %}Activa{% endif %}</td>
+</tr>{% empty %}<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No hay notas registradas.</td></tr>{% endfor %}</tbody></table>
+{% include '_pagination.html' %}
+</div></div>
+{% endif %}
+
+<!-- Modal Pago -->
+<div class="modal-overlay" id="pagoModal"><div class="modal-content" style="max-width:480px;">
+<div class="modal-header"><div class="modal-title"><i data-lucide="credit-card"></i> Registrar Pago</div><button class="btn-close" onclick="closeModal('pagoModal')"><i data-lucide="x"></i></button></div>
+<form method="post" id="pagoForm">{% csrf_token %}
+<div class="modal-body">
+    <div class="form-group"><label>Valor *</label><input type="number" name="valor" step="0.01" min="0.01" required placeholder="0.00"></div>
+    <div class="form-group"><label>Fecha</label><input type="date" name="fecha" value="{% now 'Y-m-d' %}"></div>
+    <div class="form-group"><label>M&eacute;todo de pago</label><select name="metodo"><option value="EFECTIVO">Efectivo</option><option value="TRANSFERENCIA" selected>Transferencia bancaria</option><option value="PSE">PSE</option><option value="CONSIGNACION">Consignaci&oacute;n</option><option value="TARJETA">Tarjeta</option></select></div>
+    <div class="form-group"><label>Referencia</label><input type="text" name="referencia" placeholder="N&deg; de transacci&oacute;n"></div>
+    <div class="form-group"><label>Observaciones</label><textarea name="observaciones" rows="2"></textarea></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-cancel" onclick="closeModal('pagoModal')">Cancelar</button><button type="submit" class="btn-submit">Registrar pago</button></div>
+</form></div></div>
+
+<!-- Modal Egreso -->
+<div class="modal-overlay" id="egresoModal"><div class="modal-content" style="max-width:520px;">
+<div class="modal-header"><div class="modal-title"><i data-lucide="minus-circle"></i> Registrar Egreso</div><button class="btn-close" onclick="closeModal('egresoModal')"><i data-lucide="x"></i></button></div>
+<form method="post" action="{% url 'tesoreria_crear_egreso' %}">{% csrf_token %}
+<div class="modal-body">
+    <div class="form-group"><label>Concepto *</label><input type="text" name="concepto" required placeholder="Ej: Pago n&oacute;mina abogados"></div>
+    <div class="form-grid"><div class="form-group"><label>Categor&iacute;a</label><select name="categoria"><option value="NOMINA">N&oacute;mina</option><option value="PROVEEDORES">Proveedores</option><option value="SERVICIOS">Servicios</option><option value="GASTOS_ADMIN">Gastos administrativos</option><option value="OTRO">Otro</option></select></div><div class="form-group"><label>Valor *</label><input type="number" name="valor" step="0.01" min="0.01" required></div></div>
+    <div class="form-grid"><div class="form-group"><label>Fecha</label><input type="date" name="fecha" value="{% now 'Y-m-d' %}"></div><div class="form-group"><label>Beneficiario</label><input type="text" name="beneficiario" placeholder="Nombre del beneficiario"></div></div>
+    <div class="form-group"><label>Observaciones</label><textarea name="observaciones" rows="2"></textarea></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-cancel" onclick="closeModal('egresoModal')">Cancelar</button><button type="submit" class="btn-submit">Registrar</button></div>
+</form></div></div>
+
+<!-- Modal Nota -->
+<div class="modal-overlay" id="notaModal"><div class="modal-content" style="max-width:520px;">
+<div class="modal-header"><div class="modal-title"><i data-lucide="rotate-ccw"></i> Nueva Nota</div><button class="btn-close" onclick="closeModal('notaModal')"><i data-lucide="x"></i></button></div>
+<form method="post" action="{% url 'tesoreria_crear_nota' %}">{% csrf_token %}
+<div class="modal-body">
+    <div class="form-group"><label>Factura</label><select name="factura_id" required>{% for f in facturas %}<option value="{{ f.id }}">{{ f.numero }} &mdash; {{ f.cliente.nombre }} (${{ f.saldo_pendiente|floatformat:0 }})</option>{% endfor %}</select></div>
+    <div class="form-grid"><div class="form-group"><label>Tipo</label><select name="tipo"><option value="CREDITO">Nota Cr&eacute;dito</option><option value="DEBITO">Nota D&eacute;bito</option></select></div><div class="form-group"><label>Valor *</label><input type="number" name="valor" step="0.01" min="0.01" required></div></div>
+    <div class="form-group"><label>Motivo *</label><textarea name="motivo" rows="2" required placeholder="Raz&oacute;n de la nota"></textarea></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn-cancel" onclick="closeModal('notaModal')">Cancelar</button><button type="submit" class="btn-submit">Crear nota</button></div>
+</form></div></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+function openPagoModal(facturaId){document.getElementById('pagoForm').action='/tesoreria/factura/'+facturaId+'/pago/';document.getElementById('pagoModal').classList.add('active');}
+function openEgresoModal(){document.getElementById('egresoModal').classList.add('active');}
+function openNotaModal(){document.getElementById('notaModal').classList.add('active');}
+
+function agregarItem(){var t=document.getElementById('itemsBody'),r=document.createElement('tr');r.className='item-row';r.innerHTML='<td><input type="text" name="item_descripcion[]" placeholder="Descripci&oacute;n"></td><td><input type="number" name="item_cantidad[]" value="1" min="1" oninput="calcItem(this);calcTotales();"></td><td><input type="number" name="item_valor_unitario[]" step="0.01" min="0" oninput="calcItem(this);calcTotales();"></td><td><input type="text" class="item-subtotal" readonly value="$0"></td><td><button type="button" class="btn-cancel" style="padding:0.2rem 0.4rem;font-size:0.7rem;" onclick="this.closest(\'tr\').remove();calcTotales();"><i data-lucide="x"></i></button></td>';t.appendChild(r);}
+
+function calcItem(i){var r=i.closest('tr'),c=parseFloat(r.querySelector('[name*="cantidad"]').value)||0,v=parseFloat(r.querySelector('[name*="valor_unitario"]').value)||0;r.querySelector('.item-subtotal').value='$'+(c*v).toLocaleString('es-CO',{minimumFractionDigits:0});}
+
+function calcTotales(){var s=0;document.querySelectorAll('.item-row').forEach(function(r){var c=parseFloat(r.querySelector('[name*="cantidad"]').value)||0,v=parseFloat(r.querySelector('[name*="valor_unitario"]').value)||0;s+=c*v;});var d=parseFloat(document.querySelector('[name=descuento]').value)||0;var ivaAuto=s*0.19;document.querySelector('[name=iva]').value=ivaAuto.toFixed(0);document.getElementById('displaySubtotal').textContent=s.toLocaleString('es-CO',{minimumFractionDigits:0});document.getElementById('displayTotal').textContent=(s-d+ivaAuto).toLocaleString('es-CO',{minimumFractionDigits:0});}
+
+function calcularVencimiento(){var t=document.querySelector('[name=termino_pago]').value,d={CONTADO:0,'15_DIAS':15,'30_DIAS':30,'45_DIAS':45,'60_DIAS':60},n=new Date();n.setDate(n.getDate()+(d[t]||0));document.getElementById('fechaVencimiento').value=n.toISOString().split('T')[0];}
+calcularVencimiento();
+
+function buscarClientes(){var q=document.getElementById('clienteSearch').value,r=document.getElementById('clienteResults');if(q.length<2){r.style.display='none';return;}fetch('/tesoreria/api/clientes/?q='+encodeURIComponent(q)).then(function(resp){return resp.json();}).then(function(data){r.innerHTML=data.map(function(c){return '<div class="result-item" onclick="seleccionarCliente('+c.id+',\''+c.nombre.replace(/'/g,"\\'")+'\',\''+c.identificacion+'\')">'+c.nombre+' &mdash; '+c.identificacion+'</div>';}).join('');r.style.display=data.length?'block':'none';});}
+
+function seleccionarCliente(id,nombre,doc){document.getElementById('clienteId').value=id;document.getElementById('clienteSearch').value=nombre+' ('+doc+')';document.getElementById('clienteResults').style.display='none';}
+
+function buscarProcesosCasos(){var q=document.getElementById('procesoCasoSearch').value,r=document.getElementById('procesoCasoResults');if(q.length<2){r.style.display='none';return;}Promise.all([fetch('/tesoreria/api/procesos/?q='+encodeURIComponent(q)).then(function(resp){return resp.json();}),fetch('/tesoreria/api/casos/?q='+encodeURIComponent(q)).then(function(resp){return resp.json();})]).then(function(d){var items=[];d[0].forEach(function(p){items.push({id:p.id,tipo:'proceso',label:p.nombre||p.radicado,extra:p.cliente__nombre});});d[1].forEach(function(c){items.push({id:c.id,tipo:'caso',label:c.titulo,extra:c.cliente__nombre});});r.innerHTML=items.map(function(item){var name=item.tipo==='proceso'?'proceso_id':'caso_id';return '<div class="result-item" onclick="seleccionarProcesoCaso('+item.id+',\''+name+'\',\''+item.label.replace(/'/g,"\\'")+'\')">'+item.label+' ('+item.extra+')</div>';}).join('');r.style.display=items.length?'block':'none';});}
+
+function seleccionarProcesoCaso(id,name,label){document.getElementById('procesoId').value=name==='proceso_id'?id:'';document.getElementById('casoId').value=name==='caso_id'?id:'';document.getElementById('procesoCasoSearch').value=label;document.getElementById('procesoCasoResults').style.display='none';}
+
+function calcPITotales(){var checks=document.querySelectorAll('.pi-check:checked'),subtotal=0;checks.forEach(function(c){var tr=c.closest('tr'),input=tr.querySelector('.pi-precio-input'),precio=parseFloat(input.value)||0;subtotal+=precio;});var desc=parseFloat(document.querySelector('[name=descuento]').value)||0;var iva=subtotal*0.19;var total=subtotal+iva-desc;document.getElementById('piSubtotal').textContent=subtotal.toLocaleString('es-CO',{minimumFractionDigits:0});document.getElementById('piIVA').textContent=iva.toLocaleString('es-CO',{minimumFractionDigits:0});document.getElementById('piDescuento').textContent=desc.toLocaleString('es-CO',{minimumFractionDigits:0});document.getElementById('piTotal').textContent=total.toLocaleString('es-CO',{minimumFractionDigits:0});}
+
+document.addEventListener('click',function(e){if(!e.target.closest('.search-client-wrap')){document.getElementById('clienteResults').style.display='none';}if(!e.target.closest('#procesoCasoResults')&&!e.target.closest('#procesoCasoSearch')){document.getElementById('procesoCasoResults').style.display='none';}});
+</script>
+{% endblock %}

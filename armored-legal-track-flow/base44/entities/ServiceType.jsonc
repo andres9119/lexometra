@@ -1,0 +1,22 @@
+{
+  "name": "ServiceType",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del tipo de servicio"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "TRUE para servicios por defecto (no se pueden eliminar)"
+    },
+    "order": {
+      "type": "number",
+      "description": "Orden de visualizaci\u00f3n"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

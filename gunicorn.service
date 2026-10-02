@@ -1,0 +1,35 @@
+[Unit]
+Description=Lexometra — Gunicorn daemon
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=notify
+User=lexometra
+Group=lexometra
+RuntimeDirectory=lexometra
+WorkingDirectory=/home/lexometra/lexometra
+
+# Environment variables — load from .env or set directly
+Environment=DJANGO_SETTINGS_MODULE=lexometra_proj.settings
+Environment=PYTHONUNBUFFERED=1
+
+# Path to gunicorn
+ExecStart=/home/lexometra/.venv/bin/gunicorn \
+          -c /home/lexometra/lexometra/gunicorn.conf.py \
+          lexometra_proj.wsgi:application
+
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+# Restart behaviour
+Restart=on-failure
+RestartSec=5
+
+# Security hardening
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

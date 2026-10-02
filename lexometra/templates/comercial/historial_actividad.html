@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Historial de Actividad — {{ cliente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Comercial</div>
+        <h1 class="page-title"><i data-lucide="history"></i> Historial de Actividad</h1>
+        <p class="page-sub">{{ cliente.nombre }} — {{ cliente.id_comercial }} · {{ historial|length }} registro(s)</p>
+    </div>
+    <a href="{% url 'comercial_detalle_cliente' cliente.pk %}" class="btn">
+        <i data-lucide="arrow-left" width="16" height="16"></i> Volver a la ficha
+    </a>
+</div>
+
+<div class="card">
+    {% if not read_only %}
+    <div class="card-header" style="align-items:flex-end; gap:1rem; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+            <div class="form-group" style="margin:0;">
+                <label>Agregar novedad manual</label>
+                <textarea id="actividadDesc" rows="2" placeholder="Escribe cualquier novedad del cliente..."></textarea>
+            </div>
+        </div>
+        <div style="flex:0 0 150px;">
+            <div class="form-group" style="margin:0;">
+                <label>Fecha</label>
+                <input type="date" id="actividadFecha" value="{{ hoy|date:'Y-m-d' }}">
+            </div>
+        </div>
+        <button class="btn" onclick="guardarActividad()"><i data-lucide="plus" width="16" height="16"></i> Guardar</button>
+    </div>
+    {% endif %}
+
+    <div class="card-header">
+        <span>Actividad registrada</span>
+        <span class="badge">{{ historial|length }}</span>
+    </div>
+    {% if historial %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width:150px;">Fecha</th>
+                <th>Tipo</th>
+                <th>Detalle</th>
+                <th>Registrado por</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in historial %}
+            <tr>
+                <td style="color:var(--muted); font-size:0.8rem;">{{ h.fecha|date:"d/m/Y H:i" }}</td>
+                <td>
+                    {% if h.tipo == "estado" %}<span class="badge badge-info">Cambio de estado</span>
+                    {% elif h.tipo == "recaudo" %}<span class="badge badge-success">Recaudo</span>
+                    {% elif h.tipo == "reporte" %}<span class="badge badge-warn">Reporte negativo</span>
+                    {% elif h.tipo == "documento" %}<span class="badge">Documento</span>
+                    {% elif h.tipo == "manual" %}<span class="badge badge-warn">Novedad</span>
+                    {% else %}<span class="badge">Actividad</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:0.85rem;">
+                    <div style="font-weight:600;">{{ h.texto }}</div>
+                    {% if h.detalle %}<div style="color:var(--muted); font-size:0.78rem;">{{ h.detalle }}</div>{% endif %}
+                </td>
+                <td style="font-size:0.8rem; color:var(--muted);">{{ h.usuario }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i data-lucide="inbox" width="40" height="40"></i>
+        No hay actividad registrada para este cliente.
+    </div>
+    {% endif %}
+</div>
+
+{% if not read_only %}
+<script>
+    function getCsrfToken() {
+        var m = document.cookie.match(/csrftoken=([^;]+)/);
+        return m ? m[1] : '';
+    }
+    function guardarActividad() {
+        var desc = document.getElementById('actividadDesc').value.trim();
+        if (!desc) { alert('Escribe la novedad'); return; }
+        var url = "{% url 'comercial_agregar_actividad' cliente.pk %}";
+        var body = 'descripcion=' + encodeURIComponent(desc) + '&fecha=' + encodeURIComponent(document.getElementById('actividadFecha').value);
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCsrfToken() },
+            body: body
+        }).then(function(r) { return r.json(); }).then(function(resp) {
+            if (resp.success) location.reload();
+            else alert(resp.error || 'Error al guardar');
+        }).catch(function() { alert('Error de red'); });
+    }
+</script>
+{% endif %}
+{% endblock %}

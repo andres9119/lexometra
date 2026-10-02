@@ -1,0 +1,34 @@
+# ── Python ────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── Virtual environment ──────────────────────────────
+.env
+venv/
+.venv/
+env/
+
+# ── Django ───────────────────────────────────────────
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+static_root/
+
+# ── Deployment / IDE ─────────────────────────────────
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Project-specific ─────────────────────────────────
+nginx_lexometra.conf   # local copy, deploy manually
+gunicorn.service        # local copy, deploy manually

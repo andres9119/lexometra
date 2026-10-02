@@ -1,0 +1,48 @@
+{
+  "name": "GeneratedContract",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "description": "ID de la plantilla usada"
+    },
+    "template_name": {
+      "type": "string",
+      "description": "Nombre de la plantilla"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Nombre del cliente"
+    },
+    "client_cc": {
+      "type": "string",
+      "description": "C\u00e9dula del cliente"
+    },
+    "content": {
+      "type": "string",
+      "description": "Contenido HTML final (editado)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "borrador",
+        "revisado",
+        "formalizado"
+      ],
+      "description": "Estado del documento"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas internas"
+    }
+  },
+  "required": [
+    "client_name",
+    "content",
+    "status"
+  ]
+}

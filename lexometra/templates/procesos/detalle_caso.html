@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ caso.titulo }} — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .field-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; }
+    .field-value { font-weight:700; color:var(--text-main); margin-top:0.25rem; }
+
+    .st-badge { padding:0.25rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:inline-block; }
+    .st-activo { background:var(--success-bg); color:var(--success); }
+    .st-suspendido { background:var(--warn-bg); color:var(--warn); }
+    .st-terminado { background:var(--info-bg); color:var(--info); }
+    .st-archivado { background:var(--line-soft); color:var(--muted); }
+    .st-en_proceso { background:var(--info-bg); color:var(--info); }
+    .st-resuelto { background:var(--success-bg); color:var(--success); }
+    .st-apelacion { background:var(--warn-bg); color:var(--warn); }
+
+    .pi-card { padding:0.75rem 1rem; border-bottom:1px solid var(--topbar-border); display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+    .pi-card:last-child { border-bottom:none; }
+    .pi-titulo { font-weight:600; font-size:0.9rem; }
+    .pi-meta { font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+    .pi-estado-popup { display:none; position:absolute; top:28px; left:0; background:var(--content-bg); padding:0.5rem; border:1px solid var(--topbar-border); border-radius:8px; z-index:50; min-width:180px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .pi-estado-popup select { width:100%; padding:0.3rem; border-radius:6px; border:1px solid var(--line); }
+    .pi-estado-popup-actions { display:flex; gap:0.5rem; margin-top:0.5rem; justify-content:flex-end; }
+
+    .doc-chip { display:inline-flex; align-items:center; gap:0.35rem; padding:0.25rem 0.5rem 0.25rem 0.4rem; border-radius:6px; background:var(--surface); border:1px solid var(--line); font-size:0.75rem; }
+    .doc-chip a { font-weight:600; color:var(--accent); }
+    .doc-chip .del-doc { color:var(--danger); cursor:pointer; font-size:0.85rem; line-height:1; }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,32,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 2rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: var(--surface); width: 100%; max-width: 700px; border-radius: 8px; box-shadow: 0 20px 40px rgba(15,23,32,0.18); overflow: hidden; margin-bottom:2rem; }
+    .modal-header { background: var(--surface); padding: 1.5rem 2rem; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
+    .btn-close { background: none; border: none; cursor: pointer; color: var(--muted); }
+    .modal-body { padding: 1.5rem 2rem; background: var(--surface); }
+    .modal-footer { background: var(--surface); padding: 1.25rem 2rem; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 1rem; }
+
+    .upload-btn { display:inline-flex; align-items:center; gap:0.25rem; font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:4px; border:1px dashed var(--muted); background:transparent; cursor:pointer; color:var(--muted); }
+    .upload-btn:hover { border-color:var(--accent); color:var(--accent); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+        <h2>{{ caso.titulo }}</h2>
+        <p style="color:var(--text-muted); margin:0;">
+            {{ caso.get_tipo_proceso_display }} —
+            <span class="st-badge st-{{ caso.estado|lower }}">{{ caso.get_estado_display }}</span>
+        </p>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+        <button class="btn" onclick="openEditCasoModal()" style="background:var(--accent); color:white; border-color:transparent;">Editar caso</button>
+        <button class="btn" onclick="openNuevoInternoModal()" style="background:var(--accent); color:white; border-color:transparent;">+ Proceso Interno</button>
+        <a href="{% url 'procesos_lista' %}" class="btn-cancel"><i data-lucide="arrow-left" width="14" height="14"></i> Volver</a>
+    </div>
+</div>
+
+<div style="display:flex; gap:1rem; align-items:flex-start; margin-top:1rem;">
+    <div style="flex: 0 0 60%;">
+        <div class="card">
+            <div class="section-header">
+                <span class="icon"><i data-lucide="info"></i></span>
+                <span class="title">Información del caso</span>
+            </div>
+            <div class="card-body">
+                <div class="detail-grid">
+                    <div class="col">
+                        <div class="field-label">Tipo de proceso</div>
+                        <div class="field-value">{{ caso.get_tipo_proceso_display }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Prioridad</div>
+                        <div class="field-value">{{ caso.get_prioridad_display }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Radicado externo</div>
+                        <div class="field-value">{{ caso.radicado_externo|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Etapa actual</div>
+                        <div class="field-value">{{ caso.etapa_actual|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Demandante / Accionante</div>
+                        <div class="field-value">{{ caso.demandante_accionante|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Demandado / Accionado</div>
+                        <div class="field-value">{{ caso.demandado_accionado|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Juzgado / Entidad</div>
+                        <div class="field-value">{{ caso.juzgado_entidad|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Abogado asignado</div>
+                        <div class="field-value">{% if caso.abogado_asignado %}{{ caso.abogado_asignado.get_full_name|default:caso.abogado_asignado.username }}{% else %}—{% endif %}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Fecha inicio</div>
+                        <div class="field-value">{{ caso.fecha_inicio|date:"Y-m-d"|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Próximo vencimiento</div>
+                        <div class="field-value">{{ caso.proximo_vencimiento|date:"Y-m-d"|default:"—" }}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Contrato autenticado</div>
+                        <div class="field-value">{% if caso.contrato_autenticado_recibido %}Sí{% else %}No{% endif %}</div>
+                    </div>
+                    <div class="col">
+                        <div class="field-label">Módulo jurídico habilitado</div>
+                        <div class="field-value">{% if caso.habilitado_modulo_juridico %}Sí{% else %}No{% endif %}</div>
+                    </div>
+                </div>
+
+                {% if caso.descripcion_caso %}
+                <div style="margin-top:1rem;">
+                    <div class="field-label">Descripción del caso</div>
+                    <div style="margin-top:0.25rem; color:var(--text-main);">{{ caso.descripcion_caso|linebreaks }}</div>
+                </div>
+                {% endif %}
+
+                {% if caso.notas_adicionales %}
+                <div style="margin-top:1rem;">
+                    <div class="field-label">Notas adicionales</div>
+                    <div style="margin-top:0.25rem; color:var(--text-main);">{{ caso.notas_adicionales|linebreaks }}</div>
+                </div>
+                {% endif %}
+
+                {% if caso.url_sharepoint %}
+                <div style="margin-top:1rem;">
+                    <div class="field-label">SharePoint</div>
+                    <div style="margin-top:0.25rem;"><a href="{{ caso.url_sharepoint }}" target="_blank">{{ caso.url_sharepoint }}</a></div>
+                </div>
+                {% endif %}
+
+                {% if documentos_caso or user.role in admin_roles %}
+                <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--topbar-border);">
+                    <div class="field-label" style="margin-bottom:0.5rem;">Documentos del caso</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                        {% for doc in documentos_caso %}
+                        <div class="doc-chip">
+                            <i data-lucide="file" width="14" height="14"></i>
+                            <a href="{{ doc.archivo.url }}" target="_blank">{{ doc.nombre }}</a>
+                            {% if user.role in admin_roles %}
+                            <form method="post" action="{% url 'procesos_eliminar_documento' doc.id %}" style="display:inline;" onsubmit="return confirm('¿Eliminar {{ doc.nombre }}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="del-doc" title="Eliminar"><i data-lucide="x" width="14" height="14"></i></button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <form method="post" action="{% url 'procesos_subir_documento' %}" enctype="multipart/form-data" style="display:inline-flex;align-items:center;gap:0.25rem;">
+                            {% csrf_token %}
+                            <input type="hidden" name="caso_id" value="{{ caso.id }}">
+                            <label class="upload-btn">
+                                <i data-lucide="upload" width="12" height="12"></i> Subir
+                                <input type="file" name="archivo" style="display:none;" onchange="this.form.submit()" required>
+                            </label>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div style="flex:1;" class="right-column">
+        <div class="card">
+            <div class="section-header">
+                <span class="icon"><i data-lucide="user"></i></span>
+                <span class="title">Cliente</span>
+            </div>
+            <div class="card-body">
+                {% if caso.cliente %}
+                <div class="field-value">{{ caso.cliente.nombre }}</div>
+                <div style="font-size:0.85rem; color:var(--text-muted);">CC {{ caso.cliente.identificacion }} — ID {{ caso.cliente.id_comercial }}</div>
+                <a href="{% url 'comercial_detalle_cliente' caso.cliente.pk %}" style="display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.5rem; font-weight:600;">Ver ficha <i data-lucide="chevron-right" width="14" height="14"></i></a>
+                {% else %}
+                <div style="color:var(--text-muted);">Sin cliente asociado</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:1rem;">
+            <div class="section-header">
+                <span class="icon"><i data-lucide="link"></i></span>
+                <span class="title">Proceso comercial origen</span>
+            </div>
+            <div class="card-body">
+                {% if caso.proceso %}
+                <div class="field-value">{{ caso.proceso.tipo_servicio_display }}</div>
+                <div style="font-size:0.85rem; color:var(--text-muted);">{{ caso.proceso.get_estado_comercial_display }}</div>
+                {% else %}
+                <div style="color:var(--text-muted);">Caso creado manualmente</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:1.5rem;">
+    <div class="section-header">
+        <span class="icon"><i data-lucide="list-tree"></i></span>
+        <span class="title">Procesos Internos ({{ procesos_internos|length }})</span>
+        <a href="#" onclick="openNuevoInternoModal(); return false;" style="font-size:0.8rem; font-weight:600; color:var(--accent);">+ Agregar</a>
+    </div>
+    <div class="card-body" style="padding:0;">
+        {% for pi in procesos_internos %}
+        <div class="pi-card">
+            <div style="flex:1;">
+                <div class="pi-titulo"><a href="{% url 'detalle_proceso_interno' pi.pk %}" style="text-decoration:none; color:inherit;">{{ pi.titulo }}</a></div>
+                <div class="pi-meta">
+                    <span style="font-family:monospace; font-size:0.7rem; background:var(--line-soft); padding:0.1rem 0.35rem; border-radius:3px;">{{ pi.codigo_interno|default:'—' }}</span>
+                    <span style="font-weight:600;">{{ pi.get_tipo_display }}</span>
+                    <span style="position:relative; display:inline-block;">
+                        <span class="st-badge st-{{ pi.estado|lower }}" onclick="event.stopPropagation(); var el=document.getElementById('pi-estado-popup-{{ pi.id }}'); el.style.display=el.style.display==='block'?'none':'block';" style="cursor:pointer;">{{ pi.get_estado_display }}</span>
+                        <form method="post" action="{% url 'procesos_cambiar_estado_interno' pi.id %}" class="pi-estado-popup" id="pi-estado-popup-{{ pi.id }}">
+                            {% csrf_token %}
+                            <select name="estado" onchange="this.form.submit()">
+                                <option value="ACTIVO" {% if pi.estado == 'ACTIVO' %}selected{% endif %}>Activo</option>
+                                <option value="EN_PROCESO" {% if pi.estado == 'EN_PROCESO' %}selected{% endif %}>En Proceso</option>
+                                <option value="RESUELTO" {% if pi.estado == 'RESUELTO' %}selected{% endif %}>Resuelto</option>
+                                <option value="ARCHIVADO" {% if pi.estado == 'ARCHIVADO' %}selected{% endif %}>Archivado</option>
+                                <option value="APELACION" {% if pi.estado == 'APELACION' %}selected{% endif %}>En Apelación</option>
+                            </select>
+                            <div class="pi-estado-popup-actions">
+                                <button type="button" class="btn" onclick="document.getElementById('pi-estado-popup-{{ pi.id }}').style.display='none'">Cerrar</button>
+                            </div>
+                        </form>
+                    </span>
+                    {% if pi.fecha_inicio %}<span>Inicio: {{ pi.fecha_inicio|date:"Y-m-d" }}</span>{% endif %}
+                    {% if pi.fecha_vencimiento %}<span style="{% if pi.fecha_vencimiento < today %}color:var(--danger);font-weight:600;{% endif %}">Vence: {{ pi.fecha_vencimiento|date:"Y-m-d" }}</span>{% endif %}
+                    {% if pi.fecha_resolucion %}<span>Resolución: {{ pi.fecha_resolucion|date:"Y-m-d" }}</span>{% endif %}
+                    {% if pi.abogado %}<span><i data-lucide="user" width="12" height="12"></i> {{ pi.abogado.get_full_name|default:pi.abogado.username }}</span>{% endif %}
+                    {% if pi.precio %}<span><strong>${{ pi.precio|floatformat:0 }}</strong></span>{% endif %}
+                </div>
+                {% if pi.descripcion %}
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">{{ pi.descripcion|truncatechars:120 }}</div>
+                {% endif %}
+                {% if pi.resultado %}
+                <div style="font-size:0.8rem; color:var(--accent-green); margin-top:0.2rem;"><strong>Resultado:</strong> {{ pi.resultado|truncatechars:120 }}</div>
+                {% endif %}
+
+                {% with pi.documentos.all as docs_internos %}
+                {% if docs_internos or user.role in admin_roles %}
+                <div style="margin-top:0.5rem; display:flex; flex-wrap:wrap; gap:0.35rem; align-items:center;">
+                    {% for doc in docs_internos %}
+                    <div class="doc-chip">
+                        <i data-lucide="file" width="12" height="12"></i>
+                        <a href="{{ doc.archivo.url }}" target="_blank">{{ doc.nombre }}</a>
+                        {% if user.role in admin_roles %}
+                        <form method="post" action="{% url 'procesos_eliminar_documento' doc.id %}" style="display:inline;" onsubmit="return confirm('¿Eliminar {{ doc.nombre }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="del-doc" title="Eliminar"><i data-lucide="x" width="14" height="14"></i></button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <form method="post" action="{% url 'procesos_subir_documento' %}" enctype="multipart/form-data" style="display:inline-flex;align-items:center;gap:0.25rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="proceso_interno_id" value="{{ pi.id }}">
+                        <label class="upload-btn">
+                            <i data-lucide="upload" width="12" height="12"></i> Subir
+                            <input type="file" name="archivo" style="display:none;" onchange="this.form.submit()" required>
+                        </label>
+                    </form>
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% empty %}
+        <div style="padding:1.5rem; color:var(--text-muted); text-align:center;">
+            <i data-lucide="inbox" width="32" height="32" style="display:block; margin:0 auto 0.5rem; opacity:0.4;"></i>
+            No hay procesos internos asociados a este caso. Presiona "+ Agregar" para crear uno.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Edit Caso Modal -->
+<div class="modal-overlay" id="editCasoModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="edit"></i> Editar caso jurídico</div>
+            <button class="btn-close" onclick="closeEditCasoModal()"><i data-lucide="x"></i></button>
+        </div>
+        <form method="post" action="{% url 'procesos_editar_caso' caso.pk %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" name="titulo" value="{{ caso.titulo }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de proceso</label>
+                        <select name="tipo_proceso">
+                            <option value="ACCION_TUTELA" {% if caso.tipo_proceso == 'ACCION_TUTELA' %}selected{% endif %}>Acción de Tutela</option>
+                            <option value="DERECHO_PETICION" {% if caso.tipo_proceso == 'DERECHO_PETICION' %}selected{% endif %}>Derecho de Petición</option>
+                            <option value="PROCESO_COBRO" {% if caso.tipo_proceso == 'PROCESO_COBRO' %}selected{% endif %}>Proceso de Cobro</option>
+                            <option value="DEMANDA" {% if caso.tipo_proceso == 'DEMANDA' %}selected{% endif %}>Demanda</option>
+                            <option value="RECURSO" {% if caso.tipo_proceso == 'RECURSO' %}selected{% endif %}>Recurso</option>
+                            <option value="CONCILIACION" {% if caso.tipo_proceso == 'CONCILIACION' %}selected{% endif %}>Conciliación</option>
+                            <option value="OTRO" {% if caso.tipo_proceso == 'OTRO' %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Prioridad</label>
+                        <select name="prioridad">
+                            <option value="BAJA" {% if caso.prioridad == 'BAJA' %}selected{% endif %}>Baja</option>
+                            <option value="MEDIA" {% if caso.prioridad == 'MEDIA' %}selected{% endif %}>Media</option>
+                            <option value="ALTA" {% if caso.prioridad == 'ALTA' %}selected{% endif %}>Alta</option>
+                            <option value="URGENTE" {% if caso.prioridad == 'URGENTE' %}selected{% endif %}>Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select name="estado">
+                            <option value="ACTIVO" {% if caso.estado == 'ACTIVO' %}selected{% endif %}>Activo</option>
+                            <option value="SUSPENDIDO" {% if caso.estado == 'SUSPENDIDO' %}selected{% endif %}>Suspendido</option>
+                            <option value="TERMINADO" {% if caso.estado == 'TERMINADO' %}selected{% endif %}>Terminado</option>
+                            <option value="ARCHIVADO" {% if caso.estado == 'ARCHIVADO' %}selected{% endif %}>Archivado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Radicado externo</label>
+                        <input type="text" name="radicado_externo" value="{{ caso.radicado_externo|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Etapa actual</label>
+                        <input type="text" name="etapa_actual" value="{{ caso.etapa_actual|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Demandante / Accionante</label>
+                        <input type="text" name="demandante_accionante" value="{{ caso.demandante_accionante|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Demandado / Accionado</label>
+                        <input type="text" name="demandado_accionado" value="{{ caso.demandado_accionado|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Juzgado / Entidad</label>
+                        <input type="text" name="juzgado_entidad" value="{{ caso.juzgado_entidad|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Abogado asignado</label>
+                        <select name="abogado_asignado">
+                            <option value="">— Sin asignar —</option>
+                            {% for ab in abogados %}
+                            <option value="{{ ab.id }}" {% if caso.abogado_asignado_id == ab.id %}selected{% endif %}>{{ ab.get_full_name|default:ab.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Fecha inicio</label>
+                        <input type="date" name="fecha_inicio" value="{{ caso.fecha_inicio|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Próximo vencimiento</label>
+                        <input type="date" name="proximo_vencimiento" value="{{ caso.proximo_vencimiento|date:'Y-m-d'|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>URL SharePoint</label>
+                        <input type="url" name="url_sharepoint" value="{{ caso.url_sharepoint|default:'' }}">
+                    </div>
+                    <div class="form-group" style="display:flex; gap:1rem; align-items:center; padding-top:1.2rem;">
+                        <label style="display:flex; align-items:center; gap:0.4rem; font-weight:600;">
+                            <input type="checkbox" name="contrato_autenticado_recibido" {% if caso.contrato_autenticado_recibido %}checked{% endif %}>
+                            Contrato autenticado
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.4rem; font-weight:600;">
+                            <input type="checkbox" name="habilitado_modulo_juridico" {% if caso.habilitado_modulo_juridico %}checked{% endif %}>
+                            Módulo jurídico
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción del caso</label>
+                    <textarea name="descripcion_caso" rows="3">{{ caso.descripcion_caso|default:'' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Notas adicionales</label>
+                    <textarea name="notas_adicionales" rows="3">{{ caso.notas_adicionales|default:'' }}</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditCasoModal()">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Nuevo Proceso Interno Modal -->
+<div class="modal-overlay" id="nuevoInternoModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title"><i data-lucide="list-tree"></i> Nuevo Proceso Interno</div>
+            <button class="btn-close" onclick="closeNuevoInternoModal()"><i data-lucide="x"></i></button>
+        </div>
+        <form method="post" action="{% url 'procesos_crear_interno' caso.pk %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tipo *</label>
+                        <select name="tipo" required>
+                            <option value="TUTELA">Acción de Tutela</option>
+                            <option value="DERECHO_PETICION">Derecho de Petición</option>
+                            <option value="DEMANDA">Demanda</option>
+                            <option value="RECURSO">Recurso</option>
+                            <option value="CONCILIACION">Conciliación</option>
+                            <option value="PRUEBA">Práctica de Prueba</option>
+                            <option value="NOTIFICACION">Notificación</option>
+                            <option value="OTRO">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de inicio</label>
+                        <input type="date" name="fecha_inicio" value="{% now 'Y-m-d' %}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" name="titulo" required placeholder="Ej: Tutela para protección de datos">
+                </div>
+                <div class="form-group">
+                    <label>Valor facturable ($)</label>
+                    <input type="number" name="precio" step="0.01" min="0" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" rows="3" placeholder="Detalles del proceso interno..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeNuevoInternoModal()">Cancelar</button>
+                <button type="submit" class="btn-submit">Crear Proceso Interno</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openEditCasoModal() { document.getElementById('editCasoModal').classList.add('active'); }
+    function closeEditCasoModal() { document.getElementById('editCasoModal').classList.remove('active'); }
+    function openNuevoInternoModal() { document.getElementById('nuevoInternoModal').classList.add('active'); }
+    function closeNuevoInternoModal() { document.getElementById('nuevoInternoModal').classList.remove('active'); }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.st-badge') && !e.target.closest('.pi-estado-popup')) {
+            document.querySelectorAll('.pi-estado-popup').forEach(function(el) {
+                el.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock %}

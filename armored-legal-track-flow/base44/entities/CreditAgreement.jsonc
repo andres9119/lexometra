@@ -1,0 +1,80 @@
+{
+  "name": "CreditAgreement",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "credito",
+        "acuerdo_pago"
+      ],
+      "description": "Tipo: Cr\u00e9dito o Acuerdo de Pago"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Nombre del cliente"
+    },
+    "client_cc": {
+      "type": "string",
+      "description": "C\u00e9dula del cliente"
+    },
+    "client_phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono del cliente"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n del cr\u00e9dito/acuerdo"
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Valor total (capital)"
+    },
+    "interest_rate": {
+      "type": "number",
+      "description": "Tasa de inter\u00e9s mensual (%)"
+    },
+    "num_installments": {
+      "type": "number",
+      "description": "N\u00famero de cuotas"
+    },
+    "installment_amount": {
+      "type": "number",
+      "description": "Valor cuota calculada"
+    },
+    "total_with_interest": {
+      "type": "number",
+      "description": "Total con intereses"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha inicio"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "activo",
+        "completado",
+        "anulado"
+      ],
+      "description": "Estado"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observaciones"
+    }
+  },
+  "required": [
+    "type",
+    "client_name",
+    "description",
+    "total_amount",
+    "num_installments",
+    "status"
+  ]
+}

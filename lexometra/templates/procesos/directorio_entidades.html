@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Directorio de Entidades{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ent-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .ent-header h1 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; color: var(--ink); margin: 0; }
+    .ent-count { font-size: 0.82rem; color: var(--muted); }
+    .ent-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .ent-search { padding: 0.4rem 0.75rem; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; background: var(--surface); color: var(--ink); outline: none; width: 220px; }
+    .ent-search:focus { border-color: var(--accent); }
+    .btn-ent { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.9rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; }
+    .btn-ent:hover { background: var(--line-soft); }
+    .btn-ent-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    .btn-ent-primary:hover { background: var(--brand); }
+    .btn-ent-sm { padding: 0.25rem 0.55rem; font-size: 0.72rem; }
+
+    .ent-table { width: 100%; border-collapse: collapse; }
+    .ent-table th { background: var(--line-soft); padding: 0.5rem 0.75rem; font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; text-align: left; border-bottom: 1px solid var(--line); }
+    .ent-table td { padding: 0.55rem 0.75rem; font-size: 0.82rem; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    .ent-table tr:hover td { background: var(--line-soft); }
+    .complejidad-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+    .complejidad-baja { background: var(--success-bg); color: var(--success); }
+    .complejidad-media-baja { background: var(--warn-bg); color: var(--warn); }
+    .complejidad-media { background: var(--warn-bg); color: var(--warn); }
+    .complejidad-alta { background: var(--danger-bg); color: var(--danger); }
+    .complejidad-muy-alta { background: var(--danger-bg); color: var(--danger); }
+    .emails-cell { font-size: 0.75rem; line-height: 1.5; }
+    .notas-cell { font-size: 0.75rem; color: var(--muted); max-width: 220px; }
+    .ent-actions-cell { white-space: nowrap; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,32,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: var(--surface); border-radius: 8px; padding: 1.5rem; width: 100%; max-width: 520px; box-shadow: 0 20px 40px rgba(15,23,32,0.18); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .modal-title { font-size: 1rem; font-weight: 600; color: var(--ink); }
+    .btn-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--muted); }
+    .form-group { margin-bottom: 0.75rem; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--ink); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.45rem 0.6rem; border: 1px solid var(--line); border-radius: 6px; font-size: 0.85rem; background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(32,58,94,0.08); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); background: var(--surface); }
+    .btn-cancel { padding: 0.4rem 1rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 0.82rem; color: var(--ink); }
+    .btn-cancel:hover { background: var(--line-soft); }
+    .btn-submit { padding: 0.4rem 1rem; border-radius: 6px; border: none; background: var(--accent); color: #FFFFFF; font-weight: 600; cursor: pointer; font-size: 0.82rem; }
+    .btn-submit:hover { background: var(--brand); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="ent-header">
+    <div>
+        <h1>Directorio de Entidades</h1>
+        <div class="ent-count">{{ total }} registros</div>
+    </div>
+    <div class="ent-actions">
+        <input type="text" class="ent-search" id="searchInput" placeholder="Buscar por nombre o NIT..." value="{{ q }}" onkeydown="if(event.key==='Enter'){window.location.href='?q='+encodeURIComponent(this.value)}">
+        <button class="btn-ent btn-ent-primary" onclick="openModal()">
+            <i data-lucide="plus" width="14" height="14"></i> Nueva Entidad
+        </button>
+    </div>
+</div>
+
+<div class="card" style="padding:0; overflow-x:auto;">
+    <table class="ent-table">
+        <thead>
+            <tr>
+                <th style="width:36px;">#</th>
+                <th>Razón Social</th>
+                <th style="width:140px;">NIT</th>
+                <th style="width:100px;">Complejidad</th>
+                <th style="width:200px;">Correo</th>
+                <th>Notas</th>
+                <th style="width:110px;">Fecha Registro</th>
+                <th style="width:120px;">Archivo</th>
+                <th style="width:80px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in entidades %}
+            <tr>
+                <td style="color:var(--muted-2); font-size:0.75rem;">{{ forloop.counter }}</td>
+                <td style="font-weight:600;">{{ e.razon_social }}</td>
+                <td style="font-size:0.8rem;">{{ e.nit }}</td>
+                <td>
+                    {% if e.complejidad %}
+                    <span class="complejidad-badge complejidad-{{ e.complejidad|lower }}">{{ e.get_complejidad_display }}</span>
+                    {% else %}
+                    <span style="color:var(--muted-2);">—</span>
+                    {% endif %}
+                </td>
+                <td class="emails-cell">{% if e.emails %}{{ e.emails|linebreaksbr }}{% else %}<span style="color:var(--muted-2);">—</span>{% endif %}</td>
+                <td class="notas-cell">{% if e.notas %}{{ e.notas|linebreaksbr }}{% else %}<span style="color:var(--muted-2);">—</span>{% endif %}</td>
+                <td style="font-size:0.75rem; color:var(--muted);">{{ e.fecha_registro|date:'d/m/Y' }}</td>
+                <td>
+                    {% if e.archivo %}
+                    <a href="{{ e.archivo.url }}" target="_blank" class="btn-ent btn-ent-sm"><i data-lucide="download" width="12" height="12"></i> Ver</a>
+                    {% else %}
+                    <span style="color:var(--muted-2);">—</span>
+                    {% endif %}
+                </td>
+                <td class="ent-actions-cell">
+                    <button class="btn-ent btn-ent-sm" onclick="editarEntidad({{ e.pk }})" title="Editar"><i data-lucide="pencil" width="12" height="12"></i></button>
+                    <button class="btn-ent btn-ent-sm" onclick="eliminarEntidad({{ e.pk }})" title="Eliminar" style="color:var(--danger);"><i data-lucide="trash-2" width="12" height="12"></i></button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--muted-2);">No hay entidades registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# ── MODAL ──────────────────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="entidadModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">Nueva Entidad</div>
+            <button class="btn-close" onclick="closeModal()"><i data-lucide="x" width="16" height="16"></i></button>
+        </div>
+        <form id="entidadForm">
+            {% csrf_token %}
+            <input type="hidden" name="entidad_id" id="entidadId">
+            <div class="form-group">
+                <label>Razón Social *</label>
+                <input type="text" name="razon_social" id="razonSocial" required>
+            </div>
+            <div class="form-group">
+                <label>NIT *</label>
+                <input type="text" name="nit" id="nit" required>
+            </div>
+            <div class="form-group">
+                <label>Complejidad</label>
+                <select name="complejidad" id="complejidad">
+                    <option value="">— Seleccionar —</option>
+                    {% for c in complejidades %}
+                    <option value="{{ c.0 }}">{{ c.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Correo(s) electrónico(s)</label>
+                <textarea name="emails" id="emails" rows="3" placeholder="Uno por linea"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Notas</label>
+                <textarea name="notas" id="notas" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Archivo adjunto (PDF, doc, imagen…)</label>
+                <input type="file" name="archivo" id="archivo">
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" onclick="closeModal()" class="btn-cancel">Cancelar</button>
+            <button type="button" onclick="guardarEntidad()" class="btn-submit" id="btnGuardar">Guardar</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openModal() {
+    document.getElementById('modalTitle').textContent = 'Nueva Entidad';
+    document.getElementById('btnGuardar').textContent = 'Guardar';
+    document.getElementById('entidadId').value = '';
+    document.getElementById('razonSocial').value = '';
+    document.getElementById('nit').value = '';
+    document.getElementById('complejidad').value = '';
+    document.getElementById('emails').value = '';
+    document.getElementById('notas').value = '';
+    document.getElementById('entidadModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('entidadModal').classList.remove('active');
+}
+
+function guardarEntidad() {
+    var id = document.getElementById('entidadId').value;
+    var url = id ? '{% url "editar_entidad" 0 %}'.replace('/0/', '/' + id + '/') : '{% url "crear_entidad" %}';
+    var form = document.getElementById('entidadForm');
+    var data = new FormData(form);
+    fetch(url, {
+        method: 'POST',
+        body: data,
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(function(r) { return r.json(); }).then(function(resp) {
+        if (resp.success) {
+            closeModal();
+            location.reload();
+        } else {
+            alert(resp.error || 'Error al guardar');
+        }
+    });
+}
+
+function editarEntidad(id) {
+    document.getElementById('modalTitle').textContent = 'Editar Entidad';
+    document.getElementById('btnGuardar').textContent = 'Guardar Cambios';
+    document.getElementById('entidadId').value = id;
+    var row = document.querySelector('button[onclick="editarEntidad(' + id + ')"]').closest('tr');
+    var cells = row.querySelectorAll('td');
+    document.getElementById('razonSocial').value = cells[1].textContent.trim();
+    document.getElementById('nit').value = cells[2].textContent.trim();
+    var badge = cells[3].querySelector('.complejidad-badge');
+    if (badge) {
+        var complMap = {'baja': 'BAJA', 'media-baja': 'MEDIA_BAJA', 'media': 'MEDIA', 'alta': 'ALTA', 'muy-alta': 'MUY_ALTA'};
+        for (var cls of badge.classList) {
+            if (cls.startsWith('complejidad-') && complMap[cls.replace('complejidad-', '')]) {
+                document.getElementById('complejidad').value = complMap[cls.replace('complejidad-', '')];
+                break;
+            }
+        }
+    }
+    var emailsText = cells[4].innerText.replace(/\s+/g, '\n').trim();
+    document.getElementById('emails').value = emailsText === '—' ? '' : emailsText;
+    var notasText = cells[5].innerText.trim();
+    document.getElementById('notas').value = notasText === '—' ? '' : notasText;
+    document.getElementById('entidadModal').classList.add('active');
+}
+
+function eliminarEntidad(id) {
+    if (!confirm('¿Eliminar esta entidad?')) return;
+    fetch('{% url "eliminar_entidad" 0 %}'.replace('/0/', '/' + id + '/'), {
+        method: 'POST',
+        headers: {'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, 'X-Requested-With': 'XMLHttpRequest'}
+    }).then(function(r) { return r.json(); }).then(function(resp) {
+        if (resp.success) location.reload();
+        else alert(resp.error || 'Error');
+    });
+}
+</script>
+{% endblock %}

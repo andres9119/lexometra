@@ -1,0 +1,61 @@
+{
+  "name": "ProcessStage",
+  "type": "object",
+  "properties": {
+    "process_id": {
+      "type": "string",
+      "description": "ID del proceso o actuaci\u00f3n jur\u00eddica"
+    },
+    "stage_name": {
+      "type": "string",
+      "description": "Nombre de la etapa"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de actuaci\u00f3n"
+    },
+    "term_deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Vencimiento del t\u00e9rmino (opcional)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n de la actuaci\u00f3n"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completada",
+        "en_curso",
+        "pendiente"
+      ],
+      "description": "Estado de la etapa"
+    },
+    "order": {
+      "type": "number",
+      "description": "Orden de la etapa"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Documentos de actuaci\u00f3n adjuntos"
+    }
+  },
+  "required": [
+    "process_id",
+    "stage_name",
+    "status"
+  ]
+}

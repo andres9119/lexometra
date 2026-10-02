@@ -1,0 +1,152 @@
+{
+  "name": "Process",
+  "type": "object",
+  "properties": {
+    "radicado_interno": {
+      "type": "string",
+      "description": "Radicado interno \u00fanico auto-generado. Formato: YYYY-SEQ. READONLY \u2014 nunca editar manualmente."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "tutela",
+        "derecho_peticion",
+        "recurso",
+        "incidente_desacato",
+        "eliminacion_reportes",
+        "proteccion_consumidor",
+        "superfinanciera",
+        "sic",
+        "ejecutivo",
+        "otro"
+      ],
+      "description": "Tipo de proceso"
+    },
+    "service_type_id": {
+      "type": "string",
+      "description": "FK a ServiceType - nuevo sistema relacional"
+    },
+    "case_number": {
+      "type": "string",
+      "description": "N\u00famero de radicado externo (juzgado/entidad)"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo del proceso"
+    },
+    "plaintiff": {
+      "type": "string",
+      "description": "Demandante/Accionante"
+    },
+    "defendant": {
+      "type": "string",
+      "description": "Demandado/Accionado"
+    },
+    "judge_entity": {
+      "type": "string",
+      "description": "Juzgado o entidad"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "activo",
+        "en_tramite",
+        "finalizado",
+        "archivado"
+      ],
+      "description": "Estado del proceso"
+    },
+    "habilitado_juridico": {
+      "type": "boolean",
+      "default": false,
+      "description": "TRUE cuando el proceso cumple las pol\u00edticas de handoff y es visible para el equipo jur\u00eddico"
+    },
+    "contrato_autenticado": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag: contrato firmado y autenticado recibido por la firma"
+    },
+    "current_stage": {
+      "type": "string",
+      "description": "Etapa actual del proceso (limitada a las etapas del tipo)"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de inicio"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "alta",
+        "media",
+        "baja"
+      ],
+      "description": "Prioridad"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n del caso"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas adicionales"
+    },
+    "next_deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Pr\u00f3ximo vencimiento"
+    },
+    "valor_expectativa_total": {
+      "type": "number",
+      "description": "Valor total expectativa (100% del negocio en COP)"
+    },
+    "porcentaje_anticipo": {
+      "type": "number",
+      "default": 0.5,
+      "description": "Porcentaje de anticipo (0-1)"
+    },
+    "total_reportes_objetivo": {
+      "type": "number",
+      "description": "Cantidad de reportes negativos a gestionar"
+    },
+    "anticipo_cuotas": {
+      "type": "number",
+      "default": 1,
+      "description": "N\u00famero de cuotas para el anticipo"
+    },
+    "anticipo_dates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "date"
+      },
+      "description": "Fechas de vencimiento para cada cuota del anticipo"
+    },
+    "macro_process_id": {
+      "type": "string",
+      "description": "FK: ID del negocio comercial origen (expediente macro)"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "FK: ID del cliente comercial vinculado"
+    },
+    "assigned_lawyer_id": {
+      "type": "string",
+      "description": "FK: ID del usuario/abogado responsable del proceso"
+    },
+    "assigned_lawyer_name": {
+      "type": "string",
+      "description": "Nombre del abogado asignado (desnormalizado para display)"
+    },
+    "datos_especificos": {
+      "type": "object",
+      "description": "JSONB flexible seg\u00fan tipo de servicio: campos de Ejecutivo, Tutela, etc."
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "status"
+  ]
+}

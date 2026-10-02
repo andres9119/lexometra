@@ -1,0 +1,34 @@
+{
+  "name": "DirectorioEntidad",
+  "type": "object",
+  "properties": {
+    "nit": {
+      "type": "string",
+      "description": "NIT de la entidad (\u00fanico, indexado)"
+    },
+    "razon_social": {
+      "type": "string",
+      "description": "Raz\u00f3n Social en Title Case"
+    },
+    "emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Correos electr\u00f3nicos de contacto de la entidad"
+    },
+    "complejidad": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Nivel de complejidad de gesti\u00f3n (1=Baja, 2=Media-Baja, 3=Media, 4=Alta, 5=Muy Alta)"
+    },
+    "notas": {
+      "type": "string",
+      "description": "Notas internas sobre la entidad (comportamiento, contactos, observaciones)"
+    }
+  },
+  "required": [
+    "razon_social"
+  ]
+}

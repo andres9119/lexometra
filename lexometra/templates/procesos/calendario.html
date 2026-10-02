@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendario — Lexometra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
+    .cal-nav h2 { font-family:var(--font-display); font-size:1.4rem; font-weight:600; color:var(--ink); text-transform:capitalize; }
+    .cal-nav a { background:var(--surface); border:1px solid var(--line); padding:0.4rem 1rem; border-radius:6px; text-decoration:none; color:var(--ink); font-weight:500; font-size:0.9rem; display:inline-flex; align-items:center; gap:0.4rem; }
+    .cal-nav a:hover { background:var(--line-soft); }
+
+    .cal-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:0; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--surface); width:100%; max-width:100%; }
+    .cal-header { background:var(--line-soft); padding:0.6rem 0; text-align:center; font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid var(--line); }
+    .cal-day { min-height:100px; padding:0.4rem; border-right:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface); position:relative; min-width:0; overflow:hidden; }
+    .cal-day:nth-child(7n) { border-right:none; }
+    .cal-day.other-month { background:var(--bg); }
+    .cal-day .day-num { font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:0.3rem; }
+    .cal-day.today .day-num { background:var(--accent); color:#FFFFFF; width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+
+    .cal-event { font-size:0.7rem; padding:0.15rem 0.3rem; border-radius:3px; margin-bottom:0.15rem; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:none; display:block; color:inherit; }
+    .cal-event:hover { filter:brightness(0.97); }
+    .cal-event.vencimiento { background:var(--danger-bg); color:var(--danger); }
+    .cal-event.inicio { background:var(--success-bg); color:var(--success); }
+    .cal-event.resolucion { background:var(--info-bg); color:var(--info); }
+    .cal-event.actuacion { background:var(--warn-bg); color:var(--warn); }
+    .cal-event.factura { background:var(--line-soft); color:var(--muted); }
+
+    .cal-legend { display:flex; gap:1.5rem; margin-top:1rem; flex-wrap:wrap; }
+    .cal-legend span { display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:var(--muted); }
+    .cal-legend .dot { width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+    .ev-badge { padding:0.15rem 0.4rem; border-radius:3px; font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+    .ev-badge.vencimiento { background:var(--danger-bg); color:var(--danger); }
+    .ev-badge.inicio { background:var(--success-bg); color:var(--success); }
+    .ev-badge.resolucion { background:var(--info-bg); color:var(--info); }
+    .ev-badge.actuacion { background:var(--warn-bg); color:var(--warn); }
+    .ev-badge.factura { background:var(--line-soft); color:var(--muted); }
+
+    .day-detail-card { margin-top:1rem; }
+    .day-detail-card .detail-header { font-weight:700; font-size:1rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem; }
+    .day-detail-list { list-style:none; }
+    .day-detail-list li { padding:0.5rem 0.75rem; border-bottom:1px solid var(--topbar-border); display:flex; align-items:center; gap:0.75rem; font-size:0.85rem; }
+    .day-detail-list li:last-child { border-bottom:none; }
+    .day-detail-list .ev-badge { flex-shrink:0; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.65rem; font-weight:600; text-transform:uppercase; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cal-nav">
+    <a href="?year={{ prev_year }}&month={{ prev_month }}"><i data-lucide="chevron-left" width="14" height="14"></i> {{ month_name }} {{ prev_month }} {{ prev_year }}</a>
+    <h2>{{ month_name }} {{ year }}</h2>
+    <a href="?year={{ next_year }}&month={{ next_month }}">{{ month_name }} {{ next_month }} {{ next_year }} <i data-lucide="chevron-right" width="14" height="14"></i></a>
+</div>
+
+<div class="cal-grid">
+    <div class="cal-header">Lun</div>
+    <div class="cal-header">Mar</div>
+    <div class="cal-header">Mié</div>
+    <div class="cal-header">Jue</div>
+    <div class="cal-header">Vie</div>
+    <div class="cal-header">Sáb</div>
+    <div class="cal-header">Dom</div>
+
+    {% for week in weeks %}
+    {% for day in week %}
+    {% if day == 0 %}
+    <div class="cal-day other-month"><div class="day-num"></div></div>
+    {% else %}
+    {% with date_str=year|stringformat:"d"|add:"-"|add:month|stringformat:"02d"|add:"-"|add:day|stringformat:"02d" %}
+    <div class="cal-day {% if today_str == date_str %}today{% endif %}"
+         onclick="showDayDetail('{{ date_str }}', this)">
+        <div class="day-num">{{ day }}</div>
+        {% for e in events_list %}
+        {% if e.date.day == day %}
+        {% if e.url %}
+        <a href="{{ e.url }}" class="cal-event {{ e.type }}" title="{{ e.title }}">{{ e.title }}</a>
+        {% else %}
+        <span class="cal-event {{ e.type }}" title="{{ e.title }}">{{ e.title }}</span>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endwith %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+</div>
+
+<div class="cal-legend">
+    <span><span class="dot" style="background:var(--danger-bg); border:1px solid var(--danger-border);"></span> Vencimiento</span>
+    <span><span class="dot" style="background:var(--success-bg); border:1px solid var(--success-border);"></span> Inicio</span>
+    <span><span class="dot" style="background:var(--info-bg); border:1px solid var(--info-border);"></span> Resolución</span>
+    <span><span class="dot" style="background:var(--warn-bg); border:1px solid var(--warn-border);"></span> Actuación</span>
+    <span><span class="dot" style="background:var(--line-soft); border:1px solid var(--line);"></span> Factura</span>
+</div>
+
+<div id="dayDetail" class="card day-detail-card" style="display:none;">
+    <div class="card-body">
+        <div class="detail-header"><i data-lucide="calendar"></i> <span id="detailDate"></span></div>
+        <ul id="detailList" class="day-detail-list"></ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const allEvents = {{ events_json|safe }};
+    function showDayDetail(dateStr, el) {
+        const detail = document.getElementById('dayDetail');
+        const dateSpan = document.getElementById('detailDate');
+        const list = document.getElementById('detailList');
+        dateSpan.textContent = dateStr;
+        const dayEvents = allEvents.filter(function(e) { return e.date === dateStr; });
+        list.innerHTML = '';
+        if (dayEvents.length === 0) {
+            list.innerHTML = '<li style="color:var(--text-muted);">Sin compromisos este día.</li>';
+        } else {
+            dayEvents.forEach(function(e) {
+                const li = document.createElement('li');
+                const badge = document.createElement('span');
+                badge.className = 'ev-badge ' + e.type;
+                badge.textContent = e.type;
+                const txt = document.createElement('span');
+                if (e.url) {
+                    const a = document.createElement('a');
+                    a.href = e.url;
+                    a.textContent = e.title;
+                    a.style.color = 'var(--text-main)';
+                    a.style.fontWeight = '600';
+                    txt.appendChild(a);
+                } else {
+                    txt.textContent = e.title;
+                }
+                li.appendChild(badge);
+                li.appendChild(txt);
+                list.appendChild(li);
+            });
+        }
+        detail.style.display = 'block';
+        lucide.createIcons();
+    }
+</script>
+{% endblock %}

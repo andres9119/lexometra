@@ -1,0 +1,137 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "invoice_number": {
+      "type": "string",
+      "description": "N\u00famero de factura"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Nombre del cliente"
+    },
+    "client_cc": {
+      "type": "string",
+      "description": "C\u00e9dula del cliente"
+    },
+    "process_id": {
+      "type": "string",
+      "description": "ID del expediente/proceso relacionado (opcional)"
+    },
+    "concept": {
+      "type": "string",
+      "description": "Concepto general"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "eliminacion_reportes",
+        "tutela",
+        "sic",
+        "cartera",
+        "otro"
+      ],
+      "description": "Tipo de servicio"
+    },
+    "items": {
+      "type": "array",
+      "description": "L\u00edneas de cobro detalladas",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "honorarios_fijo",
+              "cuota_litis",
+              "gastos_reembolsables"
+            ]
+          },
+          "concept": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "base_value": {
+            "type": "number"
+          },
+          "percentage": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "payment_terms": {
+      "type": "string",
+      "enum": [
+        "15",
+        "30",
+        "60",
+        "manual"
+      ],
+      "description": "T\u00e9rminos de pago (d\u00edas)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Valor total (COP)"
+    },
+    "amount_paid": {
+      "type": "number",
+      "description": "Valor pagado (COP)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Borrador",
+        "Emitida",
+        "Pago_Parcial",
+        "Pagada",
+        "Vencida",
+        "Anulada"
+      ],
+      "description": "Estado de la factura"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de emisi\u00f3n"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de vencimiento"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de pago"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "efectivo",
+        "transferencia",
+        "nequi",
+        "daviplata",
+        "cheque",
+        "otro"
+      ],
+      "description": "M\u00e9todo de pago"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas"
+    }
+  },
+  "required": [
+    "client_name",
+    "concept",
+    "amount",
+    "status"
+  ]
+}

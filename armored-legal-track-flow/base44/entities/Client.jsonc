@@ -1,0 +1,236 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Nombre completo"
+    },
+    "cc": {
+      "type": "string",
+      "description": "C\u00e9dula de ciudadan\u00eda"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Celular"
+    },
+    "email": {
+      "type": "string",
+      "description": "Correo electr\u00f3nico"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Jurisdicci\u00f3n (ciudad, departamento)"
+    },
+    "address": {
+      "type": "string",
+      "description": "Direcci\u00f3n (calle, carrera, n\u00famero)"
+    },
+    "neighborhood": {
+      "type": "string",
+      "description": "Barrio"
+    },
+    "department": {
+      "type": "string",
+      "description": "Departamento"
+    },
+    "city": {
+      "type": "string",
+      "description": "Ciudad o municipio"
+    },
+    "vereda": {
+      "type": "string",
+      "description": "Vereda (zona rural)"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "eliminacion_reportes",
+        "tutela",
+        "sic",
+        "cartera",
+        "otro"
+      ],
+      "description": "Tipo de servicio (legacy)"
+    },
+    "service_type_id": {
+      "type": "string",
+      "description": "FK a ServiceType - nuevo sistema relacional"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "prospecto",
+        "contactado",
+        "contrato_firmado",
+        "peticion_radicada",
+        "en_tramite",
+        "finalizado",
+        "perdido"
+      ],
+      "description": "Estado del caso"
+    },
+    "is_new": {
+      "type": "boolean",
+      "default": true,
+      "description": "TRUE cuando el cliente acaba de ingresar y a\u00fan no se le ha asignado un estado expl\u00edcito. Se pone FALSE al cambiar el estado manualmente."
+    },
+    "referrer_id": {
+      "type": "string",
+      "description": "ID del referidor"
+    },
+    "referrer_name": {
+      "type": "string",
+      "description": "Nombre del referido"
+    },
+    "agreed_value": {
+      "type": "number",
+      "description": "Valor pactado (COP)"
+    },
+    "pending_balance": {
+      "type": "number",
+      "description": "Saldo pendiente (COP)"
+    },
+    "datacredito_key": {
+      "type": "string",
+      "description": "Clave DataCr\u00e9dito"
+    },
+    "transunion_key": {
+      "type": "string",
+      "description": "Clave TransUnion"
+    },
+    "score_data": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000,
+      "description": "Score DataCr\u00e9dito (0-1000)"
+    },
+    "score_transunion": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000,
+      "description": "Score TransUnion (0-1000)"
+    },
+    "victim_conflict": {
+      "type": "string",
+      "enum": [
+        "si",
+        "no",
+        "na"
+      ],
+      "description": "V\u00edctima del conflicto"
+    },
+    "indigenous": {
+      "type": "string",
+      "enum": [
+        "si",
+        "no",
+        "na"
+      ],
+      "description": "Ind\u00edgena"
+    },
+    "elderly": {
+      "type": "string",
+      "enum": [
+        "si",
+        "no",
+        "na"
+      ],
+      "description": "Adulto mayor"
+    },
+    "psychological_impact": {
+      "type": "string",
+      "enum": [
+        "si",
+        "no",
+        "na"
+      ],
+      "description": "Afectaci\u00f3n psicol\u00f3gica"
+    },
+    "single_mother": {
+      "type": "string",
+      "enum": [
+        "si",
+        "no",
+        "na"
+      ],
+      "description": "Madre cabeza de familia"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observaciones generales"
+    },
+    "next_action_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha pr\u00f3xima acci\u00f3n"
+    },
+    "contract_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha firma contrato"
+    },
+    "valor_expectativa_total": {
+      "type": "number",
+      "description": "Valor total expectativa del negocio (COP)"
+    },
+    "porcentaje_anticipo": {
+      "type": "number",
+      "default": 0.5,
+      "description": "Porcentaje de anticipo (0-1)"
+    },
+    "total_reportes_objetivo": {
+      "type": "number",
+      "description": "Cantidad de reportes negativos a gestionar"
+    },
+    "anticipo_cuotas": {
+      "type": "number",
+      "default": 1,
+      "description": "N\u00famero de cuotas para el anticipo"
+    },
+    "anticipo_dates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "date"
+      },
+      "description": "Fechas de vencimiento para cada cuota del anticipo (cronograma de pagos)"
+    }
+  },
+  "required": [
+    "full_name",
+    "cc",
+    "service_type",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
