@@ -21,10 +21,19 @@ NGINX_SITE="lexometra"
 echo "==> 1. System dependencies"
 apt-get update
 apt-get install -y --no-install-recommends \
-    python3.13 python3.13-venv python3.13-dev \
+    software-properties-common \
     postgresql-client libpq-dev \
     nginx certbot python3-certbot-nginx \
     build-essential libpango1.0-dev libcairo2-dev libffi-dev
+
+# Ubuntu no incluye python3.13 en sus repos; viene en el PPA deadsnakes
+if ! command -v python3.13 &>/dev/null; then
+    echo "==> 1b. Instalando Python 3.13 (PPA deadsnakes)"
+    add-apt-repository -y ppa:deadsnakes/ppa
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        python3.13 python3.13-venv python3.13-dev
+fi
 
 echo "==> 2. Create system user (if not exists)"
 id -u lexometra &>/dev/null || useradd -m -s /bin/bash lexometra
@@ -43,7 +52,7 @@ if [ ! -f "$REPO_DIR/.env" ]; then
 fi
 
 echo "==> 5. Static files"
-mkdir -p "$REPO_DIR/staticfiles" "$REPO_DIR/media" "$REPO_DIR/logs"
+mkdir -p "$REPO_DIR/lexometra/media" "$REPO_DIR/lexometra/logs" /var/log/lexometra
 cd "$REPO_DIR"
 "$VENV_DIR/bin/python" manage.py collectstatic --noinput --clear
 
@@ -57,6 +66,8 @@ echo "==> 7. Create superuser (optional)"
 
 echo "==> 8. Permissions"
 chown -R lexometra:lexometra "$REPO_DIR"
+# nginx corre como www-data y el socket de gunicorn es 0770 grupo:lexometra
+usermod -aG lexometra www-data
 
 echo "==> 9. Gunicorn systemd service"
 cp "$REPO_DIR/gunicorn.service" /etc/systemd/system/lexometra.service
@@ -71,7 +82,8 @@ if [ ! -L /etc/nginx/sites-enabled/lexometra ]; then
 fi
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
-systemctl reload nginx
+# restart (no reload): hace falta que el master de nginx herede el grupo nuevo
+systemctl restart nginx
 
 echo ""
 echo "=== Deployment complete! ==="

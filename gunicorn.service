@@ -4,7 +4,9 @@ After=network.target postgresql.service
 Wants=postgresql.service
 
 [Service]
-Type=notify
+# gunicorn NO envía READY=1 a systemd; con Type=notify systemd lo mataría
+# por timeout aunque la app funcionara.
+Type=simple
 User=lexometra
 Group=lexometra
 RuntimeDirectory=lexometra

@@ -19,7 +19,7 @@ ciclo de vida de sus clientes y procesos:
 
 Cada rol de usuario ve un dashboard adaptado a su perfil.
 
-**Stack:** Python 3.13 / Django 5.1 / PostgreSQL (sqlite en dev) / Gunicorn + Nginx.
+**Stack:** Python 3.13 / Django 5.1 / PostgreSQL 16 (sqlite en dev) / Gunicorn + Nginx.
 
 ---
 
@@ -55,7 +55,7 @@ lexometra/                          # Raíz del proyecto (repo)
 ## 3. Punto de entrada y configuración
 
 ### `manage.py`
-Carga `.env` con `python-dotenv` y usa `DJANGO_SETTINGS_MODULE=lexometra.lexometra_proj.settings`.
+Hay **dos**: el de la raíz del repo y el interno (`lexometra/manage.py`). Ambos usan `DJANGO_SETTINGS_MODULE=lexometra_proj.settings`, pero solo el de la raíz inserta `lexometra/` en `sys.path` y lee el `.env` de la raíz del repo — **ese es el que se usa en dev y en producción** (ver §7).
 
 **Comandos útiles:**
 ```bash
@@ -275,37 +275,114 @@ El control se hace en cada view (no hay decoradores centralizados salvo `RoleReq
 
 Arquitectura: **Nginx → Gunicorn (socket unix) → Django/WSGI → PostgreSQL**.
 
+Servidor: Ubuntu 24.04 · Python 3.13 (PPA deadsnakes) · PostgreSQL 16 ·
+dominio `app.198.251.79.149.sslip.io` (cert Let's Encrypt).
+
 ### Archivos de deploy
-- **`deploy.sh`** — script idempotente para VPS (Ubuntu 22.04+, Python 3.13, PostgreSQL 16+). Pasos: instala dependencias del sistema, crea usuario `lexometra`, venv, instala requirements, copia `.env`, collectstatic, migrate, crea superuser, copia `gunicorn.service` y `nginx_lexometra.conf`, reinicia servicios. Requiere llenar `.env` antes de la 2ª ejecución.
-- **`gunicorn.conf.py`** — workers = `cpu*2+1`, socket `unix:/run/lexometra.sock`, pidfile `/run/lexometra.pid`, logs en `/var/log/lexometra/`. Configurable vía env (`GUNICORN_BIND/WORKERS/THREADS/LOG_LEVEL`).
-- **`gunicorn.service`** — unit de systemd: usuario `lexometra`, `WorkingDirectory=/home/lexometra/lexometra`, `ExecStart` con gunicorn y settings `lexometra_proj.settings`, `Restart=on-failure`, hardening (PrivateTmp, ProtectSystem=full, NoNewPrivileges).
-- **`nginx_lexometra.conf`** — upstream por socket unix, HTTP→HTTPS redirect, SSL (Let's Encrypt/certbot), headers de seguridad, servir `/static/` y `/media/` desde `/home/lexometra/lexometra/`, proxy a la app, WebSocket soporte, `client_max_body_size 50M`.
+- **`deploy.sh`** — script idempotente para VPS. Pasos: dependencias del sistema + PPA deadsnakes si falta `python3.13`, crea usuario `lexometra`, venv, `pip install -r requirements.txt`, copia `.env.example → .env` (se detiene para editarlo), `collectstatic`, `migrate`, crea superuser, `chown`, `usermod -aG lexometra www-data`, instala `gunicorn.service` y `nginx_lexometra.conf`, reinicia todo. Requiere llenar `.env` antes de la 2ª ejecución.
+- **`gunicorn.conf.py`** — workers = `cpu*2+1`, `bind = unix:/run/lexometra/lexometra.sock`, `pidfile = /run/lexometra/lexometra.pid`, `pythonpath = /home/lexometra/lexometra/lexometra`, logs en `/var/log/lexometra/`. Configurable vía env (`GUNICORN_BIND/WORKERS/THREADS/LOG_LEVEL/PIDFILE/PYTHONPATH`).
+- **`gunicorn.service`** — unit de systemd: `Type=simple`, usuario/grupo `lexometra`, `RuntimeDirectory=lexometra` (mode 0750), `WorkingDirectory=/home/lexometra/lexometra`, `Restart=on-failure`, hardening (PrivateTmp, ProtectSystem=full, NoNewPrivileges).
+- **`nginx_lexometra.conf`** — upstream `lexometra_app` por `unix:/run/lexometra/lexometra.sock`, HTTP→HTTPS redirect, SSL (Let's Encrypt/certbot), headers de seguridad, servir `/static/` y `/media/` desde `/home/lexometra/lexometra/lexometra/` (el paquete Django, que es `BASE_DIR`), proxy a la app, WebSocket soporte, `client_max_body_size 50M`.
 
 ### Rutas del servidor (producción)
 ```
-/home/lexometra/lexometra/        # repo
-/home/lexometra/.venv/            # virtualenv
-/run/lexometra.sock               # socket gunicorn
-/var/log/lexometra/               # logs gunicorn (access.log, error.log)
-/var/log/nginx/                   # logs nginx
+/home/lexometra/lexometra/                  # repo (clon)
+/home/lexometra/lexometra/.env              # NO versionar
+/home/lexometra/.venv/                      # virtualenv
+/home/lexometra/lexometra/lexometra/        # paquete Django = BASE_DIR
+    ├── db.sqlite3                          # solo dev; en prod la BD es Postgres
+    ├── staticfiles/  media/  logs/         # generados en deploy
+/run/lexometra/lexometra.sock               # socket gunicorn
+/run/lexometra/lexometra.pid                # pidfile
+/var/log/lexometra/                         # access.log / error.log de gunicorn
+/var/log/nginx/                             # logs nginx
 /etc/systemd/system/lexometra.service
 /etc/nginx/sites-available/lexometra  (symlink en sites-enabled)
 ```
+PostgreSQL: base `app_db`, rol `app_user`, listener en `127.0.0.1:5432`.
 
-### Flujo de deploy
+### Primer despliegue (instalación)
 ```bash
 sudo bash deploy.sh   # 1ª vez: instala todo y copia .env.example → .env
 # editar /home/lexometra/lexometra/.env con valores reales
 sudo bash deploy.sh   # 2ª vez: completa el despliegue
 sudo certbot --nginx -d <dominio>   # SSL (paso manual)
-journalctl -u lexometra -f          # ver logs del servicio
 ```
+
+### Actualizar producción (lo habitual)
+```bash
+sudo -u lexometra git -C /home/lexometra/lexometra pull
+sudo -u lexometra /home/lexometra/.venv/bin/pip install -r /home/lexometra/lexometra/requirements.txt
+sudo -u lexometra /home/lexometra/.venv/bin/python /home/lexometra/lexometra/manage.py migrate --noinput
+sudo -u lexometra /home/lexometra/.venv/bin/python /home/lexometra/lexometra/manage.py collectstatic --noinput --clear
+sudo systemctl restart lexometra
+```
+
+### Verificación y logs
+```bash
+systemctl status lexometra
+sudo tail -f /var/log/lexometra/error.log   # OJO: gunicorn no loguea a journald
+sudo tail -f /home/lexometra/lexometra/lexometra/logs/django.log
+journalctl -u lexometra -f                   # solo mensajes de systemd
+curl -sI https://app.198.251.79.149.sslip.io/login/ | head -3
+sudo -u lexometra curl -sI --unix-socket /run/lexometra/lexometra.sock \
+    -H "Host: app.198.251.79.149.sslip.io" http://localhost/login/ | head -3
+```
+
+### Trampas conocidas (todas aplicadas ya, no las repitas)
+1. **El socket y el pidfile NO pueden ir en `/run` directamente**: `/run` es de
+   root y el servicio corre como `lexometra`. Por eso van dentro de
+   `RuntimeDirectory=lexometra`, que systemd crea con el usuario correcto.
+   Además hay que `usermod -aG lexometra www-data` (el socket es 0770) y
+   **`systemctl restart nginx`**, no `reload`, para que el master herede el grupo.
+2. **`Type=notify` no funciona con gunicorn**: no envía `READY=1` y systemd lo
+   mata por timeout. Usar `Type=simple`.
+3. **`pythonpath` es obligatorio**: `WorkingDirectory` es la raíz del repo pero
+   `lexometra_proj` vive en `repo/lexometra/`. Sin esto: `No module named
+   'lexometra_proj'`.
+4. **`Pillow` es obligatorio** (`PerfilEmpresa.logo` es un `ImageField`); sin él
+   `manage.py migrate` aborta con `fields.E210`.
+5. **Los logs de gunicorn van a `/var/log/lexometra/error.log`**, no a journald:
+   `journalctl -u lexometra` solo muestra líneas de systemd y no el error real.
+6. **Los archivos del repo llegan con permisos 755.** Con `core.fileMode` activo
+   git marca *todo* como "modified" y el pull se aborta. Solución:
+   `git config core.fileMode false` en el repo del servidor.
+7. **Nunca corras `git` como root** en `/home/lexometra/lexometra`: deja
+   archivos de root en `.git` y el siguiente pull falla con
+   `cannot open '.git/FETCH_HEAD': Permission denied`. Usa siempre
+   `sudo -u lexometra git ...`.
+8. **Usa siempre `manage.py` con ruta absoluta**, nunca `python -c` desde otro
+   directorio: `''` (cwd) va primero en `sys.path` y puede importar otro
+   `lexometra_proj` (p. ej. el de un clon viejo).
+9. Tras cambiar `SECRET_KEY` en `.env` todas las sesiones abiertas se invalidan.
+10. Los archivos del repo llegan con permisos 755 y el `deploy.sh` hace
+    `chown -R lexometra:lexometra`; el directorio del repo debe quedar del
+    usuario `lexometra` porque Django escribe `logs/`.
+
+### Migración hecha el 2026-10-05 (de daphne/SQLite a gunicorn/Postgres)
+- Origen descartado pero conservado como rollback: `/var/www/app` (daphne +
+  `app.service` + SQLite `/var/www/app/lexometra/db.sqlite3`).
+  Rollback: `ln -sf /etc/nginx/sites-available/app.conf /etc/nginx/sites-enabled/app.conf
+  && rm -f /etc/nginx/sites-enabled/lexometra && nginx -t && systemctl restart nginx
+  && systemctl enable --now app.service`.
+- Datos migrados con `dumpdata` → `loaddata` + reseteo de secuencias
+  (script `fix_seq.py`: `setval(pg_get_serial_sequence(...), MAX(pk))`). Sin ese
+  reseteo el siguiente `INSERT` falla por id duplicada.
+- `app_user`/'s password se fijó con `ALTER ROLE` y hubo que hacer
+  `ALTER SCHEMA public OWNER TO app_user` (PostgreSQL 15+ no da `CREATE` sobre
+  `public` a todos, y `migrate` lo necesita).
+- El `.env` viejo usaba nombres que `settings.py` **no lee** (`DATABASE_URL`,
+  `ALLOWED_HOSTS`, `DEBUG`, `CSRF_TRUSTED_ORIGINS`, `SITE_BASE_URL`,
+  `USE_X_FORWARDED_HOST`, `SECURE_PROXY_SSL_HEADER`, `REDIS_URL`,
+  `EMAIL_BACKEND`). Por eso producción corría con `DEBUG=True`. El `.env`
+  correcto usa `DJANGO_*` y `DB_*` (ver §3).
 
 ---
 
 ## 8. Dependencias (`requirements.txt`)
 - `Django>=5.1.2,<5.2`
-- `gunicorn>=23.0.0`
+- `gunicorn>=23.0.0` (servidor en producción)
+- `Pillow>=10.0.0` (**obligatorio**: `PerfilEmpresa.logo` es `ImageField`)
 - `psycopg2-binary>=2.9.9` (PostgreSQL)
 - `python-dotenv>=1.0.0`
 - `requests>=2.31.0` (integración Factus)
