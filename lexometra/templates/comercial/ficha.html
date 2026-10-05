@@ -16,6 +16,7 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
+
     .banner-back {
         color: var(--sidebar-text);
         text-decoration: none;
@@ -25,7 +26,10 @@
         font-size: 0.85rem;
         transition: color 0.2s;
     }
-    .banner-back:hover { color: white; }
+
+    .banner-back:hover {
+        color: white;
+    }
 
     .banner-estado-wrapper {
         position: relative;
@@ -33,6 +37,7 @@
         align-items: center;
         gap: 0.5rem;
     }
+
     .banner-estado-select {
         background: var(--brand-2);
         border: 1px solid var(--brand-3);
@@ -49,7 +54,10 @@
         background-repeat: no-repeat;
         background-position: right 0.4rem center;
     }
-    .banner-estado-select:focus { outline: 2px solid var(--accent); }
+
+    .banner-estado-select:focus {
+        outline: 2px solid var(--accent);
+    }
 
     .banner-gear {
         color: var(--sidebar-text);
@@ -57,28 +65,59 @@
         transition: color 0.2s, transform 0.3s;
         flex-shrink: 0;
     }
-    .banner-gear:hover { color: #FFFFFF; transform: rotate(60deg); }
+
+    .banner-gear:hover {
+        color: #FFFFFF;
+        transform: rotate(60deg);
+    }
 
     .banner-nombre {
         font-size: 1rem;
         font-weight: 700;
         flex: 1;
     }
+
     .banner-cedula {
         font-size: 0.8rem;
         color: var(--sidebar-text);
         font-family: var(--font-mono);
     }
-    .hal-badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:999px; font-size:0.65rem; font-weight:700; text-transform:uppercase; }
-    .hal-estado { background:var(--brand-2); color:#fff; }
-    .hal-recaudo { background:var(--success-bg); color:var(--success); }
-    .hal-reporte { background:var(--warn-bg); color:var(--warn); }
-    .hal-documento { background:var(--line-soft); color:var(--muted); }
+
+    .hal-badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .hal-estado {
+        background: var(--brand-2);
+        color: #fff;
+    }
+
+    .hal-recaudo {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+
+    .hal-reporte {
+        background: var(--warn-bg);
+        color: var(--warn);
+    }
+
+    .hal-documento {
+        background: var(--line-soft);
+        color: var(--muted);
+    }
+
     .banner-actions {
         display: flex;
         gap: 0.5rem;
         margin-left: auto;
     }
+
     .banner-btn {
         background: var(--brand-2);
         border: 1px solid var(--brand-3);
@@ -94,9 +133,20 @@
         gap: 0.35rem;
         transition: background 0.2s;
     }
-    .banner-btn:hover { background: var(--brand-3); }
-    .banner-btn-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
-    .banner-btn-primary:hover { background: var(--brand); }
+
+    .banner-btn:hover {
+        background: var(--brand-3);
+    }
+
+    .banner-btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #FFFFFF;
+    }
+
+    .banner-btn-primary:hover {
+        background: var(--brand);
+    }
 
     /* ── TARJETAS RESUMEN ───────────────────── */
     .summary-row {
@@ -105,6 +155,7 @@
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
+
     .summary-card {
         background: var(--surface);
         border: 1px solid var(--line-soft);
@@ -114,21 +165,53 @@
         align-items: center;
         gap: 1rem;
     }
+
     .summary-card-icon {
-        width: 40px; height: 40px;
+        width: 40px;
+        height: 40px;
         border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
         font-size: 1.2rem;
     }
-    .summary-card-icon.yellow { background: var(--info-bg); color: var(--info); }
-    .summary-card-icon.blue { background: var(--info-bg); color: var(--info); }
-    .summary-card-icon.green { background: var(--success-bg); color: var(--success); }
-    .summary-card-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-    .summary-card-value { font-size: 1.4rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
+
+    .summary-card-icon.yellow {
+        background: var(--info-bg);
+        color: var(--info);
+    }
+
+    .summary-card-icon.blue {
+        background: var(--info-bg);
+        color: var(--info);
+    }
+
+    .summary-card-icon.green {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+
+    .summary-card-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .summary-card-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.1;
+    }
 
     /* ── TABLA DE FICHA ─────────────────────── */
-    .ficha-section { margin-bottom: 1rem; }
+    .ficha-section {
+        margin-bottom: 1rem;
+    }
+
     .ficha-section-header {
         background: var(--brand);
         color: white;
@@ -142,6 +225,7 @@
         justify-content: space-between;
         align-items: center;
     }
+
     .ficha-table {
         width: 100%;
         border-collapse: collapse;
@@ -151,12 +235,14 @@
         border-radius: 0 0 6px 6px;
         overflow: hidden;
     }
+
     .ficha-table td {
         padding: 0.6rem 1rem;
         font-size: 0.82rem;
         border: 1px solid var(--line);
         vertical-align: middle;
     }
+
     .ficha-table td.ft-label {
         background: var(--line-soft);
         font-weight: 700;
@@ -166,6 +252,7 @@
         white-space: nowrap;
         width: 140px;
     }
+
     .ficha-table td.ft-val {
         color: var(--ink);
         font-weight: 500;
@@ -179,15 +266,54 @@
         align-items: center;
         gap: 1rem;
     }
-    .caso-card:last-child { border-bottom: none; }
-    .caso-titulo { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
-    .caso-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
-    .caso-badge { font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; background: var(--info-bg); color: var(--info); }
-    .caso-link { margin-left: auto; font-size: 0.8rem; font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
-    .caso-link:hover { text-decoration: underline; }
+
+    .caso-card:last-child {
+        border-bottom: none;
+    }
+
+    .caso-titulo {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--ink);
+    }
+
+    .caso-meta {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.15rem;
+    }
+
+    .caso-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        font-weight: 700;
+        background: var(--info-bg);
+        color: var(--info);
+    }
+
+    .caso-link {
+        margin-left: auto;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .caso-link:hover {
+        text-decoration: underline;
+    }
 
     /* ── PROCESOS COMERCIALES ───────────────── */
-    .proc-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 0 0 6px 6px; overflow: hidden; }
+    .proc-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface);
+        border-radius: 0 0 6px 6px;
+        overflow: hidden;
+    }
+
     .proc-table th {
         background: var(--brand);
         color: white;
@@ -197,6 +323,7 @@
         text-transform: uppercase;
         text-align: left;
     }
+
     .proc-table td {
         padding: 0.65rem 1rem;
         font-size: 0.82rem;
@@ -204,6 +331,7 @@
         color: var(--ink);
         vertical-align: middle;
     }
+
     .proc-badge-estado {
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
@@ -216,7 +344,10 @@
         text-transform: uppercase;
         transition: background 0.15s;
     }
-    .proc-badge-estado:hover { background: var(--line); }
+
+    .proc-badge-estado:hover {
+        background: var(--line);
+    }
 
     /* ── POPUP ESTADO ───────────────────────── */
     .estado-popup {
@@ -229,9 +360,10 @@
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         padding: 0.5rem;
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
         z-index: 100;
     }
+
     .estado-popup select {
         width: 100%;
         padding: 0.4rem;
@@ -240,7 +372,13 @@
         outline: none;
         font-size: 0.85rem;
     }
-    .estado-popup-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
+
+    .estado-popup-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        justify-content: flex-end;
+    }
 
     /* ── CONDICIONES ESPECIALES (BADGES INFO) ── */
     .cond-badge {
@@ -259,7 +397,7 @@
     /* ── SECTION BUTTON ──────────────────────── */
     .section-btn {
         background: transparent;
-        border: 1px solid rgba(255,255,255,0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         color: white;
         padding: 0.2rem 0.6rem;
         border-radius: 4px;
@@ -268,7 +406,10 @@
         cursor: pointer;
         transition: background 0.2s;
     }
-    .section-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .section-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
 
     /* ── SMALL BUTTON ────────────────────────── */
     .btn-sm {
@@ -284,9 +425,20 @@
         text-decoration: none;
         display: inline-block;
     }
-    .btn-sm:hover { background: var(--line-soft); border-color: var(--muted-2); }
-    .btn-sm-danger { color: var(--danger); border-color: var(--danger-border); }
-    .btn-sm-danger:hover { background: var(--danger-bg); }
+
+    .btn-sm:hover {
+        background: var(--line-soft);
+        border-color: var(--muted-2);
+    }
+
+    .btn-sm-danger {
+        color: var(--danger);
+        border-color: var(--danger-border);
+    }
+
+    .btn-sm-danger:hover {
+        background: var(--danger-bg);
+    }
 
     /* ── BADGE GESTIÓN ───────────────────────── */
     .badge-gestion {
@@ -301,30 +453,87 @@
 
     /* ── MODAL EDITAR ───────────────────────── */
     .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5); z-index: 1000;
-        display: none; justify-content: center; align-items: flex-start;
-        overflow-y: auto; padding: 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        overflow-y: auto;
+        padding: 2rem;
     }
-    .modal-overlay.active { display: flex; }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
     .modal-content {
-        background: var(--surface); width: 100%; max-width: 900px;
-        border-radius: 10px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+        background: var(--surface);
+        width: 100%;
+        max-width: 900px;
+        border-radius: 10px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
         overflow: hidden;
     }
+
     .modal-header {
-        background: var(--brand); color: white;
+        background: var(--brand);
+        color: white;
         padding: 1rem 1.5rem;
-        display: flex; justify-content: space-between; align-items: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    .modal-title { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-    .btn-close { background: none; border: none; cursor: pointer; color: #A9B5C2; }
-    .btn-close:hover { color: white; }
-    .modal-body { padding: 1.5rem; }
-    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .form-group label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .form-group input, .form-group select, .form-group textarea {
+
+    .modal-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #A9B5C2;
+    }
+
+    .btn-close:hover {
+        color: white;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .form-group label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
         padding: 0.6rem 0.85rem;
         border: 1px solid var(--line);
         border-radius: 6px;
@@ -334,23 +543,55 @@
         color: var(--ink);
         transition: border-color 0.2s;
     }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(32,58,94,0.08);
+        box-shadow: 0 0 0 3px rgba(32, 58, 94, 0.08);
     }
+
     .modal-footer {
         padding: 1rem 1.5rem;
         border-top: 1px solid var(--line-soft);
-        display: flex; justify-content: flex-end; gap: 1rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
     }
 
     /* ── SERVICE BADGES (st-pi) ─────────────── */
-    .st-pi { display:inline-block; padding:0.15rem 0.45rem; border-radius:999px; font-size:0.7rem; font-weight:600; }
-    .st-activo { background:var(--info-bg); color:var(--info); }
-    .st-en_proceso { background:var(--warn-bg); color:var(--warn); }
-    .st-resuelto { background:var(--success-bg); color:var(--success); }
-    .st-archivado { background:var(--line-soft); color:var(--muted); }
-    .st-apelacion { background:var(--info-bg); color:var(--info); }
+    .st-pi {
+        display: inline-block;
+        padding: 0.15rem 0.45rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .st-activo {
+        background: var(--info-bg);
+        color: var(--info);
+    }
+
+    .st-en_proceso {
+        background: var(--warn-bg);
+        color: var(--warn);
+    }
+
+    .st-resuelto {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+
+    .st-archivado {
+        background: var(--line-soft);
+        color: var(--muted);
+    }
+
+    .st-apelacion {
+        background: var(--info-bg);
+        color: var(--info);
+    }
 </style>
 {% endblock %}
 
@@ -364,9 +605,11 @@
     {% if primer_proceso %}
     <div class="banner-estado-wrapper">
         {% if read_only %}
-        <span style="background:var(--brand-2); border:1px solid var(--brand-3); color:white; padding:0.3rem 0.75rem; border-radius:6px; font-size:0.8rem; font-weight:700;">{{ primer_proceso.estado_comercial }}</span>
+        <span
+            style="background:var(--brand-2); border:1px solid var(--brand-3); color:white; padding:0.3rem 0.75rem; border-radius:6px; font-size:0.8rem; font-weight:700;">{{ primer_proceso.estado_comercial }}</span>
         {% else %}
-        <form id="form-estado-banner" method="post" action="{% url 'comercial_cambiar_estado' primer_proceso.pk %}" style="display:inline;">
+        <form id="form-estado-banner" method="post" action="{% url 'comercial_cambiar_estado' primer_proceso.pk %}"
+            style="display:inline;">
             {% csrf_token %}
             <select name="estado" class="banner-estado-select" onchange="guardarEstadoBanner(this)">
                 {% for e in estados %}
@@ -374,7 +617,8 @@
                 {% endfor %}
             </select>
         </form>
-        <i data-lucide="settings" width="16" height="16" class="banner-gear" onclick="crearEstado()" title="Crear nuevo estado"></i>
+        <i data-lucide="settings" width="16" height="16" class="banner-gear" onclick="crearEstado()"
+            title="Crear nuevo estado"></i>
         {% endif %}
     </div>
     {% endif %}
@@ -394,10 +638,12 @@
         <button class="banner-btn" onclick="openNuevoCasoModal()">
             <i data-lucide="plus" width="14" height="14"></i> Caso Jurídico
         </button>
-        <a href="{% url 'comercial_generar_contrato' cliente.pk %}" class="banner-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
+        <a href="{% url 'comercial_generar_contrato' cliente.pk %}" class="banner-btn"
+            style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
             <i data-lucide="file-text" width="14" height="14"></i> Contrato
         </a>
-        <a href="{% url 'comercial_generar_contrato' cliente.pk %}?pdf=1" class="banner-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
+        <a href="{% url 'comercial_generar_contrato' cliente.pk %}?pdf=1" class="banner-btn"
+            style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
             <i data-lucide="download" width="14" height="14"></i> PDF
         </a>
     </div>
@@ -427,7 +673,8 @@
         </div>
     </div>
     <div class="summary-card">
-        <div class="summary-card-icon" style="background:var(--info-bg); color:var(--info);"><i data-lucide="check-circle" width="20" height="20"></i></div>
+        <div class="summary-card-icon" style="background:var(--info-bg); color:var(--info);"><i
+                data-lucide="check-circle" width="20" height="20"></i></div>
         <div>
             <div class="summary-card-label">Acuerdos Activos</div>
             <div class="summary-card-value">{{ stats.total_procesos|default:0 }}</div>
@@ -436,307 +683,345 @@
 </div>
 
 {# ── TABS ────────────────────────────────────────────────────────────────── #}
-<div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--line-soft); padding-bottom:0.5rem;">
-    <a href="#" class="tab-active" data-tab="ficha" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:700; border-radius:6px 6px 0 0; background:var(--brand); color:white; text-decoration:none;">Ficha</a>
-    <a href="#" data-tab="procesos" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Procesos ({{ stats.total_procesos|default:0 }})</a>
-    <a href="#" data-tab="actividad" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Actividad (0)</a>
+<div
+    style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--line-soft); padding-bottom:0.5rem;">
+    <a href="#" class="tab-active" data-tab="ficha"
+        style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:700; border-radius:6px 6px 0 0; background:var(--brand); color:white; text-decoration:none;">Ficha</a>
+    <a href="#" data-tab="procesos"
+        style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Procesos
+        ({{ stats.total_procesos|default:0 }})</a>
+    <a href="#" data-tab="actividad"
+        style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Actividad
+        (0)</a>
 </div>
 
 {# ── SECCIÓN FICHA ──────────────────────────────────────────────────────── #}
 <div id="tab-ficha">
 
-{# I. DATOS GENERALES Y DOMICILIO #}
-<div class="ficha-section">
-    <div class="ficha-section-header">
-        <span>I. Datos Generales y Domicilio</span>
-    </div>
-    <table class="ficha-table">
-        <tr>
-            <td class="ft-label">Nombre Completo</td>
-            <td class="ft-val">{{ cliente.nombre }}</td>
-            <td class="ft-label">Cédula</td>
-            <td class="ft-val">{{ cliente.identificacion }}</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Celular</td>
-            <td class="ft-val">{{ cliente.telefono|default:"—" }}</td>
-            <td class="ft-label">Correo</td>
-            <td class="ft-val">{{ cliente.email|default:"—" }}</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Servicio</td>
-            <td class="ft-val">{% if primer_proceso %}{{ primer_proceso.tipo_servicio_display }}{% else %}—{% endif %}</td>
-            <td class="ft-label">Referido Por</td>
-            <td class="ft-val">{% if cliente.referidor %}{{ cliente.referidor }}{% else %}—{% endif %}</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Ciudad / Municipio</td>
-            <td class="ft-val">{{ cliente.ciudad|default:"—" }}</td>
-            <td class="ft-label">Departamento</td>
-            <td class="ft-val">{{ cliente.departamento|default:"—" }}</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Dirección</td>
-            <td class="ft-val">{{ cliente.direccion|default:"—" }}</td>
-            <td class="ft-label">Barrio</td>
-            <td class="ft-val">{{ cliente.barrio|default:"—" }}</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Fec. Contrato</td>
-            <td class="ft-val">
-                {% if primer_proceso and primer_proceso.fecha_contrato %}{{ primer_proceso.fecha_contrato|date:"d/m/Y" }}
-                {% elif cliente.fecha_contrato %}{{ cliente.fecha_contrato|date:"d/m/Y" }}
-                {% else %}—{% endif %}
-                {% if primer_proceso and primer_proceso.estado_comercial == 'CONTRATO_FIRMADO' and not primer_proceso.fecha_contrato %}
-                <span style="color:var(--danger); font-size:0.75rem;"> (pendiente)</span>
-                {% endif %}
-            </td>
-            <td class="ft-label">Vereda</td>
-            <td class="ft-val">{{ cliente.vereda|default:"—" }}</td>
-        </tr>
-    </table>
-    {% if not read_only and primer_proceso %}
-    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:0.5rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; justify-content:flex-end;">
-        <button class="section-btn" onclick="openProcesoModal()">Editar datos del proceso</button>
-    </div>
-    {% endif %}
-    {% if cliente.es_victima_conflicto or cliente.es_indigena or cliente.es_adulto_mayor or cliente.es_afectacion_psicologica or cliente.es_madre_cabeza_familia %}
-    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:0.6rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; flex-wrap:wrap;">
-        <span style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; padding-top:0.2rem;">Condic. Especiales:</span>
-        {% if cliente.es_victima_conflicto %}<span class="cond-badge"><i data-lucide="shield-alert" width="12" height="12"></i> Víctima conflicto</span>{% endif %}
-        {% if cliente.es_indigena %}<span class="cond-badge"><i data-lucide="flag" width="12" height="12"></i> Indígena</span>{% endif %}
-        {% if cliente.es_adulto_mayor %}<span class="cond-badge"><i data-lucide="users" width="12" height="12"></i> Adulto mayor</span>{% endif %}
-        {% if cliente.es_afectacion_psicologica %}<span class="cond-badge"><i data-lucide="heart" width="12" height="12"></i> Afectación psicológica</span>{% endif %}
-        {% if cliente.es_madre_cabeza_familia %}<span class="cond-badge"><i data-lucide="home" width="12" height="12"></i> Madre cabeza de familia</span>{% endif %}
-    </div>
-    {% endif %}
-</div>
-
-{# OBSERVACIONES #}
-{% if cliente.observaciones %}
-<div class="ficha-section">
-    <div class="ficha-section-header"><span>Observaciones</span></div>
-    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:1rem; border-radius:0 0 6px 6px; font-size:0.85rem; color:var(--ink); white-space:pre-wrap; line-height:1.6;">{{ cliente.observaciones }}</div>
-</div>
-{% endif %}
-
-{# II. CENTRALES DE RIESGO #}
-<div class="ficha-section">
-    <div class="ficha-section-header">
-        <span>II. Centrales de Riesgo</span>
+    {# I. DATOS GENERALES Y DOMICILIO #}
+    <div class="ficha-section">
+        <div class="ficha-section-header">
+            <span>I. Datos Generales y Domicilio</span>
+        </div>
+        <table class="ficha-table">
+            <tr>
+                <td class="ft-label">Nombre Completo</td>
+                <td class="ft-val">{{ cliente.nombre }}</td>
+                <td class="ft-label">Cédula</td>
+                <td class="ft-val">{{ cliente.identificacion }}</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Celular</td>
+                <td class="ft-val">{{ cliente.telefono|default:"—" }}</td>
+                <td class="ft-label">Correo</td>
+                <td class="ft-val">{{ cliente.email|default:"—" }}</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Servicio</td>
+                <td class="ft-val">{% if primer_proceso %}{{ primer_proceso.tipo_servicio_display }}{% else %}—{% endif %}</td>
+                <td class="ft-label">Referido Por</td>
+                <td class="ft-val">{% if cliente.referidor %}{{ cliente.referidor }}{% else %}—{% endif %}</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Ciudad / Municipio</td>
+                <td class="ft-val">{{ cliente.ciudad|default:"—" }}</td>
+                <td class="ft-label">Departamento</td>
+                <td class="ft-val">{{ cliente.departamento|default:"—" }}</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Dirección</td>
+                <td class="ft-val">{{ cliente.direccion|default:"—" }}</td>
+                <td class="ft-label">Barrio</td>
+                <td class="ft-val">{{ cliente.barrio|default:"—" }}</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Fec. Contrato</td>
+                <td class="ft-val">
+                    {% if primer_proceso and primer_proceso.fecha_contrato %}{{ primer_proceso.fecha_contrato|date:"d/m/Y" }}
+                    {% elif cliente.fecha_contrato %}{{ cliente.fecha_contrato|date:"d/m/Y" }}
+                    {% else %}—{% endif %}
+                    {% if primer_proceso and primer_proceso.estado_comercial == 'CONTRATO_FIRMADO' and not primer_proceso.fecha_contrato %}
+                    <span style="color:var(--danger); font-size:0.75rem;"> (pendiente)</span>
+                    {% endif %}
+                </td>
+                <td class="ft-label">Vereda</td>
+                <td class="ft-val">{{ cliente.vereda|default:"—" }}</td>
+            </tr>
+        </table>
         {% if not read_only and primer_proceso %}
-        <button class="section-btn" onclick="openCentralesModal()">Editar</button>
+        <div
+            style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:0.5rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; justify-content:flex-end;">
+            <button class="section-btn" onclick="openProcesoModal()">Editar datos del proceso</button>
+        </div>
+        {% endif %}
+        {% if cliente.es_victima_conflicto or cliente.es_indigena or cliente.es_adulto_mayor or cliente.es_afectacion_psicologica or cliente.es_madre_cabeza_familia %}
+        <div
+            style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:0.6rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <span
+                style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; padding-top:0.2rem;">Condic.
+                Especiales:</span>
+            {% if cliente.es_victima_conflicto %}<span class="cond-badge"><i data-lucide="shield-alert" width="12"
+                    height="12"></i> Víctima conflicto</span>{% endif %}
+            {% if cliente.es_indigena %}<span class="cond-badge"><i data-lucide="flag" width="12" height="12"></i>
+                Indígena</span>{% endif %}
+            {% if cliente.es_adulto_mayor %}<span class="cond-badge"><i data-lucide="users" width="12" height="12"></i>
+                Adulto mayor</span>{% endif %}
+            {% if cliente.es_afectacion_psicologica %}<span class="cond-badge"><i data-lucide="heart" width="12"
+                    height="12"></i> Afectación psicológica</span>{% endif %}
+            {% if cliente.es_madre_cabeza_familia %}<span class="cond-badge"><i data-lucide="home" width="12"
+                    height="12"></i> Madre cabeza de familia</span>{% endif %}
+        </div>
         {% endif %}
     </div>
-    {% with p=primer_proceso %}
-    <table class="ficha-table">
-        {% if p %}
-        <tr>
-            <td class="ft-label">Clave DataCrédito</td>
-            <td class="ft-val">{{ p.clave_datacredito|default:"—" }}</td>
-            <td class="ft-label">Score DataCrédito</td>
-            <td class="ft-val">{{ p.score_datacredito|default:"—" }} / 1000</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Clave TransUnion</td>
-            <td class="ft-val">{{ p.clave_transunion|default:"—" }}</td>
-            <td class="ft-label">Score TransUnion</td>
-            <td class="ft-val">{{ p.score_transunion|default:"—" }} / 1000</td>
-        </tr>
-        {% else %}
-        <tr><td class="ft-val" colspan="4" style="text-align:center;color:var(--muted);">Sin procesos asociados</td></tr>
-        {% endif %}
-    </table>
-    {% endwith %}
-</div>
 
-{# IV. ESTRUCTURA DE COBRO MIXTO #}
-{% if primer_proceso %}
-{% with p=primer_proceso %}
-{% with ar=anticipo_resumen %}
-<div class="ficha-section">
-    <div class="ficha-section-header">
-        <span>IV. Estructura de Cobro Mixto</span>
-        <div style="display:flex; gap:0.4rem;">
-            {% if not read_only %}
-            <button class="section-btn" onclick="openCobroModal()">Editar</button>
-            <button class="section-btn" style="background:var(--success); color:white; border-color:var(--success);" onclick="facturarCobro()">Facturar</button>
-            {% endif %}
-        </div>
-    </div>
-    <table class="ficha-table">
-        <tr>
-            <td class="ft-label">Expectativa Total (COP)</td>
-            <td class="ft-val" style="font-weight:700;">$ {{ p.valor_expectativa_total|floatformat:0|intcomma|default:"0" }}</td>
-            <td class="ft-label">% Anticipo</td>
-            <td class="ft-val" style="font-weight:700;">{{ p.porcentaje_anticipo|floatformat:0|default:"0" }}%</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Reportes Objetivo</td>
-            <td class="ft-val" style="font-weight:700;">{{ p.cantidad_reportes|default:"0" }}</td>
-            <td class="ft-label">Cuotas Anticipo</td>
-            <td class="ft-val" style="font-weight:700;">{{ p.cuotas_anticipo|default:"1" }}</td>
-        </tr>
-        {% if ar %}
-        <tr>
-            <td class="ft-label">Anticipo Total</td>
-            <td class="ft-val" style="font-weight:700;">$ {{ ar.anticipo_total|floatformat:0|intcomma }}</td>
-            <td class="ft-label">Anticipo Pagado</td>
-            <td class="ft-val" style="font-weight:700; color:var(--success);">$ {{ ar.anticipo_pagado|floatformat:0|intcomma }}</td>
-        </tr>
-        <tr>
-            <td class="ft-label">Anticipo Pendiente</td>
-            <td class="ft-val" style="font-weight:700; color:var(--warn);">$ {{ ar.anticipo_pendiente|floatformat:0|intcomma }}</td>
-            <td class="ft-label">Saldo Pendiente</td>
-            <td class="ft-val" style="font-weight:700; color:var(--danger);">$ {{ ar.saldo_pendiente|floatformat:0|intcomma }}</td>
-        </tr>
-        {% endif %}
-    </table>
-    {% if anticipo_cuotas %}
-    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; border-radius:0 0 6px 6px; padding:0.75rem 1rem;">
-        <div style="font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:0.5rem;">
-            Cronograma de cuotas del anticipo
-            {% if anticipo_resumen %}<span style="color:var(--success);">({{ anticipo_resumen.cuotas_pagadas }}/{{ anticipo_resumen.cuotas_totales }} pagadas)</span>{% endif %}
-        </div>
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-            {% for c in anticipo_cuotas %}
-            <div style="flex:1 1 140px; max-width:200px; border:1px solid var(--line-soft); border-radius:6px; padding:0.5rem 0.7rem; {% if c.pagada %}background:var(--success-bg); border-color:var(--success);{% endif %}">
-                <div style="font-size:0.7rem; color:var(--muted);">Cuota {{ c.numero }}</div>
-                <div style="font-weight:700; font-size:0.85rem;">$ {{ c.valor|floatformat:0|intcomma }}</div>
-                <div style="font-size:0.7rem; color:{% if c.pagada %}var(--success){% else %}var(--muted-2){% endif %}; font-weight:600;">{% if c.pagada %}{{ c.fecha_pago|date:"d/m/Y" }}{% else %}Pendiente{% endif %}</div>
-            </div>
-            {% endfor %}
-        </div>
+    {# OBSERVACIONES #}
+    {% if cliente.observaciones %}
+    <div class="ficha-section">
+        <div class="ficha-section-header"><span>Observaciones</span></div>
+        <div
+            style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:1rem; border-radius:0 0 6px 6px; font-size:0.85rem; color:var(--ink); white-space:pre-wrap; line-height:1.6;">
+            {{ cliente.observaciones }}</div>
     </div>
     {% endif %}
-</div>
-{% endwith %}{% endwith %}
-{% endif %}
 
-{# III. REPORTES NEGATIVOS EN CENTRALES #}
-<div class="ficha-section">
-    <div class="ficha-section-header">
-        <span>III. Reportes Negativos en Centrales ({{ reportes_negativos|length }})</span>
-        {% if not read_only %}
-        <button class="section-btn" onclick="openReporteModal()">Agregar</button>
-        {% endif %}
-    </div>
-    <table class="proc-table" style="border-radius:0 0 6px 6px;">
-        <thead>
-            <tr>
-                <th style="width:30px;">#</th>
-                <th>Entidad / No. Obligación</th>
-                <th>Estado Central</th>
-                <th>Gestión</th>
-                <th>Estado Obligación</th>
-                <th>Saldo</th>
-                <th>Perm. Negativa</th>
-                <th style="width:100px;">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in reportes_negativos %}
-            <tr>
-                <td style="color:var(--muted); font-size:0.75rem;">{{ forloop.counter }}</td>
-                <td>
-                    <div style="font-weight:600;">{{ r.entidad }}</div>
-                    {% if r.numero_obligacion %}<div style="font-size:0.75rem; color:var(--muted);">No. {{ r.numero_obligacion }}</div>{% endif %}
-                </td>
-                <td>{{ r.estado_central|default:"—" }}</td>
-                <td><span class="badge-gestion">{{ r.get_gestion_display }}</span></td>
-                <td>{% if r.obligation_status %}<span class="hal-badge hal-estado">{{ r.get_obligation_status_display }}</span>{% else %}<span style="color:var(--muted-2);">—</span>{% endif %}</td>
-                <td style="font-weight:700;">$ {{ r.saldo|floatformat:0|intcomma }}</td>
-                <td style="font-size:0.78rem;">{% if r.permiso_negativa_hasta %}Hasta {{ r.permiso_negativa_hasta|date:"d/m/Y" }}{% else %}—{% endif %}</td>
-                <td>
-                    {% if not read_only %}
-                    <button class="btn-sm" onclick="editarReporte({{ r.id }})">Editar</button>
-                    <button class="btn-sm btn-sm-danger" onclick="eliminarReporte({{ r.id }})"><i data-lucide="x" width="12" height="12"></i></button>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:1.5rem;">No hay reportes negativos registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-        {% if reportes_negativos %}
-        <tfoot>
-            <tr style="background:var(--line-soft); font-weight:700;">
-                <td colspan="5" style="text-align:right; padding:0.6rem 1rem;">TOTALES — {{ reportes_negativos|length }} obligación(es)</td>
-                <td style="padding:0.6rem 1rem;">$ {{ total_saldo_reportes|default:0|floatformat:0|intcomma }}</td>
-                <td colspan="2"></td>
-            </tr>
-        </tfoot>
-        {% endif %}
-    </table>
-</div>
-
-{# V. DOCUMENTOS ANEXOS #}
-<div class="ficha-section">
-    <div class="ficha-section-header">
-        <span>V. Documentos Anexos ({{ documentos|length }})</span>
-        {% if not read_only %}
-        <button class="section-btn" onclick="openDocumentoModal()">+ Subir Documento</button>
-        {% endif %}
-    </div>
-    <table class="proc-table" style="border-radius:0 0 6px 6px;">
-        <thead>
-            <tr>
-                <th style="width:30px;">#</th>
-                <th>Tipo de Documento</th>
-                <th>Nombre del Archivo</th>
-                <th>Fecha de Carga</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for d in documentos %}
-            <tr>
-                <td style="color:var(--muted); font-size:0.75rem;">{{ forloop.counter }}</td>
-                <td>{{ d.descripcion|default:"Documento" }}</td>
-                <td><a href="{{ d.archivo.url }}" target="_blank" style="color:var(--accent); text-decoration:none;">{{ d.nombre }}</a></td>
-                <td style="font-size:0.78rem;">{{ d.fecha_subida|date:"d/m/Y" }}</td>
-                <td style="white-space:nowrap;">
-                    <a href="{{ d.archivo.url }}" target="_blank" class="btn-sm">Descargar</a>
-                    {% if not read_only %}
-                    <button class="btn-sm btn-sm-danger" onclick="eliminarDocumento({{ d.pk }})" title="Eliminar"><i data-lucide="x" width="12" height="12"></i></button>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:1.5rem;">No hay documentos anexados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-{# VI. HISTORIAL DE ACTIVIDADES #}
-<div class="ficha-section">
-    <div class="ficha-section-header">
-        <span>VI. Historial de Actividades</span>
-        <div style="display:flex; gap:0.4rem;">
-            {% if not read_only %}
-            <button class="section-btn" onclick="openActividadModal()">Agregar actividad</button>
+    {# II. CENTRALES DE RIESGO #}
+    <div class="ficha-section">
+        <div class="ficha-section-header">
+            <span>II. Centrales de Riesgo</span>
+            {% if not read_only and primer_proceso %}
+            <button class="section-btn" onclick="openCentralesModal()">Editar</button>
             {% endif %}
-            <a href="{% url 'comercial_historial' cliente.pk %}" class="section-btn">Ver todas</a>
         </div>
+        {% with p=primer_proceso %}
+        <table class="ficha-table">
+            {% if p %}
+            <tr>
+                <td class="ft-label">Clave DataCrédito</td>
+                <td class="ft-val">{{ p.clave_datacredito|default:"—" }}</td>
+                <td class="ft-label">Score DataCrédito</td>
+                <td class="ft-val">{{ p.score_datacredito|default:"—" }} / 1000</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Clave TransUnion</td>
+                <td class="ft-val">{{ p.clave_transunion|default:"—" }}</td>
+                <td class="ft-label">Score TransUnion</td>
+                <td class="ft-val">{{ p.score_transunion|default:"—" }} / 1000</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="ft-val" colspan="4" style="text-align:center;color:var(--muted);">Sin procesos asociados</td>
+            </tr>
+            {% endif %}
+        </table>
+        {% endwith %}
     </div>
-    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; border-radius:0 0 6px 6px;">
-        {% for h in historial %}
-        <div style="display:flex; gap:0.75rem; padding:0.7rem 1rem; border-top:1px solid var(--line-soft); align-items:flex-start;">
-            <div style="flex-shrink:0; font-size:0.72rem; color:var(--muted); min-width:80px; padding-top:0.1rem;">{{ h.fecha|date:"d/m/Y" }}</div>
-            <div style="flex:1; min-width:0;">
-                <div style="font-size:0.83rem; font-weight:600; color:var(--ink);">{{ h.texto }}</div>
-                {% if h.usuario %}<div style="font-size:0.72rem; color:var(--muted);">por {{ h.usuario }}</div>{% endif %}
+
+    {# IV. ESTRUCTURA DE COBRO MIXTO #}
+    {% if primer_proceso %}
+    {% with p=primer_proceso %}
+    {% with ar=anticipo_resumen %}
+    <div class="ficha-section">
+        <div class="ficha-section-header">
+            <span>IV. Estructura de Cobro Mixto</span>
+            <div style="display:flex; gap:0.4rem;">
+                {% if not read_only %}
+                <button class="section-btn" onclick="openCobroModal()">Editar</button>
+                <button class="section-btn" style="background:var(--success); color:white; border-color:var(--success);"
+                    onclick="facturarCobro()">Facturar</button>
+                {% endif %}
             </div>
-            {% if h.tipo %}<span class="hal-badge hal-{{ h.tipo }}" style="flex-shrink:0;">{{ h.tipo }}</span>{% endif %}
         </div>
-        {% empty %}
-        <div style="padding:1.5rem; text-align:center; color:var(--muted); font-size:0.85rem;">
-            Sin actividades registradas todavía.
+        <table class="ficha-table">
+            <tr>
+                <td class="ft-label">Expectativa Total (COP)</td>
+                <td class="ft-val" style="font-weight:700;">$ {{ p.valor_expectativa_total|floatformat:0|intcomma|default:"0" }}</td>
+                <td class="ft-label">% Anticipo</td>
+                <td class="ft-val" style="font-weight:700;">{{ p.porcentaje_anticipo|floatformat:0|default:"0" }}%</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Reportes Objetivo</td>
+                <td class="ft-val" style="font-weight:700;">{{ p.cantidad_reportes|default:"0" }}</td>
+                <td class="ft-label">Cuotas Anticipo</td>
+                <td class="ft-val" style="font-weight:700;">{{ p.cuotas_anticipo|default:"1" }}</td>
+            </tr>
+            {% if ar %}
+            <tr>
+                <td class="ft-label">Anticipo Total</td>
+                <td class="ft-val" style="font-weight:700;">$ {{ ar.anticipo_total|floatformat:0|intcomma }}</td>
+                <td class="ft-label">Anticipo Pagado</td>
+                <td class="ft-val" style="font-weight:700; color:var(--success);">$ {{ ar.anticipo_pagado|floatformat:0|intcomma }}</td>
+            </tr>
+            <tr>
+                <td class="ft-label">Anticipo Pendiente</td>
+                <td class="ft-val" style="font-weight:700; color:var(--warn);">$ {{ ar.anticipo_pendiente|floatformat:0|intcomma }}</td>
+                <td class="ft-label">Saldo Pendiente</td>
+                <td class="ft-val" style="font-weight:700; color:var(--danger);">$ {{ ar.saldo_pendiente|floatformat:0|intcomma }}</td>
+            </tr>
+            {% endif %}
+        </table>
+        {% if anticipo_cuotas %}
+        <div
+            style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; border-radius:0 0 6px 6px; padding:0.75rem 1rem;">
+            <div
+                style="font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:0.5rem;">
+                Cronograma de cuotas del anticipo
+                {% if anticipo_resumen %}<span style="color:var(--success);">({{ anticipo_resumen.cuotas_pagadas }}/{{ anticipo_resumen.cuotas_totales }} pagadas)</span>{% endif %}
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                {% for c in anticipo_cuotas %}
+                <div
+                    style="flex:1 1 140px; max-width:200px; border:1px solid var(--line-soft); border-radius:6px; padding:0.5rem 0.7rem; {% if c.pagada %}background:var(--success-bg); border-color:var(--success);{% endif %}">
+                    <div style="font-size:0.7rem; color:var(--muted);">Cuota {{ c.numero }}</div>
+                    <div style="font-weight:700; font-size:0.85rem;">$ {{ c.valor|floatformat:0|intcomma }}</div>
+                    <div
+                        style="font-size:0.7rem; color:{% if c.pagada %}var(--success){% else %}var(--muted-2){% endif %}; font-weight:600;">
+                        {% if c.pagada %}{{ c.fecha_pago|date:"d/m/Y" }}{% else %}Pendiente{% endif %}</div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        {% endfor %}
+        {% endif %}
     </div>
-</div>
+    {% endwith %}{% endwith %}
+    {% endif %}
+
+    {# III. REPORTES NEGATIVOS EN CENTRALES #}
+    <div class="ficha-section">
+        <div class="ficha-section-header">
+            <span>III. Reportes Negativos en Centrales ({{ reportes_negativos|length }})</span>
+            {% if not read_only %}
+            <button class="section-btn" onclick="openReporteModal()">Agregar</button>
+            {% endif %}
+        </div>
+        <table class="proc-table" style="border-radius:0 0 6px 6px;">
+            <thead>
+                <tr>
+                    <th style="width:30px;">#</th>
+                    <th>Entidad / No. Obligación</th>
+                    <th>Estado Central</th>
+                    <th>Gestión</th>
+                    <th>Estado Obligación</th>
+                    <th>Saldo</th>
+                    <th>Perm. Negativa</th>
+                    <th style="width:100px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reportes_negativos %}
+                <tr>
+                    <td style="color:var(--muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                    <td>
+                        <div style="font-weight:600;">{{ r.entidad }}</div>
+                        {% if r.numero_obligacion %}<div style="font-size:0.75rem; color:var(--muted);">No. {{ r.numero_obligacion }}</div>{% endif %}
+                    </td>
+                    <td>{{ r.estado_central|default:"—" }}</td>
+                    <td><span class="badge-gestion">{{ r.get_gestion_display }}</span></td>
+                    <td>{% if r.obligation_status %}<span class="hal-badge hal-estado">{{ r.get_obligation_status_display }}</span>{% else %}<span
+                            style="color:var(--muted-2);">—</span>{% endif %}</td>
+                    <td style="font-weight:700;">$ {{ r.saldo|floatformat:0|intcomma }}</td>
+                    <td style="font-size:0.78rem;">{% if r.permiso_negativa_hasta %}Hasta {{ r.permiso_negativa_hasta|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                    <td>
+                        {% if not read_only %}
+                        <button class="btn-sm" onclick="editarReporte({{ r.id }})">Editar</button>
+                        <button class="btn-sm btn-sm-danger" onclick="eliminarReporte({{ r.id }})"><i data-lucide="x"
+                                width="12" height="12"></i></button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align:center; color:var(--muted); padding:1.5rem;">No hay reportes
+                        negativos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% if reportes_negativos %}
+            <tfoot>
+                <tr style="background:var(--line-soft); font-weight:700;">
+                    <td colspan="5" style="text-align:right; padding:0.6rem 1rem;">TOTALES — {{ reportes_negativos|length }} obligación(es)</td>
+                    <td style="padding:0.6rem 1rem;">$ {{ total_saldo_reportes|default:0|floatformat:0|intcomma }}</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+
+    {# V. DOCUMENTOS ANEXOS #}
+    <div class="ficha-section">
+        <div class="ficha-section-header">
+            <span>V. Documentos Anexos ({{ documentos|length }})</span>
+            {% if not read_only %}
+            <button class="section-btn" onclick="openDocumentoModal()">+ Subir Documento</button>
+            {% endif %}
+        </div>
+        <table class="proc-table" style="border-radius:0 0 6px 6px;">
+            <thead>
+                <tr>
+                    <th style="width:30px;">#</th>
+                    <th>Tipo de Documento</th>
+                    <th>Nombre del Archivo</th>
+                    <th>Fecha de Carga</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in documentos %}
+                <tr>
+                    <td style="color:var(--muted); font-size:0.75rem;">{{ forloop.counter }}</td>
+                    <td>{{ d.descripcion|default:"Documento" }}</td>
+                    <td><a href="{{ d.archivo.url }}" target="_blank"
+                            style="color:var(--accent); text-decoration:none;">{{ d.nombre }}</a></td>
+                    <td style="font-size:0.78rem;">{{ d.fecha_subida|date:"d/m/Y" }}</td>
+                    <td style="white-space:nowrap;">
+                        <a href="{{ d.archivo.url }}" target="_blank" class="btn-sm">Descargar</a>
+                        {% if not read_only %}
+                        <button class="btn-sm btn-sm-danger" onclick="eliminarDocumento({{ d.pk }})" title="Eliminar"><i
+                                data-lucide="x" width="12" height="12"></i></button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color:var(--muted); padding:1.5rem;">No hay documentos
+                        anexados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# VI. HISTORIAL DE ACTIVIDADES #}
+    <div class="ficha-section">
+        <div class="ficha-section-header">
+            <span>VI. Historial de Actividades</span>
+            <div style="display:flex; gap:0.4rem;">
+                {% if not read_only %}
+                <button class="section-btn" onclick="openActividadModal()">Agregar actividad</button>
+                {% endif %}
+                <a href="{% url 'comercial_historial' cliente.pk %}" class="section-btn">Ver todas</a>
+            </div>
+        </div>
+        <div
+            style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; border-radius:0 0 6px 6px;">
+            {% for h in historial %}
+            <div
+                style="display:flex; gap:0.75rem; padding:0.7rem 1rem; border-top:1px solid var(--line-soft); align-items:flex-start;">
+                <div style="flex-shrink:0; font-size:0.72rem; color:var(--muted); min-width:80px; padding-top:0.1rem;">
+                    {{ h.fecha|date:"d/m/Y" }}</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:0.83rem; font-weight:600; color:var(--ink);">{{ h.texto }}</div>
+                    {% if h.usuario %}<div style="font-size:0.72rem; color:var(--muted);">por {{ h.usuario }}</div>{% endif %}
+                </div>
+                {% if h.tipo %}<span class="hal-badge hal-{{ h.tipo }}" style="flex-shrink:0;">{{ h.tipo }}</span>{% endif %}
+            </div>
+            {% empty %}
+            <div style="padding:1.5rem; text-align:center; color:var(--muted); font-size:0.85rem;">
+                Sin actividades registradas todavía.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
 </div>{# /tab-ficha #}
 
@@ -757,7 +1042,8 @@
                     </div>
                     <div class="form-group">
                         <label>Cédula</label>
-                        <input type="text" name="identificacion" value="{{ cliente.identificacion }}" readonly style="background:var(--line-soft);">
+                        <input type="text" name="identificacion" value="{{ cliente.identificacion }}" readonly
+                            style="background:var(--line-soft);">
                     </div>
                     <div class="form-group">
                         <label>Celular</label>
@@ -792,14 +1078,15 @@
                         <select name="canal_origen">
                             <option value="">— Sin canal —</option>
                             {% for v, lbl in canales_origen %}
-                            <option value="{{ v }}" {% if cliente.canal_origen == v %}selected{% endif %}>{{ lbl }}</option>
+                            <option value="{{ v }}" {% if cliente.canal_origen == v %}selected{% endif %}>{{ lbl }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Fec. Contrato</label>
                         <input type="date" name="fecha_contrato"
-                               value="{% if primer_proceso and primer_proceso.fecha_contrato %}{{ primer_proceso.fecha_contrato|date:'Y-m-d' }}{% elif cliente.fecha_contrato %}{{ cliente.fecha_contrato|date:'Y-m-d' }}{% endif %}">
+                            value="{% if primer_proceso and primer_proceso.fecha_contrato %}{{ primer_proceso.fecha_contrato|date:'Y-m-d' }}{% elif cliente.fecha_contrato %}{{ cliente.fecha_contrato|date:'Y-m-d' }}{% endif %}">
                     </div>
                 </div>
                 {% if request.user.role == 'ADMIN' %}
@@ -833,7 +1120,8 @@
                         <input type="checkbox" name="es_victima_conflicto" {% if cliente.es_victima_conflicto %}checked{% endif %}> Víctima conflicto
                     </label>
                     <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
-                        <input type="checkbox" name="es_indigena" {% if cliente.es_indigena %}checked{% endif %}> Indígena
+                        <input type="checkbox" name="es_indigena" {% if cliente.es_indigena %}checked{% endif %}>
+                        Indígena
                     </label>
                     <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem; cursor:pointer;">
                         <input type="checkbox" name="es_adulto_mayor" {% if cliente.es_adulto_mayor %}checked{% endif %}> Adulto mayor
@@ -867,19 +1155,23 @@
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label>Clave DataCrédito</label>
-                        <input type="text" name="clave_datacredito" value="{{ primer_proceso.clave_datacredito|default:'' }}">
+                        <input type="text" name="clave_datacredito"
+                            value="{{ primer_proceso.clave_datacredito|default:'' }}">
                     </div>
                     <div class="form-group">
                         <label>Score DataCrédito</label>
-                        <input type="number" name="score_datacredito" value="{{ primer_proceso.score_datacredito|default:'' }}" min="0" max="1000">
+                        <input type="number" name="score_datacredito"
+                            value="{{ primer_proceso.score_datacredito|default:'' }}" min="0" max="1000">
                     </div>
                     <div class="form-group">
                         <label>Clave TransUnion</label>
-                        <input type="text" name="clave_transunion" value="{{ primer_proceso.clave_transunion|default:'' }}">
+                        <input type="text" name="clave_transunion"
+                            value="{{ primer_proceso.clave_transunion|default:'' }}">
                     </div>
                     <div class="form-group">
                         <label>Score TransUnion</label>
-                        <input type="number" name="score_transunion" value="{{ primer_proceso.score_transunion|default:'' }}" min="0" max="1000">
+                        <input type="number" name="score_transunion"
+                            value="{{ primer_proceso.score_transunion|default:'' }}" min="0" max="1000">
                     </div>
                 </div>
             </form>
@@ -904,27 +1196,33 @@
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label>Expectativa Total (COP)</label>
-                        <input type="number" name="valor_expectativa_total" step="0.01" value="{{ primer_proceso.valor_expectativa_total|default:'0' }}">
+                        <input type="number" name="valor_expectativa_total" step="0.01"
+                            value="{{ primer_proceso.valor_expectativa_total|default:'0' }}">
                     </div>
                     <div class="form-group">
                         <label>% Anticipo</label>
-                        <input type="number" name="porcentaje_anticipo" step="0.01" value="{{ primer_proceso.porcentaje_anticipo|default:'0' }}">
+                        <input type="number" name="porcentaje_anticipo" step="0.01"
+                            value="{{ primer_proceso.porcentaje_anticipo|default:'0' }}">
                     </div>
                     <div class="form-group">
                         <label>Reportes Objetivo</label>
-                        <input type="number" name="cantidad_reportes" value="{{ primer_proceso.cantidad_reportes|default:'0' }}">
+                        <input type="number" name="cantidad_reportes"
+                            value="{{ primer_proceso.cantidad_reportes|default:'0' }}">
                     </div>
                     <div class="form-group">
                         <label>Cuotas Anticipo</label>
-                        <input type="number" name="cuotas_anticipo" value="{{ primer_proceso.cuotas_anticipo|default:'1' }}" min="1">
+                        <input type="number" name="cuotas_anticipo"
+                            value="{{ primer_proceso.cuotas_anticipo|default:'1' }}" min="1">
                     </div>
                     <div class="form-group">
                         <label>Valor Pactado</label>
-                        <input type="number" name="valor_pactado" step="0.01" value="{{ primer_proceso.valor_pactado|default:'0' }}">
+                        <input type="number" name="valor_pactado" step="0.01"
+                            value="{{ primer_proceso.valor_pactado|default:'0' }}">
                     </div>
                     <div class="form-group">
                         <label>Saldo Pendiente</label>
-                        <input type="number" name="saldo_pendiente" step="0.01" value="{{ primer_proceso.saldo_pendiente|default:'0' }}">
+                        <input type="number" name="saldo_pendiente" step="0.01"
+                            value="{{ primer_proceso.saldo_pendiente|default:'0' }}">
                     </div>
                 </div>
             </form>
@@ -958,7 +1256,8 @@
                     </div>
                     <div class="form-group">
                         <label>Estado Central</label>
-                        <input type="text" name="estado_central" id="rep_estado_central" placeholder="Ej: Cartera castigada">
+                        <input type="text" name="estado_central" id="rep_estado_central"
+                            placeholder="Ej: Cartera castigada">
                     </div>
                     <div class="form-group">
                         <label>Gestión</label>
@@ -1176,11 +1475,13 @@
                 </div>
                 <div class="form-group full-width">
                     <label>Título *</label>
-                    <input type="text" name="titulo" id="servTitulo" required placeholder="Ej: Tutela para protección de datos">
+                    <input type="text" name="titulo" id="servTitulo" required
+                        placeholder="Ej: Tutela para protección de datos">
                 </div>
                 <div class="form-group full-width">
                     <label>Descripción</label>
-                    <textarea name="descripcion" id="servDescripcion" rows="3" placeholder="Detalles del servicio..."></textarea>
+                    <textarea name="descripcion" id="servDescripcion" rows="3"
+                        placeholder="Detalles del servicio..."></textarea>
                 </div>
             </div>
         </div>
@@ -1209,7 +1510,8 @@
             </div>
             <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem;">
                 <button class="section-btn" onclick="closeActividadModal()">Cancelar</button>
-                <button class="section-btn" style="background:var(--primary); color:white; border-color:var(--primary);" onclick="guardarActividad()">Guardar</button>
+                <button class="section-btn" style="background:var(--primary); color:white; border-color:var(--primary);"
+                    onclick="guardarActividad()">Guardar</button>
             </div>
         </div>
     </div>
@@ -1226,10 +1528,10 @@
     }
 
     // ── Tab switching ───────────────────────────
-    document.querySelectorAll('[data-tab]').forEach(function(tab) {
-        tab.addEventListener('click', function(e) {
+    document.querySelectorAll('[data-tab]').forEach(function (tab) {
+        tab.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelectorAll('[data-tab]').forEach(function(t) {
+            document.querySelectorAll('[data-tab]').forEach(function (t) {
                 t.style.background = 'transparent';
                 t.style.color = 'var(--muted)';
                 t.style.fontWeight = '600';
@@ -1238,7 +1540,7 @@
             this.style.color = 'white';
             this.style.fontWeight = '700';
             var tabName = this.getAttribute('data-tab');
-            document.querySelectorAll('div[id^="tab-"]').forEach(function(d) { d.style.display = 'none'; });
+            document.querySelectorAll('div[id^="tab-"]').forEach(function (d) { d.style.display = 'none'; });
             var target = document.getElementById('tab-' + tabName);
             if (target) target.style.display = 'block';
         });
@@ -1415,44 +1717,44 @@
     function guardarEstadoBanner(selectEl) {
         var estado = selectEl.value;
         var procesoId = {{ primer_proceso.pk|default:0 }};
-        if (!procesoId) { alert('No hay proceso asignado'); return; }
-        var observacion = window.prompt('Observación obligatoria del cambio de estado:', '');
-        if (observacion === null || observacion.trim() === '') {
-            alert('Debe registrar una observación para cambiar el estado.');
+    if (!procesoId) { alert('No hay proceso asignado'); return; }
+    var observacion = window.prompt('Observación obligatoria del cambio de estado:', '');
+    if (observacion === null || observacion.trim() === '') {
+        alert('Debe registrar una observación para cambiar el estado.');
+        selectEl.value = '{{ primer_proceso.estado_comercial }}';
+        return;
+    }
+    var fechaContrato = '';
+    if (estado === 'CONTRATO_FIRMADO') {
+        fechaContrato = window.prompt('Fecha del contrato (AAAA-MM-DD):', '{{ primer_proceso.fecha_contrato|date:"Y-m-d"|default:"" }}') || '';
+        if (fechaContrato === '') {
+            alert('Debe indicar la fecha del contrato cuando está firmado.');
             selectEl.value = '{{ primer_proceso.estado_comercial }}';
             return;
         }
-        var fechaContrato = '';
-        if (estado === 'CONTRATO_FIRMADO') {
-            fechaContrato = window.prompt('Fecha del contrato (AAAA-MM-DD):', '{{ primer_proceso.fecha_contrato|date:"Y-m-d"|default:"" }}') || '';
-            if (fechaContrato === '') {
-                alert('Debe indicar la fecha del contrato cuando está firmado.');
-                selectEl.value = '{{ primer_proceso.estado_comercial }}';
-                return;
-            }
-            var d = new Date(fechaContrato);
-            if (isNaN(d.getTime())) {
-                alert('Fecha de contrato inválida.');
-                selectEl.value = '{{ primer_proceso.estado_comercial }}';
-                return;
-            }
+        var d = new Date(fechaContrato);
+        if (isNaN(d.getTime())) {
+            alert('Fecha de contrato inválida.');
+            selectEl.value = '{{ primer_proceso.estado_comercial }}';
+            return;
         }
-        var baseUrl = "{% url 'comercial_cambiar_estado' 0 %}";
-        var url = baseUrl.replace('/0/', '/' + procesoId + '/');
-        var body = new URLSearchParams({ 'estado': estado, 'fecha_contrato': fechaContrato });
-        body.append('observacion', observacion.trim());
-        fetch(url, {
-            method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCsrfToken(), 'Accept': 'application/json' },
-            body: body
-        }).then(r => r.json()).then(data => {
-            if (!data.success) {
-                alert(data.error || 'Error al guardar estado');
-                selectEl.value = '{{ primer_proceso.estado_comercial }}';
-                return;
-            }
-            alert('Estado actualizado a ' + estado + ' con observación.');
-        }).catch(() => { alert('Error de red'); selectEl.value = '{{ primer_proceso.estado_comercial }}'; });
+    }
+    var baseUrl = "{% url 'comercial_cambiar_estado' 0 %}";
+    var url = baseUrl.replace('/0/', '/' + procesoId + '/');
+    var body = new URLSearchParams({ 'estado': estado, 'fecha_contrato': fechaContrato });
+    body.append('observacion', observacion.trim());
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCsrfToken(), 'Accept': 'application/json' },
+        body: body
+    }).then(r => r.json()).then(data => {
+        if (!data.success) {
+            alert(data.error || 'Error al guardar estado');
+            selectEl.value = '{{ primer_proceso.estado_comercial }}';
+            return;
+        }
+        alert('Estado actualizado a ' + estado + ' con observación.');
+    }).catch(() => { alert('Error de red'); selectEl.value = '{{ primer_proceso.estado_comercial }}'; });
     }
 
     // ── Crear nuevo estado (engranaje) ─────────
@@ -1473,7 +1775,7 @@
                 opt.textContent = data.nombre;
                 sel.appendChild(opt);
                 sel.value = data.nombre;
-                document.querySelectorAll('.estado-popup select').forEach(function(s) {
+                document.querySelectorAll('.estado-popup select').forEach(function (s) {
                     var o2 = document.createElement('option');
                     o2.value = data.nombre;
                     o2.textContent = data.nombre;
@@ -1483,7 +1785,7 @@
             } else {
                 alert(data.error || 'Error al crear estado');
             }
-        } catch(e) {
+        } catch (e) {
             alert('Error de red');
         }
     }
@@ -1544,7 +1846,7 @@
             } else {
                 alert(data.error || 'Error al cargar datos del proceso');
             }
-        }).catch(function() { alert('Error de red'); });
+        }).catch(function () { alert('Error de red'); });
     }
     function closeProcesoModal() {
         document.getElementById('procesoModal').classList.remove('active');
@@ -1560,14 +1862,14 @@
             method: 'POST',
             body: data,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        }).then(function(r) { return r.json(); }).then(function(resp) {
+        }).then(function (r) { return r.json(); }).then(function (resp) {
             if (resp.success) {
                 closeProcesoModal();
                 location.reload();
             } else {
                 alert(resp.error || 'Error al guardar');
             }
-        }).catch(function() { alert('Error de red'); });
+        }).catch(function () { alert('Error de red'); });
     }
 
     // ── Servicio Modal ────────────────────────────
@@ -1598,14 +1900,14 @@
             method: 'POST',
             body: data,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        }).then(function(r) { return r.json(); }).then(function(resp) {
+        }).then(function (r) { return r.json(); }).then(function (resp) {
             if (resp.success) {
                 closeServicioModal();
                 location.reload();
             } else {
                 alert(resp.error || 'Error al crear servicio');
             }
-        }).catch(function() { alert('Error de red'); });
+        }).catch(function () { alert('Error de red'); });
     }
 
     // ── Facturar servicios listos ─────────────────
@@ -1628,13 +1930,13 @@
         fetch(url, {
             method: 'POST',
             headers: { 'X-CSRFToken': getCsrfToken(), 'X-Requested-With': 'XMLHttpRequest' }
-        }).then(function(r) { return r.json(); }).then(function(resp) {
+        }).then(function (r) { return r.json(); }).then(function (resp) {
             if (resp.success) location.reload();
             else alert(resp.error || 'Error al eliminar');
-        }).catch(function() { alert('Error de red'); });
+        }).catch(function () { alert('Error de red'); });
     }
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.proc-badge-estado') && !e.target.closest('.estado-popup')) {
             document.querySelectorAll('.estado-popup').forEach(el => el.style.display = 'none');
         }
@@ -1652,10 +1954,10 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCsrfToken(), 'X-Requested-With': 'XMLHttpRequest' },
             body: body
-        }).then(function(r) { return r.json(); }).then(function(resp) {
+        }).then(function (r) { return r.json(); }).then(function (resp) {
             if (resp.success) location.reload();
             else alert(resp.error || 'Error al guardar');
-        }).catch(function() { alert('Error de red'); });
+        }).catch(function () { alert('Error de red'); });
     }
 </script>
 {% endblock %}

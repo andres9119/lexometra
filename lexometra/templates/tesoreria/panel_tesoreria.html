@@ -1,5 +1,5 @@
 ﻿{% extends 'base.html' %}
-{% block title %}TesorerÃ­a â€” Lexometra{% endblock %}
+{% block title %}Tesorería — Lexometra{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -67,11 +67,11 @@
 
 {% block content %}
 <div class="tesoreria-subnav">
-    <a href="{% url 'tesoreria_panel' %}" class="{% if seccion_activa == 'facturacion' %}active{% endif %}"><i data-lucide="file-text" width="16" height="16"></i> FacturaciÃ³n</a>
+    <a href="{% url 'tesoreria_panel' %}" class="{% if seccion_activa == 'facturacion' %}active{% endif %}"><i data-lucide="file-text" width="16" height="16"></i> Facturación</a>
     <a href="{% url 'tesoreria_cartera' %}" class="{% if seccion_activa == 'cartera' %}active{% endif %}"><i data-lucide="briefcase" width="16" height="16"></i> Cartera</a>
-    <a href="{% url 'tesoreria_tesoreria' %}" class="{% if seccion_activa == 'tesoreria' %}active{% endif %}"><i data-lucide="landmark" width="16" height="16"></i> TesorerÃ­a</a>
+    <a href="{% url 'tesoreria_tesoreria' %}" class="{% if seccion_activa == 'tesoreria' %}active{% endif %}"><i data-lucide="landmark" width="16" height="16"></i> Tesorería</a>
     <a href="{% url 'tesoreria_reportes' %}" class="{% if seccion_activa == 'reportes' %}active{% endif %}"><i data-lucide="bar-chart-2" width="16" height="16"></i> Reportes</a>
-    <a href="{% url 'tesoreria_notas' %}" class="{% if seccion_activa == 'notas' %}active{% endif %}"><i data-lucide="rotate-ccw" width="16" height="16"></i> Notas CrÃ©dito/DÃ©bito</a>
+    <a href="{% url 'tesoreria_notas' %}" class="{% if seccion_activa == 'notas' %}active{% endif %}"><i data-lucide="rotate-ccw" width="16" height="16"></i> Notas Crédito/Débito</a>
     <a href="{% url 'tesoreria_factus_list' %}" class="{% if seccion_activa == 'factus_list' %}active{% endif %}"><i data-lucide="cloud" width="16" height="16"></i> Factus</a>
 </div>
 
@@ -234,7 +234,7 @@
     <a href="{% url 'tesoreria_descargar_pdf' f.pk %}" class="btn" style="background:var(--accent);color:white;border-color:var(--accent);">PDF DIAN</a>
     {% endif %}
     {% if f.estado == 'PENDIENTE' or f.estado == 'RECHAZADA' %}
-    <form method="post" action="{% url 'tesoreria_eliminar_factus' f.pk %}" style="display:inline;" onsubmit="return confirm('Â¿Eliminar {{ f.numero }} de Factus? PodrÃ¡s corregirla y reemitirla.');">{% csrf_token %}<button type="submit" class="btn" style="background:var(--danger);color:white;border-color:var(--danger);">Eliminar de Factus</button></form>
+    <form method="post" action="{% url 'tesoreria_eliminar_factus' f.pk %}" style="display:inline;" onsubmit="return confirm('¿Eliminar {{ f.numero }} de Factus? Podrás corregirla y reemitirla.');">{% csrf_token %}<button type="submit" class="btn" style="background:var(--danger);color:white;border-color:var(--danger);">Eliminar de Factus</button></form>
     {% endif %}
     <a href="{% url 'tesoreria_editar' f.pk %}" class="btn" style="background:var(--brand);color:white;border-color:transparent;">Editar</a>
     <a href="{% url 'tesoreria_pdf' f.pk %}" class="btn">PDF</a>
@@ -442,7 +442,7 @@
         {% if f.estado != 'ANULADA' and f.estado != 'PAGADA' and f.estado != 'PENDIENTE' and f.estado != 'RECHAZADA' and f.estado != 'BORRADOR' %}<a href="{% url 'tesoreria_detalle' f.pk %}" style="border-color:var(--success);color:var(--success);">+ Pago</a>{% endif %}
         <a href="{% url 'tesoreria_pdf' f.pk %}">PDF</a>
         {% if f.cufe %}<a href="{% url 'tesoreria_descargar_xml' f.pk %}" style="border-color:var(--accent);color:var(--accent);">XML</a>{% endif %}
-        {% if f.estado == 'PENDIENTE' or f.estado == 'RECHAZADA' %}<form method="post" action="{% url 'tesoreria_eliminar_factus' f.pk %}" style="display:inline;" onsubmit="return confirm('Â¿Eliminar {{ f.numero }} de Factus?');">{% csrf_token %}<button type="submit" style="border-color:var(--danger);color:var(--danger);background:white;border:1px solid var(--danger);padding:0.25rem 0.4rem;border-radius:6px;font-size:0.7rem;cursor:pointer;">Eliminar Factus</button></form>{% endif %}
+        {% if f.estado == 'PENDIENTE' or f.estado == 'RECHAZADA' %}<form method="post" action="{% url 'tesoreria_eliminar_factus' f.pk %}" style="display:inline;" onsubmit="return confirm('¿Eliminar {{ f.numero }} de Factus?');">{% csrf_token %}<button type="submit" style="border-color:var(--danger);color:var(--danger);background:white;border:1px solid var(--danger);padding:0.25rem 0.4rem;border-radius:6px;font-size:0.7rem;cursor:pointer;">Eliminar Factus</button></form>{% endif %}
         {% if f.estado != 'ANULADA' %}<form method="post" action="{% url 'tesoreria_anular' f.pk %}" style="display:inline;" onsubmit="return confirm('&iquest;Anular {{ f.numero }}?');">{% csrf_token %}<button type="submit" style="border-color:var(--danger);color:var(--danger);background:white;border:1px solid var(--danger);padding:0.25rem 0.4rem;border-radius:6px;font-size:0.7rem;cursor:pointer;">Anular</button></form>{% endif %}
     </div></td>
 </tr>{% empty %}<tr><td colspan="10" style="text-align:center;padding:2.5rem;color:var(--muted);">No hay facturas registradas. Crea la primera.</td></tr>{% endfor %}</tbody></table>
