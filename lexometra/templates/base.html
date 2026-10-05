@@ -6,7 +6,7 @@
     <title>{% block title %}Lexometra{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -14,52 +14,52 @@
 
         /* ── Design tokens ────────────────────────────── */
         :root {
-            /* Brand (deep navy for accents) */
-            --brand: #1C2B3A;
-            --brand-2: #24394D;
-            --brand-3: #2E475F;
-            --accent: #203A5E;
+            /* Brand */
+            --brand: #09090b;
+            --brand-2: #18181b;
+            --brand-3: #27272a;
+            --accent: #3b82f6;
 
             /* Neutral surfaces & text */
-            --ink: #2c3e50; /* Softer dark text */
-            --muted: #64748b; /* Softer gray text */
-            --muted-2: #94a3b8;
-            --bg: #F0F4F8; /* Soft blue-gray background */
-            --surface: #FFFFFF; /* White cards */
-            --line: #E2E8F0; /* Soft borders */
-            --line-soft: #F1F5F9;
+            --ink: #09090b;
+            --muted: #71717a;
+            --muted-2: #a1a1aa;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --line: #e4e4e7;
+            --line-soft: #f4f4f5;
 
             /* Semantic (muted) */
             --danger: #ef4444;
-            --danger-bg: #fee2e2;
+            --danger-bg: #fef2f2;
             --danger-border: #fca5a5;
             --success: #10b981;
-            --success-bg: #d1fae5;
+            --success-bg: #ecfdf5;
             --success-border: #6ee7b7;
             --warn: #f59e0b;
-            --warn-bg: #fef3c7;
+            --warn-bg: #fffbeb;
             --warn-border: #fcd34d;
             --info: #3b82f6;
-            --info-bg: #dbeafe;
+            --info-bg: #eff6ff;
             --info-border: #93c5fd;
 
             /* Typography */
-            --font-display: 'Source Serif 4', Georgia, serif;
+            --font-display: 'Outfit', sans-serif;
             --font-body: 'Inter', system-ui, sans-serif;
             --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
             /* Shadows (Neumorphism / Soft UI) */
-            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
-            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.06);
-            --shadow-pill: 0 2px 10px rgba(0, 0, 0, 0.04);
+            --shadow-soft: 0 4px 24px -6px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 10px 30px -4px rgba(0, 0, 0, 0.1);
+            --shadow-pill: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
             
             /* Radii */
             --radius-card: 16px;
-            --radius-btn: 20px;
+            --radius-btn: 8px;
             --radius-pill: 24px;
 
             /* Legacy aliases mapped to new theme */
-            --sidebar-bg: transparent; /* Sidebar is now transparent against main bg */
+            --sidebar-bg: transparent;
             --sidebar-text: var(--muted);
             --sidebar-hover: var(--surface);
             --sidebar-active-bg: var(--surface);
@@ -67,7 +67,7 @@
             --main-bg: var(--bg);
             --content-bg: var(--surface);
             --topbar-bg: transparent;
-            --topbar-border: transparent; /* Removed rigid border */
+            --topbar-border: transparent;
             --text-main: var(--ink);
             --text-muted: var(--muted);
         }
@@ -83,6 +83,7 @@
             font-size: 14px;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 70%);
         }
 
         a { color: var(--accent); }
@@ -386,13 +387,27 @@
         .card {
             background: var(--content-bg);
             border-radius: var(--radius-card);
-            border: none;
+            border: 1px solid var(--line);
             box-shadow: var(--shadow-soft);
             overflow: hidden;
-            transition: box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         .card:hover {
             box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+        .card:hover::before {
+            opacity: 1;
         }
         
         .card-header {
