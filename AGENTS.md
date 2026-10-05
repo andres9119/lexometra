@@ -256,6 +256,102 @@ usuarios/     (login.html)
 
 Los templates de tesorería usan un único `panel_tesoreria.html` que muestra distintas secciones según la variable `seccion_activa` del contexto. Los templates de `comercial` usan `_pagination.html` para la paginación.
 
+### 5.1 Estructura de `comercial/ficha.html` (la pantalla más pesada)
+`extends "base.html"` (línea ~3) y cuatro bloques: `title`, `extra_css`
+(6–596), `content` (598–1544) y `extra_js` (1546–1988). Secciones: **I**
+Contacto / datos generales, **II** Cobro mixto (anticipo + cronograma de cuotas
++ "Facturar BORRADOR"), **III** Reportes negativos, **IV** Documentos,
+**V** Datos jurídicos, **VI** Historial de actividades.
+Dentro de `content` hay bloques `{% with p=primer_proceso %}` y
+`{% with ar=anticipo_resumen %}` reutilizados en varias filas de tablas.
+
+### 5.2 Trampas del lexer de Django (verificadas el 2026-10-05)
+El lexer de Django es `django/template/base.py`:
+```python
+tag_re = re.compile(r"({%.*?%}|{{.*?}}|{#.*?#})")   # ¡SIN re.DOTALL!
+```
+Consecuencias, todas encontradas en la práctica:
+
+1. **Un tag partido entre dos líneas es texto literal, no un tag.** Un
+   formateador automático (Prettier y similares) parte líneas largas y deja
+   `{% endif` al final de una línea y `%}` al principio de la siguiente; Django
+   no lo reconoce y lo emite como texto. Peor: el `{% if %}` queda abierto y
+   Django se come un `{% endif %}` de más adelante, produciendo
+   `TemplateSyntaxError: Invalid block tag on line N: 'endif', expected
+   'endblock'. Did you forget to register or load this tag?` — el mensaje
+   apunta a una línea que **no es** la del problema real.
+   Lo mismo aplica a `{{ variable }}` partido: se renderiza en crudo, sin error.
+   **Regla: cada `{% ... %}` y `{{ ... }}` va en una sola línea.**
+2. **`endif`, `else`, `elif` y `empty` NO son tags registrados.** Los consume
+   internamente `do_if`/`do_for`. Si uno queda huérfano, el error es el de
+   arriba.
+3. **`==` exige espacios:** `{% if a==b %}` falla con
+   `Could not parse the remainder: '==b' from 'a==b'`. Usar `{% if a == b %}`.
+4. **Los argumentos de filtro no admiten espacio tras `:`:**
+   `{{ x|default: 0 }}` falla con `default requires 2 arguments, 1 provided`.
+   Usar `{{ x|default:0 }}` o `{{ x|default:"—" }}` (sin espacio tras `:`).
+5. `{{ ... }}` dentro de `<script>` **sí** se procesa (salvo que esté partido);
+   por eso el JS de la ficha lleva `{{ primer_proceso.pk|default:0 }}`.
+
+### 5.3 Cómo verificar templates (hazlo SIEMPRE antes de commitear)
+`manage.py check` **no** valida templates. Estos chequeos sí:
+
+**a) Que los 27 templates compilen** (detecta sintaxis y tags partidos):
+```powershell
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe -c @"
+import sys, pathlib
+sys.path.insert(0, 'lexometra')
+import django, os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lexometra_proj.settings')
+django.setup()
+from django.template.loader import get_template
+bad = 0
+for p in sorted(pathlib.Path('lexometra/templates').rglob('*.html')):
+    name = str(p.relative_to('lexometra/templates')).replace(chr(92), '/')
+    try: get_template(name)
+    except Exception as e: bad += 1; print(f'ERROR {name}: {e}')
+print('los 27 templates compilan' if not bad else f'{bad} con error')
+"@
+```
+**b) Buscar tags partidos** (un `{%`/`{{` que Django ve como TEXTO = roto).
+Este es el chequeo que más vale, porque encuentra los tags partidos aunque la
+vista de punta a punta no se renders:
+```powershell
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe -c @"
+import sys, pathlib, re
+sys.path.insert(0, 'lexometra')
+import django, os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lexometra_proj.settings')
+django.setup()
+from django.template.base import Lexer
+for p in sorted(pathlib.Path('lexometra/templates').rglob('*.html')):
+    for t in Lexer(p.read_text(encoding='utf-8')).tokenize():
+        if t.token_type.value == 0 and re.search(r'\{%|\{\{|%\}|\}\}', t.contents):
+            print(f'TAG ROTO {p} linea {t.lineno}: {t.contents.strip()[:70]!r}')
+"@
+```
+> Falso positivo conocido: los `}}` de JavaScript dentro de `<script>` (p. ej.
+> el bloque de modales de `panel_tesoreria.html` en la ~593). Un `}}` sin `{{`
+> de apertura es JS normal, no un tag roto.
+
+**c) Renderizar de verdad.** `get_template` solo compila, no evalúa: un
+`{{ x }}` partido sale como texto sin error y un `{% url %}` mal escrito solo
+falla al renderizar. Por eso, antes de commitear `.html`, renderiza al menos
+una vista real y verifica que no queden marcadores sin renderizar:
+```python
+from django.test.runner import DiscoverRunner
+runner = DiscoverRunner(verbosity=0, interactive=False); cfg = runner.setup_databases()
+# crear Usuario(ADMIN) + Cliente + Proceso + Factura, luego
+c = Client(); c.force_login(admin); r = c.get(reverse('comercial_detalle_cliente', args=[cliente.pk]))
+html = r.content.decode(); assert r.status_code == 200 and '{{' not in html and '{%' not in html
+runner.teardown_databases(cfg)
+```
+> ⚠️ `python -c` **no** encuentra `lexometra_proj` desde la raíz del repo
+> (el paquete vive en `repo/lexometra/`): hay que hacer `sys.path.insert(0,
+> 'lexometra')`. Es la trampa #8 de §7.
+
 ---
 
 ## 6. Roles y permisos
@@ -403,13 +499,30 @@ sudo -u lexometra curl -sI --unix-socket /run/lexometra/lexometra.sock \
 - **No commits de:** `.env`, `db.sqlite3`, `media/`, `staticfiles/`, logs, y las copias locales `nginx_lexometra.conf`/`gunicorn.service` (ver `.gitignore`).
 - **Paginación:** las listas usan `Paginator` (50 por página) y el partial `_pagination.html`.
 - **ESTADOS_SIN_SALDO** (`comercial/models.py`): constantes a nivel de módulo (no dentro de TextChoices, por error de metaclase). En `save()` de `ReporteNegativo` fuerza saldo=0 y gestión SALDADO si el estado lo exige.
+- **Tokens CSS del tema:** los colores viven como variables en `:root` de `base.html`: `--brand`, `--brand-2`, `--brand-3`, `--accent`, `--ink`, `--muted`, `--muted-2`, `--bg`, `--surface`, `--line`, `--line-soft` y los semánticos `--danger/--success/--warn/--info` (+ su `-bg`/`-border`). `base.html` mantiene además `--text-main`/`--text-muted`/`--topbar-border` como alias de compatibilidad, pero **nada nuevo debe usarlos**: todos los templates usan los tokens canónicos. Cambiar el tema = editar `base.html`.
+- **Tipografía:** `Outfit` (UI) + `Inter` + `IBM Plex Mono`, cargadas por Google Fonts en `base.html`. El `<link>` de `fonts.googleapis.com` en `base.html:9` es el punto único de cambio.
+- **Iconos:** `lucide` vía CDN (`lucide.createIcons()` en el JS de `base.html`); no se usan SVG inline ni otra librería de iconos.
+- **NO pases formateadores automáticos (Prettier, formateo "on save" del editor) por los templates `.html`:** parten los tags Django entre líneas y rompen el render (ver §5.2). Si hay que formatear, hacerlo a mano y luego correr el chequeo de §5.3.
+- **Codificación:** todos los templates son **UTF-8 sin BOM**. Si aparece `Ã¡`/`Ã­`/`Â¿` es doble codificación: guardar como UTF-8, no como Windows-1252. `panel_tesoreria.html` aún empieza con BOM (línea 1) y tiene `{{`/`}}` legítimos dentro de `<script>` que **no** son tags rotos.
+- **Antes de cada commit** que toque `.html`: los 27 templates compilan, `manage.py test comercial` pasa, y al menos una vista real renderiza sin `{{`/`{%` en el HTML de respuesta (§5.3).
+- **Commits:** mensajes en español, estilo Conventional Commits (`fix(deploy):`, `style(templates):`, `feat(…):`).
+
+### Historial de deploy (commits que tocaron infraestructura o tema)
+| Commit | Qué cambió |
+|---|---|
+| `638e495` | Migración real a gunicorn/Postgres: socket y pidfile en `/run/lexometra/`, `Type=simple`, `pythonpath`, `Pillow`, nginx con dominio y aliases de `BASE_DIR`, `deploy.sh` con deadsnakes + `www-data` en el grupo `lexometra`, §7 de este doc reescrito por completo. |
+| `6768ab1` | Tema monocromo + `Outfit` en `base.html`. |
+| `eda2571` | Migración de 12 templates a los tokens del tema nuevo. |
+| `ae8393f` | Rediseño de `comercial/ficha.html` + 23 tags partidos reparados (ver §5.2) + mojibake de `panel_tesoreria.html`. |
 
 ---
 
 ## 10. Estado actual / próximos pasos (referencia)
 - El proyecto tiene apps funcionales de usuarios, comercial, procesos, referidos y tesorería.
 - Facturación electrónica integrada con Factus sandbox.
+- Producción **migrada y verificada** el 2026-10-05: Nginx → Gunicorn → Django → PostgreSQL (`app_db`), `DEBUG=False`, HTTPS en `app.198.251.79.149.sslip.io`, `/login/` respondiendo 200.
 - Ampliaciones implementadas: navbar unificada (solo topbar), lista global de contratos (`/contratos/`), enlace público de captura por referidor (`/registro/?ref=<pk>`), historial de actividades con novedades manuales (`Actividad`), carga de `archivo` en Entidades, dashboards admin/comercial/colaborador sin tarjetas KPI de resumen (gráficos, vencimientos y listados), y los 18 requisitos del prototipo portados a la ficha/lista comercial.
 - Cédula y nombre en la lista comercial (y contratos) abren la ficha completa del cliente.
-- Revisión visual/integración opcional de las pantallas nuevas.
+- **Pendiente conocido:** `settings.py` no lee `EMAIL_BACKEND` ni `SECURE_PROXY_SSL_HEADER`, así que el correo saliente no está configurado (el `.env` viejo traía `EMAIL_BACKEND=locmem` solo para pruebas) y no se declara `SECURE_PROXY_SSL_HEADER` detrás de Nginx. No rompen hoy, pero hay que añadirlos si se activan correos o `SECURE_SSL_REDIRECT`.
+- **Opcional:** test de humo que renderice `comercial_detalle_cliente` para que un tag roto no vuelva a colarse sin que se note.
 - (Este documento debe actualizarse cuando cambie el alcance del proyecto.)
