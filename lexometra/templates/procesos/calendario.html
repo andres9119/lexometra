@@ -39,7 +39,7 @@
     .day-detail-card { margin-top:1rem; }
     .day-detail-card .detail-header { font-weight:700; font-size:1rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem; }
     .day-detail-list { list-style:none; }
-    .day-detail-list li { padding:0.5rem 0.75rem; border-bottom:1px solid var(--topbar-border); display:flex; align-items:center; gap:0.75rem; font-size:0.85rem; }
+    .day-detail-list li { padding:0.5rem 0.75rem; border-bottom:1px solid var(--line-soft); display:flex; align-items:center; gap:0.75rem; font-size:0.85rem; }
     .day-detail-list li:last-child { border-bottom:none; }
     .day-detail-list .ev-badge { flex-shrink:0; padding:0.15rem 0.4rem; border-radius:3px; font-size:0.65rem; font-weight:600; text-transform:uppercase; }
 </style>
@@ -113,7 +113,7 @@
         const dayEvents = allEvents.filter(function(e) { return e.date === dateStr; });
         list.innerHTML = '';
         if (dayEvents.length === 0) {
-            list.innerHTML = '<li style="color:var(--text-muted);">Sin compromisos este día.</li>';
+            list.innerHTML = '<li style="color:var(--muted);">Sin compromisos este día.</li>';
         } else {
             dayEvents.forEach(function(e) {
                 const li = document.createElement('li');
@@ -125,7 +125,7 @@
                     const a = document.createElement('a');
                     a.href = e.url;
                     a.textContent = e.title;
-                    a.style.color = 'var(--text-main)';
+                    a.style.color = 'var(--ink)';
                     a.style.fontWeight = '600';
                     txt.appendChild(a);
                 } else {

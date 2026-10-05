@@ -17,7 +17,7 @@
         font-size: 0.9rem;
         padding: 0.75rem 0.25rem 0.6rem;
         position: relative;
-        color: var(--text-muted);
+        color: var(--muted);
         transition: color 0.15s;
     }
     .ref-subnav a:hover { color: var(--ink); }
@@ -59,7 +59,7 @@
         align-items: center;
         gap: 1rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        border: 1px solid var(--topbar-border);
+        border: 1px solid var(--line-soft);
     }
     .kpi-icon {
         width: 44px; height: 44px;
@@ -73,7 +73,7 @@
     .kpi-icon.purple { background: var(--info-bg); color: var(--accent); }
     .kpi-icon.green { background: var(--success-bg); color: var(--success); }
     .kpi-number { font-size: 1.35rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
-    .kpi-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+    .kpi-label { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
 
     .ref-grid {
         display: grid;
@@ -84,7 +84,7 @@
         background: var(--surface);
         border-radius: 10px;
         padding: 1.25rem;
-        border: 1px solid var(--topbar-border);
+        border: 1px solid var(--line-soft);
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         transition: box-shadow 0.15s;
     }
@@ -103,7 +103,7 @@
         flex-shrink: 0;
     }
     .ref-name { font-weight: 700; font-size: 0.95rem; color: var(--ink); }
-    .ref-doc { font-size: 0.75rem; color: var(--text-muted); }
+    .ref-doc { font-size: 0.75rem; color: var(--muted); }
     .ref-badge {
         font-size: 0.65rem;
         font-weight: 600;
@@ -122,15 +122,15 @@
     }
     .ref-stat { flex: 1; text-align: center; }
     .ref-stat-num { font-size: 1rem; font-weight: 700; color: var(--ink); }
-    .ref-stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .ref-stat-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,32,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 2rem; }
     .modal-overlay.active { display: flex; }
     .modal-content { background: var(--surface); width: 100%; max-width: 640px; border-radius: 10px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
-    .modal-header { background: var(--brand); padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--topbar-border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header { background: var(--brand); padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--line-soft); display: flex; justify-content: space-between; align-items: center; }
     .modal-title { font-size: 1rem; font-weight: 600; color: #FFFFFF; display: flex; align-items: center; gap: 0.5rem; }
     .modal-body { padding: 1.5rem 1.75rem; background: var(--surface); }
-    .modal-footer { background: var(--surface); padding: 1.25rem 1.75rem; border-top: 1px solid var(--topbar-border); display: flex; justify-content: flex-end; gap: 1rem; }
+    .modal-footer { background: var(--surface); padding: 1.25rem 1.75rem; border-top: 1px solid var(--line-soft); display: flex; justify-content: flex-end; gap: 1rem; }
 
     .float-btn-wrap {
         display: flex;
@@ -230,7 +230,7 @@
     {% empty %}
     <div class="card" style="grid-column:1/-1; text-align:center; padding:3rem 1rem;">
         <i data-lucide="user-plus" width="40" height="40" style="display:block; margin:0 auto 0.75rem; opacity:0.3;"></i>
-        <p style="color:var(--text-muted); margin:0;">No hay referidores registrados. Presiona "+ Nuevo Referidor" para agregar uno.</p>
+        <p style="color:var(--muted); margin:0;">No hay referidores registrados. Presiona "+ Nuevo Referidor" para agregar uno.</p>
     </div>
     {% endfor %}
 </div>

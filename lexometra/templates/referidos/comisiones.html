@@ -17,7 +17,7 @@
         font-size: 0.9rem;
         padding: 0.75rem 0.25rem 0.6rem;
         position: relative;
-        color: var(--text-muted);
+        color: var(--muted);
         transition: color 0.15s;
     }
     .ref-subnav a:hover { color: var(--ink); }
@@ -33,26 +33,26 @@
     }
 
     .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
-    .kpi-card { background:var(--surface); border-radius:10px; padding:1.25rem 1.5rem; border:1px solid var(--topbar-border); display:flex; align-items:center; gap:1rem; }
+    .kpi-card { background:var(--surface); border-radius:10px; padding:1.25rem 1.5rem; border:1px solid var(--line-soft); display:flex; align-items:center; gap:1rem; }
     .kpi-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .kpi-number { font-size:1.35rem; font-weight:700; color:var(--ink); line-height:1.2; }
-    .kpi-label { font-size:0.75rem; color:var(--text-muted); font-weight:500; }
+    .kpi-label { font-size:0.75rem; color:var(--muted); font-weight:500; }
 
-    .tabs { display:flex; gap:0; margin-bottom:1rem; border-bottom:1px solid var(--topbar-border); }
-    .tab { padding:0.6rem 1.2rem; font-size:0.82rem; font-weight:600; color:var(--text-muted); text-decoration:none; border-bottom:2px solid transparent; }
+    .tabs { display:flex; gap:0; margin-bottom:1rem; border-bottom:1px solid var(--line-soft); }
+    .tab { padding:0.6rem 1.2rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-bottom:2px solid transparent; }
     .tab.active { color:var(--ink); border-bottom-color:var(--accent); }
 
-    .card { background:var(--surface); border-radius:10px; border:1px solid var(--topbar-border); overflow:hidden; }
-    .section-header { display:flex; align-items:center; gap:0.6rem; padding:0.75rem 1rem; border-bottom:1px solid var(--topbar-border); }
-    .section-header .title { font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); }
+    .card { background:var(--surface); border-radius:10px; border:1px solid var(--line-soft); overflow:hidden; }
+    .section-header { display:flex; align-items:center; gap:0.6rem; padding:0.75rem 1rem; border-bottom:1px solid var(--line-soft); }
+    .section-header .title { font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
 
     table { width:100%; border-collapse:collapse; font-size:0.82rem; }
-    th { text-align:left; padding:0.6rem 0.75rem; font-size:0.7rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; background:var(--line-soft); border-bottom:1px solid var(--topbar-border); }
+    th { text-align:left; padding:0.6rem 0.75rem; font-size:0.7rem; color:var(--muted); font-weight:600; text-transform:uppercase; background:var(--line-soft); border-bottom:1px solid var(--line-soft); }
     td { padding:0.6rem 0.75rem; border-bottom:1px solid var(--line-soft); }
     .badge { font-size:0.65rem; padding:0.15rem 0.4rem; border-radius:4px; font-weight:600; display:inline-block; }
     .badge-pendiente { background:var(--warn-bg); color:var(--warn); }
     .badge-pagada { background:var(--success-bg); color:var(--success); }
-    .btn-sm { padding:0.3rem 0.6rem; font-size:0.72rem; border-radius:4px; font-weight:600; cursor:pointer; border:1px solid var(--topbar-border); background:var(--surface); text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem; color:var(--text-main); }
+    .btn-sm { padding:0.3rem 0.6rem; font-size:0.72rem; border-radius:4px; font-weight:600; cursor:pointer; border:1px solid var(--line-soft); background:var(--surface); text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem; color:var(--ink); }
     .btn-sm:hover { background:var(--line-soft); }
     .btn-success { background:var(--accent); color:white; border-color:var(--accent); }
     .btn-success:hover { background:var(--brand); }
@@ -148,7 +148,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="{% if user.role == 'ADMIN' %}8{% else %}7{% endif %}" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                    <td colspan="{% if user.role == 'ADMIN' %}8{% else %}7{% endif %}" style="text-align:center;padding:2rem;color:var(--muted);">
                         No hay comisiones registradas.
                     </td>
                 </tr>

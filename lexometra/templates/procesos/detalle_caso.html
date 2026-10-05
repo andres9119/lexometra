@@ -5,8 +5,8 @@
 {% block extra_css %}
 <style>
     .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-    .field-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; }
-    .field-value { font-weight:700; color:var(--text-main); margin-top:0.25rem; }
+    .field-label { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+    .field-value { font-weight:700; color:var(--ink); margin-top:0.25rem; }
 
     .st-badge { padding:0.25rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:inline-block; }
     .st-activo { background:var(--success-bg); color:var(--success); }
@@ -17,11 +17,11 @@
     .st-resuelto { background:var(--success-bg); color:var(--success); }
     .st-apelacion { background:var(--warn-bg); color:var(--warn); }
 
-    .pi-card { padding:0.75rem 1rem; border-bottom:1px solid var(--topbar-border); display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+    .pi-card { padding:0.75rem 1rem; border-bottom:1px solid var(--line-soft); display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
     .pi-card:last-child { border-bottom:none; }
     .pi-titulo { font-weight:600; font-size:0.9rem; }
-    .pi-meta { font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
-    .pi-estado-popup { display:none; position:absolute; top:28px; left:0; background:var(--content-bg); padding:0.5rem; border:1px solid var(--topbar-border); border-radius:8px; z-index:50; min-width:180px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .pi-meta { font-size:0.75rem; color:var(--muted); margin-top:0.2rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+    .pi-estado-popup { display:none; position:absolute; top:28px; left:0; background:var(--content-bg); padding:0.5rem; border:1px solid var(--line-soft); border-radius:8px; z-index:50; min-width:180px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
     .pi-estado-popup select { width:100%; padding:0.3rem; border-radius:6px; border:1px solid var(--line); }
     .pi-estado-popup-actions { display:flex; gap:0.5rem; margin-top:0.5rem; justify-content:flex-end; }
 
@@ -47,7 +47,7 @@
 <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
     <div>
         <h2>{{ caso.titulo }}</h2>
-        <p style="color:var(--text-muted); margin:0;">
+        <p style="color:var(--muted); margin:0;">
             {{ caso.get_tipo_proceso_display }} —
             <span class="st-badge st-{{ caso.estado|lower }}">{{ caso.get_estado_display }}</span>
         </p>
@@ -121,14 +121,14 @@
                 {% if caso.descripcion_caso %}
                 <div style="margin-top:1rem;">
                     <div class="field-label">Descripción del caso</div>
-                    <div style="margin-top:0.25rem; color:var(--text-main);">{{ caso.descripcion_caso|linebreaks }}</div>
+                    <div style="margin-top:0.25rem; color:var(--ink);">{{ caso.descripcion_caso|linebreaks }}</div>
                 </div>
                 {% endif %}
 
                 {% if caso.notas_adicionales %}
                 <div style="margin-top:1rem;">
                     <div class="field-label">Notas adicionales</div>
-                    <div style="margin-top:0.25rem; color:var(--text-main);">{{ caso.notas_adicionales|linebreaks }}</div>
+                    <div style="margin-top:0.25rem; color:var(--ink);">{{ caso.notas_adicionales|linebreaks }}</div>
                 </div>
                 {% endif %}
 
@@ -140,7 +140,7 @@
                 {% endif %}
 
                 {% if documentos_caso or user.role in admin_roles %}
-                <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--topbar-border);">
+                <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line-soft);">
                     <div class="field-label" style="margin-bottom:0.5rem;">Documentos del caso</div>
                     <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
                         {% for doc in documentos_caso %}
@@ -179,10 +179,10 @@
             <div class="card-body">
                 {% if caso.cliente %}
                 <div class="field-value">{{ caso.cliente.nombre }}</div>
-                <div style="font-size:0.85rem; color:var(--text-muted);">CC {{ caso.cliente.identificacion }} — ID {{ caso.cliente.id_comercial }}</div>
+                <div style="font-size:0.85rem; color:var(--muted);">CC {{ caso.cliente.identificacion }} — ID {{ caso.cliente.id_comercial }}</div>
                 <a href="{% url 'comercial_detalle_cliente' caso.cliente.pk %}" style="display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.5rem; font-weight:600;">Ver ficha <i data-lucide="chevron-right" width="14" height="14"></i></a>
                 {% else %}
-                <div style="color:var(--text-muted);">Sin cliente asociado</div>
+                <div style="color:var(--muted);">Sin cliente asociado</div>
                 {% endif %}
             </div>
         </div>
@@ -195,9 +195,9 @@
             <div class="card-body">
                 {% if caso.proceso %}
                 <div class="field-value">{{ caso.proceso.tipo_servicio_display }}</div>
-                <div style="font-size:0.85rem; color:var(--text-muted);">{{ caso.proceso.get_estado_comercial_display }}</div>
+                <div style="font-size:0.85rem; color:var(--muted);">{{ caso.proceso.get_estado_comercial_display }}</div>
                 {% else %}
-                <div style="color:var(--text-muted);">Caso creado manualmente</div>
+                <div style="color:var(--muted);">Caso creado manualmente</div>
                 {% endif %}
             </div>
         </div>
@@ -241,10 +241,10 @@
                     {% if pi.precio %}<span><strong>${{ pi.precio|floatformat:0 }}</strong></span>{% endif %}
                 </div>
                 {% if pi.descripcion %}
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">{{ pi.descripcion|truncatechars:120 }}</div>
+                <div style="font-size:0.8rem; color:var(--muted); margin-top:0.3rem;">{{ pi.descripcion|truncatechars:120 }}</div>
                 {% endif %}
                 {% if pi.resultado %}
-                <div style="font-size:0.8rem; color:var(--accent-green); margin-top:0.2rem;"><strong>Resultado:</strong> {{ pi.resultado|truncatechars:120 }}</div>
+                <div style="font-size:0.8rem; color:var(--success); margin-top:0.2rem;"><strong>Resultado:</strong> {{ pi.resultado|truncatechars:120 }}</div>
                 {% endif %}
 
                 {% with pi.documentos.all as docs_internos %}
@@ -276,7 +276,7 @@
             </div>
         </div>
         {% empty %}
-        <div style="padding:1.5rem; color:var(--text-muted); text-align:center;">
+        <div style="padding:1.5rem; color:var(--muted); text-align:center;">
             <i data-lucide="inbox" width="32" height="32" style="display:block; margin:0 auto 0.5rem; opacity:0.4;"></i>
             No hay procesos internos asociados a este caso. Presiona "+ Agregar" para crear uno.
         </div>

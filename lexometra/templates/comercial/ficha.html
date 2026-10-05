@@ -107,7 +107,7 @@
     }
     .summary-card {
         background: var(--surface);
-        border: 1px solid var(--topbar-border);
+        border: 1px solid var(--line-soft);
         border-radius: 8px;
         padding: 1rem 1.25rem;
         display: flex;
@@ -124,7 +124,7 @@
     .summary-card-icon.yellow { background: var(--info-bg); color: var(--info); }
     .summary-card-icon.blue { background: var(--info-bg); color: var(--info); }
     .summary-card-icon.green { background: var(--success-bg); color: var(--success); }
-    .summary-card-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .summary-card-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
     .summary-card-value { font-size: 1.4rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
 
     /* ── TABLA DE FICHA ─────────────────────── */
@@ -145,7 +145,7 @@
     .ficha-table {
         width: 100%;
         border-collapse: collapse;
-        border: 1px solid var(--topbar-border);
+        border: 1px solid var(--line-soft);
         border-top: none;
         background: var(--surface);
         border-radius: 0 0 6px 6px;
@@ -174,14 +174,14 @@
     /* ── SECCIÓN CASOS ──────────────────────── */
     .caso-card {
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--topbar-border);
+        border-bottom: 1px solid var(--line-soft);
         display: flex;
         align-items: center;
         gap: 1rem;
     }
     .caso-card:last-child { border-bottom: none; }
     .caso-titulo { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
-    .caso-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .caso-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
     .caso-badge { font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; background: var(--info-bg); color: var(--info); }
     .caso-link { margin-left: auto; font-size: 0.8rem; font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
     .caso-link:hover { text-decoration: underline; }
@@ -200,7 +200,7 @@
     .proc-table td {
         padding: 0.65rem 1rem;
         font-size: 0.82rem;
-        border-bottom: 1px solid var(--topbar-border);
+        border-bottom: 1px solid var(--line-soft);
         color: var(--ink);
         vertical-align: middle;
     }
@@ -226,7 +226,7 @@
         left: 0;
         min-width: 220px;
         background: var(--surface);
-        border: 1px solid var(--topbar-border);
+        border: 1px solid var(--line-soft);
         border-radius: 8px;
         padding: 0.5rem;
         box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12);
@@ -340,7 +340,7 @@
     }
     .modal-footer {
         padding: 1rem 1.5rem;
-        border-top: 1px solid var(--topbar-border);
+        border-top: 1px solid var(--line-soft);
         display: flex; justify-content: flex-end; gap: 1rem;
     }
 
@@ -436,7 +436,7 @@
 </div>
 
 {# ── TABS ────────────────────────────────────────────────────────────────── #}
-<div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--topbar-border); padding-bottom:0.5rem;">
+<div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--line-soft); padding-bottom:0.5rem;">
     <a href="#" class="tab-active" data-tab="ficha" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:700; border-radius:6px 6px 0 0; background:var(--brand); color:white; text-decoration:none;">Ficha</a>
     <a href="#" data-tab="procesos" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Procesos ({{ stats.total_procesos|default:0 }})</a>
     <a href="#" data-tab="actividad" style="padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:var(--muted); text-decoration:none; border-radius:6px 6px 0 0;">Actividad (0)</a>
@@ -496,12 +496,12 @@
         </tr>
     </table>
     {% if not read_only and primer_proceso %}
-    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; padding:0.5rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; justify-content:flex-end;">
+    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:0.5rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; justify-content:flex-end;">
         <button class="section-btn" onclick="openProcesoModal()">Editar datos del proceso</button>
     </div>
     {% endif %}
     {% if cliente.es_victima_conflicto or cliente.es_indigena or cliente.es_adulto_mayor or cliente.es_afectacion_psicologica or cliente.es_madre_cabeza_familia %}
-    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; padding:0.6rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:0.6rem 1rem; border-radius:0 0 6px 6px; display:flex; gap:0.5rem; flex-wrap:wrap;">
         <span style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; padding-top:0.2rem;">Condic. Especiales:</span>
         {% if cliente.es_victima_conflicto %}<span class="cond-badge"><i data-lucide="shield-alert" width="12" height="12"></i> Víctima conflicto</span>{% endif %}
         {% if cliente.es_indigena %}<span class="cond-badge"><i data-lucide="flag" width="12" height="12"></i> Indígena</span>{% endif %}
@@ -516,7 +516,7 @@
 {% if cliente.observaciones %}
 <div class="ficha-section">
     <div class="ficha-section-header"><span>Observaciones</span></div>
-    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; padding:1rem; border-radius:0 0 6px 6px; font-size:0.85rem; color:var(--ink); white-space:pre-wrap; line-height:1.6;">{{ cliente.observaciones }}</div>
+    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; padding:1rem; border-radius:0 0 6px 6px; font-size:0.85rem; color:var(--ink); white-space:pre-wrap; line-height:1.6;">{{ cliente.observaciones }}</div>
 </div>
 {% endif %}
 
@@ -544,7 +544,7 @@
             <td class="ft-val">{{ p.score_transunion|default:"—" }} / 1000</td>
         </tr>
         {% else %}
-        <tr><td class="ft-val" colspan="4" style="text-align:center;color:var(--text-muted);">Sin procesos asociados</td></tr>
+        <tr><td class="ft-val" colspan="4" style="text-align:center;color:var(--muted);">Sin procesos asociados</td></tr>
         {% endif %}
     </table>
     {% endwith %}
@@ -593,14 +593,14 @@
         {% endif %}
     </table>
     {% if anticipo_cuotas %}
-    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; border-radius:0 0 6px 6px; padding:0.75rem 1rem;">
+    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; border-radius:0 0 6px 6px; padding:0.75rem 1rem;">
         <div style="font-size:0.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:0.5rem;">
             Cronograma de cuotas del anticipo
             {% if anticipo_resumen %}<span style="color:var(--success);">({{ anticipo_resumen.cuotas_pagadas }}/{{ anticipo_resumen.cuotas_totales }} pagadas)</span>{% endif %}
         </div>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
             {% for c in anticipo_cuotas %}
-            <div style="flex:1 1 140px; max-width:200px; border:1px solid var(--topbar-border); border-radius:6px; padding:0.5rem 0.7rem; {% if c.pagada %}background:var(--success-bg); border-color:var(--success);{% endif %}">
+            <div style="flex:1 1 140px; max-width:200px; border:1px solid var(--line-soft); border-radius:6px; padding:0.5rem 0.7rem; {% if c.pagada %}background:var(--success-bg); border-color:var(--success);{% endif %}">
                 <div style="font-size:0.7rem; color:var(--muted);">Cuota {{ c.numero }}</div>
                 <div style="font-weight:700; font-size:0.85rem;">$ {{ c.valor|floatformat:0|intcomma }}</div>
                 <div style="font-size:0.7rem; color:{% if c.pagada %}var(--success){% else %}var(--muted-2){% endif %}; font-weight:600;">{% if c.pagada %}{{ c.fecha_pago|date:"d/m/Y" }}{% else %}Pendiente{% endif %}</div>
@@ -655,7 +655,7 @@
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No hay reportes negativos registrados.</td></tr>
+            <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:1.5rem;">No hay reportes negativos registrados.</td></tr>
             {% endfor %}
         </tbody>
         {% if reportes_negativos %}
@@ -703,7 +703,7 @@
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No hay documentos anexados.</td></tr>
+            <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:1.5rem;">No hay documentos anexados.</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -720,7 +720,7 @@
             <a href="{% url 'comercial_historial' cliente.pk %}" class="section-btn">Ver todas</a>
         </div>
     </div>
-    <div style="background:var(--surface); border:1px solid var(--topbar-border); border-top:none; border-radius:0 0 6px 6px;">
+    <div style="background:var(--surface); border:1px solid var(--line-soft); border-top:none; border-radius:0 0 6px 6px;">
         {% for h in historial %}
         <div style="display:flex; gap:0.75rem; padding:0.7rem 1rem; border-top:1px solid var(--line-soft); align-items:flex-start;">
             <div style="flex-shrink:0; font-size:0.72rem; color:var(--muted); min-width:80px; padding-top:0.1rem;">{{ h.fecha|date:"d/m/Y" }}</div>
@@ -731,7 +731,7 @@
             {% if h.tipo %}<span class="hal-badge hal-{{ h.tipo }}" style="flex-shrink:0;">{{ h.tipo }}</span>{% endif %}
         </div>
         {% empty %}
-        <div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+        <div style="padding:1.5rem; text-align:center; color:var(--muted); font-size:0.85rem;">
             Sin actividades registradas todavía.
         </div>
         {% endfor %}

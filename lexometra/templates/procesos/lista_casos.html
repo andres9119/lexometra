@@ -68,7 +68,7 @@
         <tbody>
             {% for caso in casos %}
             <tr>
-                <td class="caso-titulo"><a href="{% url 'procesos_detalle' caso.pk %}" style="color:var(--text-main); text-decoration:none;">{{ caso.titulo }}</a></td>
+                <td class="caso-titulo"><a href="{% url 'procesos_detalle' caso.pk %}" style="color:var(--ink); text-decoration:none;">{{ caso.titulo }}</a></td>
                 <td>{{ caso.get_tipo_proceso_display }}</td>
                 <td><span class="st-badge st-{{ caso.estado|lower }}">{{ caso.get_estado_display }}</span></td>
                 <td>{% if caso.abogado_asignado %}{{ caso.abogado_asignado.get_full_name|default:caso.abogado_asignado.username }}{% else %}—{% endif %}</td>
@@ -77,7 +77,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">No hay casos jurídicos registrados.</td>
+                <td colspan="6" style="text-align:center; padding:3rem; color:var(--muted);">No hay casos jurídicos registrados.</td>
             </tr>
             {% endfor %}
         </tbody>

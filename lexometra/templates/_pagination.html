@@ -1,17 +1,17 @@
 {% if paginator and paginator.num_pages > 1 %}
-<div style="display:flex; justify-content:space-between; align-items:center; padding:0.9rem 1.1rem; border-top:1px solid var(--topbar-border); background:var(--content-bg); flex-wrap:wrap; gap:0.5rem;">
-    <span style="font-size:0.78rem; color:var(--text-muted);">
+<div style="display:flex; justify-content:space-between; align-items:center; padding:0.9rem 1.1rem; border-top:1px solid var(--line-soft); background:var(--content-bg); flex-wrap:wrap; gap:0.5rem;">
+    <span style="font-size:0.78rem; color:var(--muted);">
         Página {{ page_obj.number }} de {{ paginator.num_pages }} ({{ paginator.count }} registros)
     </span>
     <div style="display:flex; gap:0.25rem;">
         {% if page_obj.has_previous %}
-        <a href="?page=1{{ query_params }}" aria-label="Primera página" style="padding:0.35rem 0.6rem; border:1px solid var(--topbar-border); border-radius:5px; text-decoration:none; color:var(--text-main); font-size:0.8rem;">&laquo;</a>
-        <a href="?page={{ page_obj.previous_page_number }}{{ query_params }}" aria-label="Anterior" style="padding:0.35rem 0.6rem; border:1px solid var(--topbar-border); border-radius:5px; text-decoration:none; color:var(--text-main); font-size:0.8rem;">&lsaquo;</a>
+        <a href="?page=1{{ query_params }}" aria-label="Primera página" style="padding:0.35rem 0.6rem; border:1px solid var(--line-soft); border-radius:5px; text-decoration:none; color:var(--ink); font-size:0.8rem;">&laquo;</a>
+        <a href="?page={{ page_obj.previous_page_number }}{{ query_params }}" aria-label="Anterior" style="padding:0.35rem 0.6rem; border:1px solid var(--line-soft); border-radius:5px; text-decoration:none; color:var(--ink); font-size:0.8rem;">&lsaquo;</a>
         {% endif %}
         <span style="padding:0.35rem 0.6rem; background:var(--accent); color:#fff; border-radius:5px; font-size:0.8rem;">{{ page_obj.number }}</span>
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{{ query_params }}" aria-label="Siguiente" style="padding:0.35rem 0.6rem; border:1px solid var(--topbar-border); border-radius:5px; text-decoration:none; color:var(--text-main); font-size:0.8rem;">&rsaquo;</a>
-        <a href="?page={{ paginator.num_pages }}{{ query_params }}" aria-label="Última página" style="padding:0.35rem 0.6rem; border:1px solid var(--topbar-border); border-radius:5px; text-decoration:none; color:var(--text-main); font-size:0.8rem;">&raquo;</a>
+        <a href="?page={{ page_obj.next_page_number }}{{ query_params }}" aria-label="Siguiente" style="padding:0.35rem 0.6rem; border:1px solid var(--line-soft); border-radius:5px; text-decoration:none; color:var(--ink); font-size:0.8rem;">&rsaquo;</a>
+        <a href="?page={{ paginator.num_pages }}{{ query_params }}" aria-label="Última página" style="padding:0.35rem 0.6rem; border:1px solid var(--line-soft); border-radius:5px; text-decoration:none; color:var(--ink); font-size:0.8rem;">&raquo;</a>
         {% endif %}
     </div>
 </div>

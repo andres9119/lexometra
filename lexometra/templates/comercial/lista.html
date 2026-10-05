@@ -45,17 +45,17 @@
         gap: 0;
         margin-bottom: 1rem;
         overflow-x: auto;
-        border-bottom: 1px solid var(--topbar-border);
+        border-bottom: 1px solid var(--line-soft);
     }
     
     .status-tab {
         background: white;
-        border-right: 1px solid var(--topbar-border);
+        border-right: 1px solid var(--line-soft);
         border-bottom: 2px solid transparent;
         padding: 0.75rem 1rem;
         font-size: 0.75rem;
         font-weight: 700;
-        color: var(--text-muted);
+        color: var(--muted);
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -67,18 +67,18 @@
     }
     
     .status-tab.active {
-        color: var(--text-main);
+        color: var(--ink);
         border-bottom-color: var(--accent);
     }
     
     .status-tab:hover:not(.active) {
         background: var(--line-soft);
-        color: var(--text-main);
+        color: var(--ink);
     }
     
     .tab-count {
         background: var(--line-soft);
-        color: var(--text-main);
+        color: var(--ink);
         border-radius: 4px;
         padding: 0.1rem 0.4rem;
         font-size: 0.7rem;
@@ -103,31 +103,31 @@
         width: 100%;
         padding: 0.5rem 1rem;
         border: none;
-        border-bottom: 1px solid var(--topbar-border);
+        border-bottom: 1px solid var(--line-soft);
         font-size: 0.9rem;
         outline: none;
         background: transparent;
-        color: var(--text-main);
+        color: var(--ink);
     }
     .search-box input::placeholder {
-        color: var(--text-muted);
+        color: var(--muted);
     }
     
     .service-filters { display: flex; gap: 1rem; align-items: center; }
     .service-filters select {
         padding: 0.4rem 1rem;
         border: none;
-        border-bottom: 1px solid var(--topbar-border);
+        border-bottom: 1px solid var(--line-soft);
         background: transparent;
         font-size: 0.85rem;
-        color: var(--text-main);
+        color: var(--ink);
         outline: none;
     }
 
     /* Table */
     .table-card {
         background: white;
-        border: 1px solid var(--topbar-border);
+        border: 1px solid var(--line-soft);
         border-radius: 8px;
         overflow-x: auto;
     }
@@ -149,9 +149,9 @@
     td {
         padding: 0.8rem 1rem;
         font-size: 0.8rem;
-        border-bottom: 1px solid var(--topbar-border);
-        border-right: 1px solid var(--topbar-border);
-        color: var(--text-main);
+        border-bottom: 1px solid var(--line-soft);
+        border-right: 1px solid var(--line-soft);
+        color: var(--ink);
         vertical-align: middle;
     }
     td:last-child { border-right: none; }
@@ -326,7 +326,7 @@
     .modal-body { padding: 2rem; background: var(--bg); }
     .modal-content:not(#clienteModal .modal-content) { background: var(--surface); border-radius: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
-    .form-group label { font-size: 0.85rem; color: var(--text-main); font-weight: 500; }
+    .form-group label { font-size: 0.85rem; color: var(--ink); font-weight: 500; }
     .form-group input, .form-group select, .form-group textarea {
         padding: 0.75rem 1rem; border: 1px solid var(--line); border-radius: 8px;
         font-size: 0.9rem; outline: none; background: var(--surface); font-family: inherit;
@@ -370,7 +370,7 @@
             <option>{{ s.nombre }}</option>
             {% endfor %}
         </select>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">{{ paginator.count }} registros</span>
+        <span style="font-size: 0.75rem; color: var(--muted);">{{ paginator.count }} registros</span>
     </div>
 </div>
 
@@ -414,7 +414,7 @@
                     <div style="position:relative;">
                         <span class="badge-status {% if read_only %}no-click{% endif %}" {% if not read_only %}onclick="toggleEstado({{ proceso.id }})"{% endif %}>{{ proceso.estado_comercial }}</span>
                         {% if not read_only %}
-                        <form method="post" id="estado-form-{{ proceso.id }}" style="display:none; position:absolute; top:28px; left:0; right:0; background:var(--content-bg); padding:0.5rem; border:1px solid var(--topbar-border); border-radius:8px; z-index:50; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <form method="post" id="estado-form-{{ proceso.id }}" style="display:none; position:absolute; top:28px; left:0; right:0; background:var(--content-bg); padding:0.5rem; border:1px solid var(--line-soft); border-radius:8px; z-index:50; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
                             {% csrf_token %}
                             <select name="estado" style="width:100%; padding:0.35rem; border-radius:4px; border:1px solid var(--line); outline:none;">
                                 {% for e in estados %}
@@ -441,8 +441,8 @@
             {% empty %}
             <tr>
                 <td colspan="8" style="text-align: center; padding: 3rem;">
-                    <i data-lucide="inbox" width="48" height="48" style="color: var(--topbar-border); margin-bottom: 1rem;"></i>
-                    <p style="color: var(--text-muted);">No hay registros aún.</p>
+                    <i data-lucide="inbox" width="48" height="48" style="color: var(--line-soft); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--muted);">No hay registros aún.</p>
                 </td>
             </tr>
             {% endfor %}
